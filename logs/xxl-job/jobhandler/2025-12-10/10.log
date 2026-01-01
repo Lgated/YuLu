@@ -1,0 +1,13 @@
+2025-12-10 19:46:09 [com.xxl.job.core.thread.JobThread#run]-[133]-[xxl-job, JobThread-1-1765367108429] <br>----------- xxl-job job execute start -----------<br>----------- Param:
+2025-12-10 19:46:09 [com.ityfz.yulu.ticket.job.TicketJobHandler#ticketAutoClose]-[32]-[Thread-8] [TicketJob] ========== 开始执行工单超时自动关闭任务 ==========
+2025-12-10 19:46:09 [com.ityfz.yulu.ticket.job.TicketJobHandler#ticketAutoClose]-[38]-[Thread-8] [TicketJob] 截止时间：2025-12-03T19:46:09.383108300（7天前）
+2025-12-10 19:46:09 [com.ityfz.yulu.ticket.job.TicketJobHandler#ticketAutoClose]-[54]-[Thread-8] [TicketJob] 查询到2个超时工单，开始批量关闭
+2025-12-10 19:46:09 [com.ityfz.yulu.ticket.job.TicketJobHandler#ticketAutoClose]-[72]-[Thread-8] [TicketJob] 工单已关闭: ticketId=4, title=测试工单2-超时, 创建时间=2025-11-30T19:45:44
+2025-12-10 19:46:09 [com.ityfz.yulu.ticket.job.TicketJobHandler#ticketAutoClose]-[72]-[Thread-8] [TicketJob] 工单已关闭: ticketId=3, title=测试工单1-超时, 创建时间=2025-12-02T19:45:44
+2025-12-10 19:46:09 [com.ityfz.yulu.ticket.job.TicketJobHandler#ticketAutoClose]-[93]-[Thread-8] [TicketJob] ========== 任务执行完成 ==========
+2025-12-10 19:46:09 [com.ityfz.yulu.ticket.job.TicketJobHandler#ticketAutoClose]-[94]-[Thread-8] [TicketJob] 总工单数: 2
+2025-12-10 19:46:09 [com.ityfz.yulu.ticket.job.TicketJobHandler#ticketAutoClose]-[95]-[Thread-8] [TicketJob] 成功关闭: 2
+2025-12-10 19:46:09 [com.ityfz.yulu.ticket.job.TicketJobHandler#ticketAutoClose]-[96]-[Thread-8] [TicketJob] 失败数量: 0
+2025-12-10 19:46:09 [com.ityfz.yulu.ticket.job.TicketJobHandler#ticketAutoClose]-[97]-[Thread-8] [TicketJob] 执行耗时: 70ms
+2025-12-10 19:46:09 [com.xxl.job.core.thread.JobThread#run]-[179]-[xxl-job, JobThread-1-1765367108429] <br>----------- xxl-job job execute end(finish) -----------<br>----------- Result: handleCode=200, handleMsg = null
+2025-12-10 19:46:09 [com.xxl.job.core.thread.TriggerCallbackThread#callbackLog]-[197]-[xxl-job, executor TriggerCallbackThread] <br>----------- xxl-job job callback finish.

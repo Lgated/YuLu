@@ -1,0 +1,63 @@
+spring:
+  application:
+    name: Yulu
+  datasource:
+    url: jdbc:mysql://localhost:3306/yulu?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:your_password_here}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
+    database: 0
+    timeout: 3000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        max-wait: 1000ms
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:admin}
+    password: ${RABBITMQ_PASSWORD:your_password_here}
+    virtual-host: /
+    listener:
+      simple:
+        acknowledge-mode: MANUAL
+        concurrency: 3
+        max-concurrency: 10
+        prefetch: 10
+        retry:
+          enabled: true
+          initial-interval: 1000
+          max-attempts: 3
+          multiplier: 2
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    template:
+      mandatory: true
+
+ai:
+  qianwen:
+    api-key: ${AI_QIANWEN_API_KEY:your_api_key_here}
+    base-url: https://dashscope.aliyuncs.com/api/v1
+    model: ${AI_MODEL:qwen1.5-110b-chat}
+
+# XXL-Job配置
+xxl:
+  job:
+    admin:
+      addresses: ${XXL_JOB_ADMIN_ADDRESS:http://localhost:18080/xxl-job-admin}
+    executor:
+      appname: ${XXL_JOB_APPNAME:yulu-ticket-service}
+      address:
+      ip: ${XXL_JOB_EXECUTOR_IP:127.0.0.1}
+      port: ${XXL_JOB_EXECUTOR_PORT:9999}
+      logpath: ./logs/xxl-job/jobhandler
+      logretentiondays: 30
+    accessToken: ${XXL_JOB_ACCESS_TOKEN:your_access_token_here}
+
+debug: ${DEBUG:false}
