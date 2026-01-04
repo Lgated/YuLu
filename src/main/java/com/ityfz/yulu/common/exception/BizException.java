@@ -23,16 +23,3 @@ public class BizException extends RuntimeException {
         this.data = data;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
