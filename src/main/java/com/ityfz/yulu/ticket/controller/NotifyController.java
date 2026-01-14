@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+
 @RestController
 @RequestMapping("/api/notify")
 @RequiredArgsConstructor
@@ -21,6 +22,9 @@ public class NotifyController {
 
     private final NotificationService notificationService;
 
+    /**
+     * 分页查询通知列表
+     */
     @GetMapping("/list")
     public ApiResponse<IPage<NotifyMessage>> list(NotifyListRequest req) {
         Long tenantId = SecurityUtil.currentTenantId();
@@ -29,6 +33,9 @@ public class NotifyController {
         return ApiResponse.success("OK", page);
     }
 
+    /**
+     * 标记通知为已读
+     */
     @PostMapping("/read")
     public ApiResponse<Void> markRead(@Valid @RequestBody NotifyReadRequest req) {
         Long tenantId = SecurityUtil.currentTenantId();

@@ -1,0 +1,85 @@
+spring:
+  application:
+    name: Yulu
+  datasource:
+    url: jdbc:mysql://localhost:3306/yulu?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: yfz
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: localhost
+    port: 6379
+    password: 
+    database: 1
+    timeout: 3000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        max-wait: 1000ms
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    listener:
+      simple:
+        acknowledge-mode: MANUAL # 手动确认消息
+        concurrency: 3 # 最小消费者数量
+        max-concurrency: 10 #  最大消费者数量
+        prefetch: 10 # 每个消费者每次拉取的消息数量
+        retry: # 重试配置
+          enabled: true
+          initial-interval: 1000 # 初始间隔时间，单位毫秒
+          max-attempts: 3 # 最大重试次数
+          multiplier: 2 # 间隔时间倍数
+    publisher-confirm-type: correlated # 启用发布者确认
+    publisher-returns: true # 启用发布者返回
+    template:
+      mandatory: true # 启用强制模式
+
+# MyBatis Plus 配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto #
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# AI 配置（通义千问）
+ai:
+  qianwen:
+    api-key: sk-b7fbdd371bc247548f1fc31057fe5713
+    base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    model: qwen-turbo
+
+# XXL-Job配置（可选，如果不需要定时任务可以设置为 false）
+xxl:
+  job:
+    enabled: false  # 设置为 true 启用 XXL-Job，需要先启动 XXL-Job Admin 服务
+    admin:
+      addresses: http://localhost:18080/xxl-job-admin
+    executor:
+      appname: yulu-ticket-service
+      address:
+      ip: 127.0.0.1
+      port: 9999
+      logpath: ./logs/xxl-job/jobhandler
+      logretentiondays: 30
+    accessToken: 
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.ityfz.yulu: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n"
+
+debug: false

@@ -4,14 +4,17 @@ import com.xxl.job.core.executor.impl.XxlJobSpringExecutor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * XXL-Job配置类
+ * 通过配置 xxl.job.enabled=true 来启用，默认禁用
  */
 @Slf4j
 @Configuration
+@ConditionalOnProperty(name = "xxl.job.enabled", havingValue = "true", matchIfMissing = false)
 public class XxlJobConfig {
     @Value("${xxl.job.admin.addresses}")
     private String adminAddresses;
@@ -19,7 +22,7 @@ public class XxlJobConfig {
     @Value("${xxl.job.executor.appname}")
     private String appname;
 
-    @Value("${xxl.job.executor.address}")
+    @Value("${xxl.job.executor.address:}")
     private String address;
 
     @Value("${xxl.job.executor.ip}")

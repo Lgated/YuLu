@@ -42,6 +42,7 @@ public class TicketEventPublisher {
      */
     public void publishNegativeEmotion(NegativeEmotionEvent event) {
         try{
+
             rabbitTemplate.convertAndSend("ex.ticket","ticket.emotion.negative", event, message -> {
                 // 设置消息持久化（落地磁盘，防止服务器重启丢失）
                 message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);

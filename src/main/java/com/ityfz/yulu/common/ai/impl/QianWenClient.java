@@ -50,13 +50,40 @@ public class QianWenClient implements LLMClient {
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
-
-        String url = props.getBaseUrl() + "/services/aigc/text-generation/generation";
-
+        // 判断是兼容模式还是标准模式
+        String baseUrl = props.getBaseUrl();
+        String url;
+        boolean isCompatibleMode = baseUrl.contains("/compatible");
+        
+        if (isCompatibleMode) {
+            // 兼容模式：使用 OpenAI 兼容接口
+            // baseUrl 应该是 https://dashscope.aliyuncs.com/compatible/v1
+            // 拼接后：https://dashscope.aliyuncs.com/compatible/v1/chat/completions
+            url = baseUrl + "/chat/completions";
+            // 兼容模式的请求体格式不同（OpenAI 格式）
+            body = new HashMap<>();
+            body.put("model", props.getModel());
+            body.put("messages", contextMessages);
+            // 兼容模式使用 Authorization: Bearer {api_key}
+            headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(props.getApiKey());
+            request = new HttpEntity<>(body, headers);
+            log.info("[QianWen] 使用兼容模式，URL: {}, Model: {}, Messages: {}", url, props.getModel(), contextMessages.size());
+        } else {
+            // 标准模式：使用通义千问原生接口
+            url = baseUrl + "/services/aigc/text-generation/generation";
+            // 标准模式使用 X-DashScope-API-Key 头
+            headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("X-DashScope-API-Key", props.getApiKey());
+            request = new HttpEntity<>(body, headers);
+            log.info("[QianWen] 使用标准模式，URL: {}, Model: {}", url, props.getModel());
+        }
 
         try {
             //1、调用通义千问
-            //用 RestTemplate 发一个 POST 请求到通义千问的接口，Map.class 表示把返回的 JSON 按 Map 解析。
+            log.debug("[QianWen] 请求URL: {}, 请求体: {}", url, body);
             ResponseEntity<Map> resp = restTemplate.exchange(url, HttpMethod.POST, request, Map.class);
             if (!resp.getStatusCode().is2xxSuccessful() || resp.getBody() == null) {
                 log.warn("调用通义千问失败，status={}, body={}", resp.getStatusCode(), resp.getBody());
@@ -64,26 +91,60 @@ public class QianWenClient implements LLMClient {
             }
 
             Map<String, Object> respBody = resp.getBody();
-            // 简单从 output.choices[0].message.content 中取值
-            //respBody.get("output") → 取出 output 部分。
-            Map<String, Object> output = (Map<String, Object>) respBody.get("output");
-            //拿到 choices 数组。
-            List<Map<String, Object>> choices = (List<Map<String, Object>>) output.get("choices");
-            if (choices == null || choices.isEmpty()) {
-                log.warn("通义千问返回 choices 为空: {}", respBody);
-                return "抱歉，我暂时没有合适的回答。";
+            String content;
+            
+            if (isCompatibleMode) {
+                // 兼容模式响应格式：choices[0].message.content
+                List<Map<String, Object>> choices = (List<Map<String, Object>>) respBody.get("choices");
+                if (choices == null || choices.isEmpty()) {
+                    log.warn("通义千问返回 choices 为空: {}", respBody);
+                    return "抱歉，我暂时没有合适的回答。";
+                }
+                Map<String, Object> first = choices.get(0);
+                Map<String, Object> message = (Map<String, Object>) first.get("message");
+                content = (String) message.get("content");
+            } else {
+                // 标准模式响应格式：output.choices[0].message.content
+                Map<String, Object> output = (Map<String, Object>) respBody.get("output");
+                if (output == null) {
+                    log.warn("通义千问返回 output 为空: {}", respBody);
+                    return "抱歉，我暂时没有合适的回答。";
+                }
+                List<Map<String, Object>> choices = (List<Map<String, Object>>) output.get("choices");
+                if (choices == null || choices.isEmpty()) {
+                    log.warn("通义千问返回 choices 为空: {}", respBody);
+                    return "抱歉，我暂时没有合适的回答。";
+                }
+                Map<String, Object> first = choices.get(0);
+                Map<String, Object> message = (Map<String, Object>) first.get("message");
+                content = (String) message.get("content");
             }
-            Map<String, Object> first = choices.get(0);
-            Map<String, Object> message = (Map<String, Object>) first.get("message");
-            String content = (String) message.get("content");
 
             long cost = System.currentTimeMillis() - start;
             log.info("[QianWen] 调用成功, model={}, questionLen={}, cost={}ms",
                     props.getModel(), question != null ? question.length() : 0, cost);
 
             return content;
+        } catch (org.springframework.web.client.HttpClientErrorException e) {
+            // HTTP 错误（4xx, 5xx）
+            String errorBody = e.getResponseBodyAsString();
+            log.error("[QianWen] HTTP错误: status={}, body={}, URL={}", 
+                    e.getStatusCode(), errorBody, url, e);
+            
+            // 如果是 404，可能是 URL 或 API Key 问题
+            if (e.getStatusCode().value() == 404) {
+                return "通义千问 API 地址错误或 API Key 无效，请检查配置。错误详情：" + 
+                       (errorBody != null && !errorBody.isEmpty() ? errorBody : e.getMessage());
+            }
+            // 如果是 401，是认证问题
+            if (e.getStatusCode().value() == 401) {
+                return "通义千问 API Key 无效或已过期，请检查配置。";
+            }
+            
+            return "调用通义千问出错：" + e.getStatusCode() + " - " + 
+                   (errorBody != null && !errorBody.isEmpty() ? errorBody : e.getMessage());
         } catch (Exception e) {
-            log.error("[QianWen] 调用异常", e);
+            log.error("[QianWen] 调用异常: URL={}", url, e);
             return "调用通义千问出错：" + e.getMessage();
         }
     }

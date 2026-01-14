@@ -52,7 +52,7 @@ public class ChatServiceImpl implements ChatService {
     public ChatServiceImpl(ChatSessionMapper chatSessionMapper,
                            ChatMessageMapper chatMessageMapper,
                            StringRedisTemplate stringRedisTemplate,
-                           @Qualifier("qianWenClient") LLMClient llmClient,
+                           @Qualifier("langChain4jQwenClient") LLMClient llmClient,
                            TicketService ticketService,
                            TicketEventPublisher emotionEventPublisher) {
         this.chatSessionMapper = chatSessionMapper;
@@ -162,7 +162,6 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    @Transactional
     public ChatMessage chatWithAi(Long sessionId, Long userId, Long tenantId, String question) {
         // 1. 填充租户上下文（保证 DB 操作正确）
         TenantContextHolder.setTenantId(tenantId);
@@ -224,6 +223,7 @@ public class ChatServiceImpl implements ChatService {
                 event.setQuestion(question);
                 event.setPriority("ANGRY".equalsIgnoreCase(emotion) ? "HIGH" : "MEDIUM");
                 event.setEmotion(emotion);
+                // 发送消息
                 emotionEventPublisher.publishNegativeEmotion(event);
                 log.info("[Chat] 负向情绪事件已发送到MQ: emotion={}, sessionId={}", emotion, sessionId);
             }catch (Exception e) {

@@ -1,0 +1,23 @@
+const TOKEN_KEY = 'yulu_token';
+const SESSION_KEY = 'yulu_session_id';
+
+export const getToken = () => localStorage.getItem(TOKEN_KEY);
+
+export const setToken = (token: string) => localStorage.setItem(TOKEN_KEY, token);
+
+export const clearToken = () => localStorage.removeItem(TOKEN_KEY);
+
+export const getCurrentSessionId = (): number | null => {
+  const v = localStorage.getItem(SESSION_KEY);
+  if (!v) return null;
+  const n = Number(v);
+  return Number.isNaN(n) ? null : n;
+};
+
+export const setCurrentSessionId = (id: number) =>
+  localStorage.setItem(SESSION_KEY, String(id));
+
+export const clearCurrentSessionId = () => localStorage.removeItem(SESSION_KEY);
+
+
+
