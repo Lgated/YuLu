@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "登录注册逻辑重构方案.md",
+                "file": "langchain4j-对话能力增强方案.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "登录注册逻辑重构方案"
+              "title": "langchain4j-对话能力增强方案"
             }
           }
         ],
@@ -200,17 +200,23 @@
   },
   "active": "d3a783cd54340f95",
   "lastOpenFiles": [
-    "多租户智能客服中台-产品与技术架构设计.md",
-    "前端API路径修改说明.md",
-    "登录注册逻辑重构方案.md",
-    "后端架构重构-详细实现指南.md",
-    "实现目标.md",
     "langchain4j-改造教学-从零到跑通.md",
+    "langchain4j-对话能力增强方案.md",
+    "next-steps-roadmap.md",
+    "project-architecture-single-tenant-ai-chat.md",
     "project-overview.md",
     "react-frontend-设计与实现指南.md",
+    "TenantIdentifier工具类清理说明.md",
     "XXL-Job配置指南.md",
-    "project-architecture-single-tenant-ai-chat.md",
-    "next-steps-roadmap.md",
+    "后端架构整理方案.md",
+    "多租户智能客服中台-产品与技术架构设计.md",
+    "后端架构重构-详细实现指南.md",
+    "前端API路径修改说明.md",
+    "实现目标.md",
+    "登录注册功能简化方案-最终版.md",
+    "404错误排查和修复.md",
+    "登录注册逻辑重构方案.md",
+    "为什么C端需要租户校验-逻辑说明.md",
     "数据库初始化指南.md",
     "通义千问API配置指南.md",
     "sql/xxl-job-init.sql",

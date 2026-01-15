@@ -1,5 +1,6 @@
 export interface ApiResponse<T> {
-  code: string;
+  success?: boolean;  // 后端返回的success字段
+  code: string;       // 后端返回的code字段（如"200"表示成功）
   message: string;
   data: T;
 }
@@ -12,6 +13,10 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   token: string;
+  role?: string;
+  username?: string;
+  tenantId?: number;
+  userId?: number;
 }
 
 export interface ChatMessage {
@@ -67,5 +72,6 @@ export interface NotifyMessage {
   readFlag: number;
   createTime: string;
 }
+
 
 

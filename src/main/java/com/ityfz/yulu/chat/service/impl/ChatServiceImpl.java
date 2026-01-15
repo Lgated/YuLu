@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ityfz.yulu.common.ai.LLMClient;
 import com.ityfz.yulu.common.ai.Message;
 import com.ityfz.yulu.common.enums.Roles;
-import com.ityfz.yulu.common.error.ErrorCodes;
+import com.ityfz.yulu.common.enums.ErrorCodes;
 import com.ityfz.yulu.common.exception.BizException;
 import com.ityfz.yulu.common.security.SecurityUtil;
 import com.ityfz.yulu.common.tenant.TenantContextHolder;

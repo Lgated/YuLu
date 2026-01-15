@@ -30,8 +30,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         // 排除不需要认证的接口
         registration.addInitParameter("excludedUrls",
-                "/api/auth/login," +
-                        "/api/auth/registerTenant," +
+                "/api/admin/auth/login," +
+                        "/api/admin/auth/registerTenant," +
+                        "/api/customer/auth/login," +
+                        "/api/customer/auth/register," +
                         "/actuator/health," +
                         "/error");
 

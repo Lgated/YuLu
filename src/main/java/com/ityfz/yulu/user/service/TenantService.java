@@ -1,10 +1,10 @@
 package com.ityfz.yulu.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.ityfz.yulu.user.dto.LoginRequest;
-import com.ityfz.yulu.user.dto.LoginResponse;
-import com.ityfz.yulu.user.dto.TenantRegisterRequest;
-import com.ityfz.yulu.user.dto.TenantRegisterResponse;
+import com.ityfz.yulu.common.dto.LoginRequest;
+import com.ityfz.yulu.common.dto.LoginResponse;
+import com.ityfz.yulu.admin.dto.TenantRegisterRequest;
+import com.ityfz.yulu.admin.dto.TenantRegisterResponse;
 import com.ityfz.yulu.user.entity.Tenant;
 
 public interface TenantService extends IService<Tenant> {
@@ -18,5 +18,10 @@ public interface TenantService extends IService<Tenant> {
      * 登录，返回token等信息。
      */
     LoginResponse login(LoginRequest request);
+
+    /**
+     * B端登录（仅允许 ADMIN/AGENT）
+     */
+    LoginResponse loginAdmin(LoginRequest request);
 }
 

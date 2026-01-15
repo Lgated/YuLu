@@ -1,6 +1,7 @@
 package com.ityfz.yulu.user.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -36,6 +37,13 @@ public class Tenant implements Serializable {
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;
+
+    /**
+     * 租户标识码（对外使用，比tenantCode更友好）
+     * C端用户使用此字段登录，而不是tenantCode
+     */
+    @TableField("tenant_identifier")
+    private String tenantIdentifier;
 }
 
 

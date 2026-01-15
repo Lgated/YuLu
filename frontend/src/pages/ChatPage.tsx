@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Card, List, Input, Button, message as antdMessage, Tag } from 'antd';
 import { chatApi } from '../api/chat';
 import type { ChatMessage, ChatSession } from '../api/types';
-import { AppLayout } from '../components/layout/AppLayout';
 import { getCurrentSessionId, setCurrentSessionId as saveSessionId } from '../utils/storage';
 
 const { TextArea } = Input;
@@ -16,13 +15,8 @@ export default function ChatPage() {
   const chatWindowRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const savedId = getCurrentSessionId();
-    if (savedId) {
-      setCurrentSessionId(savedId);
-      loadMessages(savedId);
-    } else {
-      loadSessions();
-    }
+    // 每次进入页面都先加载会话列表，再根据 localStorage 的 sessionId 恢复历史
+    loadSessions(true);
   }, []);
 
   // 消息变化时自动滚动到底部
@@ -33,16 +27,32 @@ export default function ChatPage() {
     }
   }, [messages]);
 
-  const loadSessions = async () => {
+  const loadSessions = async (autoSelect: boolean) => {
     try {
-      const res = await chatApi.allSessions();
+      const res = await chatApi.sessions();
       if (res.success || res.code === '200') {
-        setSessions(res.data || []);
-        if (res.data && res.data.length > 0) {
-          const first = res.data[0];
-          setCurrentSessionId(first.id);
-          saveSessionId(first.id);
-          loadMessages(first.id);
+        const list = res.data || [];
+        setSessions(list);
+
+        if (!autoSelect) return;
+
+        const savedId = getCurrentSessionId();
+        // 优先恢复上次会话；若不存在则选第一个
+        const targetId =
+          savedId && list.some((s) => s.id === savedId)
+            ? savedId
+            : list.length > 0
+            ? list[0].id
+            : null;
+
+        if (targetId) {
+          setCurrentSessionId(targetId);
+          saveSessionId(targetId);
+          await loadMessages(targetId);
+        } else {
+          // 没有任何会话：清空消息
+          setCurrentSessionId(null);
+          setMessages([]);
         }
       }
     } catch (e: any) {
@@ -117,90 +127,89 @@ export default function ChatPage() {
   };
 
   return (
-    <AppLayout>
-      <div
-        style={{
+    <div
+      style={{
+        display: 'flex',
+        gap: 16,
+        height: 'calc(100vh - 96px)',
+        overflow: 'hidden'
+      }}
+    >
+      <Card title="会话列表" style={{ width: 260, overflowY: 'auto', height: '100%' }}>
+        <List
+          dataSource={sessions}
+          renderItem={(item) => (
+            <List.Item
+              style={{
+                cursor: 'pointer',
+                background: item.id === currentSessionId ? '#e6f4ff' : undefined
+              }}
+              onClick={() => {
+                setCurrentSessionId(item.id);
+                saveSessionId(item.id);
+                loadMessages(item.id);
+              }}
+            >
+              {item.sessionTitle || `会话 #${item.id}`}
+            </List.Item>
+          )}
+        />
+      </Card>
+      <Card
+        title="智能对话"
+        style={{ flex: 1, height: '100%' }}
+        bodyStyle={{
           display: 'flex',
-          gap: 16,
-          height: 'calc(100vh - 96px)',
-          overflow: 'hidden'
+          flexDirection: 'column',
+          height: '100%',
+          padding: 16,
+          paddingTop: 8
         }}
       >
-        <Card title="会话列表" style={{ width: 260, overflowY: 'auto', height: '100%' }}>
+        <div className="chat-window" ref={chatWindowRef}>
           <List
-            dataSource={sessions}
-            renderItem={(item) => (
-              <List.Item
-                style={{
-                  cursor: 'pointer',
-                  background: item.id === currentSessionId ? '#e6f4ff' : undefined
-                }}
-                onClick={() => {
-                  setCurrentSessionId(item.id);
-                  loadMessages(item.id);
-                }}
-              >
-                {item.sessionTitle || `会话 #${item.id}`}
-              </List.Item>
-            )}
-          />
-        </Card>
-        <Card
-          title="智能对话"
-          style={{ flex: 1, height: '100%' }}
-          bodyStyle={{
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100%',
-            padding: 16,
-            paddingTop: 8
-          }}
-        >
-          <div className="chat-window" ref={chatWindowRef}>
-            <List
-              dataSource={messages}
-              renderItem={(msg) => {
-                const isUser = msg.senderType === 'USER';
-                return (
-                  <div className={`chat-message ${isUser ? 'user' : 'ai'}`}>
-                    <div className={`chat-bubble ${isUser ? 'user' : 'ai'}`}>
-                      <div style={{ marginBottom: 4, fontSize: 12, opacity: 0.7 }}>
-                        {isUser ? '用户' : 'AI'}
-                        {!isUser && msg.emotion && msg.emotion !== 'NORMAL' && (
-                          <Tag color="red" style={{ marginLeft: 8 }}>
-                            {msg.emotion}
-                          </Tag>
-                        )}
-                      </div>
-                      <div>{msg.content}</div>
+            dataSource={messages}
+            renderItem={(msg) => {
+              const isUser = msg.senderType === 'USER';
+              return (
+                <div className={`chat-message ${isUser ? 'user' : 'ai'}`}>
+                  <div className={`chat-bubble ${isUser ? 'user' : 'ai'}`}>
+                    <div style={{ marginBottom: 4, fontSize: 12, opacity: 0.7 }}>
+                      {isUser ? '用户' : 'AI'}
+                      {!isUser && msg.emotion && msg.emotion !== 'NORMAL' && (
+                        <Tag color="red" style={{ marginLeft: 8 }}>
+                          {msg.emotion}
+                        </Tag>
+                      )}
                     </div>
+                    <div>{msg.content}</div>
                   </div>
-                );
-              }}
-            />
+                </div>
+              );
+            }}
+          />
+        </div>
+        <div style={{ marginTop: 8 }}>
+          <TextArea
+            rows={3}
+            placeholder="请输入要咨询的问题..."
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            onPressEnter={(e) => {
+              if (!e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
+          />
+          <div style={{ textAlign: 'right', marginTop: 8 }}>
+            <Button type="primary" onClick={handleSend} loading={loading}>
+              发送
+            </Button>
           </div>
-          <div style={{ marginTop: 8 }}>
-            <TextArea
-              rows={3}
-              placeholder="请输入要咨询的问题..."
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              onPressEnter={(e) => {
-                if (!e.shiftKey) {
-                  e.preventDefault();
-                  handleSend();
-                }
-              }}
-            />
-            <div style={{ textAlign: 'right', marginTop: 8 }}>
-              <Button type="primary" onClick={handleSend} loading={loading}>
-                发送
-              </Button>
-            </div>
-          </div>
-        </Card>
-      </div>
-    </AppLayout>
+        </div>
+      </Card>
+    </div>
   );
 }
 

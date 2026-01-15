@@ -2,6 +2,7 @@ package com.ityfz.yulu.customer.controller;
 
 import com.ityfz.yulu.chat.dto.ChatAskRequest;
 import com.ityfz.yulu.chat.entity.ChatMessage;
+import com.ityfz.yulu.chat.entity.ChatSession;
 import com.ityfz.yulu.chat.service.ChatService;
 import com.ityfz.yulu.common.annotation.RequireRole;
 import com.ityfz.yulu.common.enums.ErrorCodes;
@@ -61,6 +62,23 @@ public class CustomerChatController {
         chatService.checkSessionOwnerOrAgent(tenantId, userId, sessionId);
         List<ChatMessage> messages = chatService.listMessages(sessionId);
         return ApiResponse.success("OK", messages);
+    }
+
+    /**
+     * 当前用户的会话列表
+     * GET /api/customer/chat/sessions
+     */
+    @GetMapping("/sessions")
+    public ApiResponse<List<ChatSession>> listMySessions() {
+        Long tenantId = TenantContextHolder.getTenantId();
+        Long userId = UserContextHolder.getUserId();
+
+        if (tenantId == null || userId == null) {
+            throw new BizException(ErrorCodes.UNAUTHORIZED, "请先登录");
+        }
+
+        List<ChatSession> sessions = chatService.listUserSessionsByUsers(tenantId, userId);
+        return ApiResponse.success("OK", sessions);
     }
 
     /**

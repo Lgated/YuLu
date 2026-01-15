@@ -1,18 +1,54 @@
 import http from './axios';
 import type { ApiResponse, Ticket, TicketComment } from './types';
 
+/**
+ * B端工单管理API（管理员/客服使用）
+ */
 export const ticketApi = {
+  // 分页查询工单列表
   list(params: { status?: string; page?: number; size?: number }) {
-    return http.get<ApiResponse<{ records: Ticket[]; total: number }>>('/ticket/list', {
+    return http.get<ApiResponse<{ records: Ticket[]; total: number }>>('/admin/ticket/list', {
       params
     });
   },
 
+  // 分配工单（仅管理员）
+  assign(ticketId: number, assigneeUserId: number) {
+    return http.post<ApiResponse<void>>('/admin/ticket/assign', {
+      ticketId,
+      assigneeUserId
+    });
+  },
+
+  // 工单状态流转
+  transition(ticketId: number, targetStatus: string, comment?: string) {
+    return http.post<ApiResponse<void>>('/admin/ticket/transition', {
+      ticketId,
+      targetStatus,
+      comment
+    });
+  },
+
+  // 添加工单备注
+  addComment(ticketId: number, content: string) {
+    return http.post<ApiResponse<void>>('/admin/ticket/comment', {
+      ticketId,
+      content
+    });
+  },
+
+  // 获取工单备注列表
   comments(ticketId: number) {
-    return http.get<ApiResponse<TicketComment[]>>('/ticket/comment/list', {
+    return http.get<ApiResponse<TicketComment[]>>('/admin/ticket/comment/list', {
       params: { ticketId }
     });
+  },
+
+  // 获取工单统计信息
+  stats() {
+    return http.get<ApiResponse<any>>('/admin/ticket/stats');
   }
 };
+
 
 

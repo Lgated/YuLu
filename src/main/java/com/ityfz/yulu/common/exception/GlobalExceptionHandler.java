@@ -1,6 +1,6 @@
 package com.ityfz.yulu.common.exception;
 
-import com.ityfz.yulu.common.error.ErrorCodes;
+import com.ityfz.yulu.common.enums.ErrorCodes;
 import com.ityfz.yulu.common.model.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;

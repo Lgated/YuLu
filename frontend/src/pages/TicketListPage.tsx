@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { AppLayout } from '../components/layout/AppLayout';
 import { Card, Table, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { ticketApi } from '../api/ticket';
@@ -47,11 +46,9 @@ export default function TicketListPage() {
   ];
 
   return (
-    <AppLayout>
-      <Card title="工单中心">
-        <Table<Ticket> rowKey="id" loading={loading} dataSource={data} columns={columns} />
-      </Card>
-    </AppLayout>
+    <Card title="工单中心">
+      <Table<Ticket> rowKey="id" loading={loading} dataSource={data} columns={columns} />
+    </Card>
   );
 }
 

@@ -2,16 +2,17 @@ package com.ityfz.yulu.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ityfz.yulu.common.enums.ErrorCodes;
 import com.ityfz.yulu.common.enums.Roles;
-import com.ityfz.yulu.common.error.ErrorCodes;
+
 import com.ityfz.yulu.common.exception.BizException;
 import com.ityfz.yulu.common.security.JwtUtil;
 import com.ityfz.yulu.common.security.JwtUtil.LoginUser;
 import com.ityfz.yulu.common.tenant.TenantContextHolder;
-import com.ityfz.yulu.user.dto.LoginRequest;
-import com.ityfz.yulu.user.dto.LoginResponse;
-import com.ityfz.yulu.user.dto.TenantRegisterRequest;
-import com.ityfz.yulu.user.dto.TenantRegisterResponse;
+import com.ityfz.yulu.common.dto.LoginRequest;
+import com.ityfz.yulu.common.dto.LoginResponse;
+import com.ityfz.yulu.admin.dto.TenantRegisterRequest;
+import com.ityfz.yulu.admin.dto.TenantRegisterResponse;
 import com.ityfz.yulu.user.entity.Tenant;
 import com.ityfz.yulu.user.entity.User;
 import com.ityfz.yulu.user.mapper.TenantMapper;
@@ -53,6 +54,11 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
         tenant.setTenantCode(request.getTenantCode());
         tenant.setName(request.getTenantName());
         tenant.setStatus(1);
+        // 设置tenantIdentifier（如果未提供，默认等于tenantCode）
+        String tenantIdentifier = StringUtils.hasText(request.getTenantIdentifier()) 
+                ? request.getTenantIdentifier() 
+                : request.getTenantCode();
+        tenant.setTenantIdentifier(tenantIdentifier);
         this.save(tenant);
 
         //校验用户名是否重复
@@ -147,5 +153,19 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
             // 清除租户上下文（虽然请求结束后会自动清除，但显式清除更安全）
             TenantContextHolder.clear();
         }
+    }
+
+    /**
+     * B端登录：仅允许 ADMIN / AGENT
+     */
+    @Override
+    public LoginResponse loginAdmin(LoginRequest request) {
+        LoginResponse response = login(request);
+        String role = response.getRole();
+        if (Roles.USER.equalsIgnoreCase(role)) {
+            // 不返回token给USER，避免误登录到B端
+            throw new BizException(ErrorCodes.FORBIDDEN, "当前账号不是租户端账号，请使用客户登录入口");
+        }
+        return response;
     }
 }

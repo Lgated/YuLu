@@ -12,6 +12,7 @@ instance.interceptors.request.use((config) => {
     config.headers = config.headers || {};
     config.headers.Authorization = `Bearer ${token}`;
   }
+  
   return config;
 });
 
@@ -27,5 +28,6 @@ instance.interceptors.response.use(
 );
 
 export default instance;
+
 
 

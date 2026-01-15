@@ -15,6 +15,7 @@ public final class ErrorCodes {
     public static final String METHOD_NOT_ALLOWED = "METHOD_NOT_ALLOWED";
     public static final String FORBIDDEN = "FORBIDDEN";
     public static final String UNAUTHORIZED = "UNAUTHORIZED";
+    public static final String TOKEN_INVALID = "TOKEN_INVALID";
 
     // 业务 - 租户/用户
     public static final String TENANT_EXISTS = "TENANT_EXISTS";

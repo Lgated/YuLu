@@ -1,4 +1,4 @@
-package com.ityfz.yulu.user.dto;
+package com.ityfz.yulu.admin.dto;
 
 import javax.validation.constraints.NotBlank;
 import lombok.Data;
@@ -26,6 +26,13 @@ public class TenantRegisterRequest {
      * 如果不提供，默认为 ADMIN（保持向后兼容）
      */
     private String role;
+
+    /**
+     * 租户标识码（可选）
+     * 如果不提供，默认等于tenantCode
+     * C端用户使用此字段登录，而不是tenantCode
+     */
+    private String tenantIdentifier;
 }
 
 

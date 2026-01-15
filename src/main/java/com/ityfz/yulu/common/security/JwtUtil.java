@@ -4,7 +4,7 @@ import cn.hutool.jwt.JWTPayload;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTUtil;
 import cn.hutool.jwt.signers.JWTSignerUtil;
-import com.ityfz.yulu.common.error.ErrorCodes;
+import com.ityfz.yulu.common.enums.ErrorCodes;
 import com.ityfz.yulu.common.exception.BizException;
 import lombok.Data;
 

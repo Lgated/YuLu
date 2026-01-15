@@ -1,4 +1,4 @@
-package com.ityfz.yulu.user.dto;
+package com.ityfz.yulu.admin.dto;
 
 import lombok.Data;
 
