@@ -189,9 +189,8 @@ public class ChatServiceImpl implements ChatService {
                 .map(m -> new Message(m.get("role"), m.get("content")))
                 .collect(Collectors.toList());
 
-        //TODO：改用大模型
 
-        // 5. 调用 AI (暂时mock实现)
+        // 5. 调用 AI
         String aiReply = llmClient.chat(messages, question);
 
         // 6. 情绪识别（针对用户这句话，也可以针对整段对话）
