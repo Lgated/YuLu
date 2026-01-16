@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "langchain4j-对话能力增强方案.md",
+                "file": "text-embedding-v2与Qdrant完整实现方案.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "langchain4j-对话能力增强方案"
+              "title": "text-embedding-v2与Qdrant完整实现方案"
             }
           }
         ],
@@ -200,16 +200,25 @@
   },
   "active": "d3a783cd54340f95",
   "lastOpenFiles": [
-    "langchain4j-改造教学-从零到跑通.md",
+    "Embedding模型与向量数据库选型对比分析.md",
+    "text-embedding-v2与Qdrant完整实现方案.md",
+    "TenantIdentifier工具类清理说明.md",
+    "RAG向量检索增强生成-完整实现方案.md",
+    "Redis存储方案选择-leftPush-vs-rightPush.md",
     "langchain4j-对话能力增强方案.md",
+    "langchain4j-改造教学-从零到跑通.md",
+    "多租户智能客服中台-产品与技术架构设计.md",
+    "上下文构造逻辑详解与Redis交互机制.md",
+    "AI对话上下文问题诊断与修复方案.md",
+    "单元测试说明-LangChain4jQwenClient.md",
+    "JSON解析异常问题修复方案.md",
+    "单元测试错误分析与解决方案.md",
     "next-steps-roadmap.md",
     "project-architecture-single-tenant-ai-chat.md",
     "project-overview.md",
     "react-frontend-设计与实现指南.md",
-    "TenantIdentifier工具类清理说明.md",
     "XXL-Job配置指南.md",
     "后端架构整理方案.md",
-    "多租户智能客服中台-产品与技术架构设计.md",
     "后端架构重构-详细实现指南.md",
     "前端API路径修改说明.md",
     "实现目标.md",
@@ -217,8 +226,6 @@
     "404错误排查和修复.md",
     "登录注册逻辑重构方案.md",
     "为什么C端需要租户校验-逻辑说明.md",
-    "数据库初始化指南.md",
-    "通义千问API配置指南.md",
     "sql/xxl-job-init.sql",
     "sql/init.sql",
     "sql",

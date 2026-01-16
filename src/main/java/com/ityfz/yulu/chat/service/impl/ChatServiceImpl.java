@@ -180,7 +180,8 @@ public class ChatServiceImpl implements ChatService {
         userMsg.setEmotion("NORMAL");   // 暂时 NORMAL，可后面用 detectEmotion 再识别
         userMsg.setCreateTime(LocalDateTime.now());
         chatMessageMapper.insert(userMsg);
-        appendContext(sessionId, "user", question);
+
+
 
         // 4. 从 Redis 中取出当前会话最近的上下文，供调用 AI 模型时拼接 Prompt
         //并转成 List<Message>
@@ -189,9 +190,17 @@ public class ChatServiceImpl implements ChatService {
                 .map(m -> new Message(m.get("role"), m.get("content")))
                 .collect(Collectors.toList());
 
+        String summary = stringRedisTemplate.opsForValue().get("chat:summary:" + sessionId);
+
+        if (summary != null && !summary.isEmpty()) {
+            messages.add(0, new Message("system",
+                    "这是本次会话目前为止的摘要，请在回答问题时参考这些信息：" + summary));
+        }
 
         // 5. 调用 AI
         String aiReply = llmClient.chat(messages, question);
+        appendContext(sessionId, "user", question);
+
 
         // 6. 情绪识别（针对用户这句话，也可以针对整段对话）
         String emotion = llmClient.detectEmotion(question);
@@ -391,4 +400,35 @@ public class ChatServiceImpl implements ChatService {
         java.util.Collections.reverse(kept);
         stringRedisTemplate.opsForList().leftPushAll(key, kept);
     }
+
+    /**
+     *
+     * 新增一层摘要
+     */
+    private void generateAndSaveSummaryIfNeeded(Long sessionId, Long tenantId) {
+        // 1. 读取当前 context（listContextFromRedis）
+        List<Map<String, String>> ctx = listContextFromRedis(sessionId);
+        if (ctx.size() < 10) {
+            return; // 太短不需要摘要
+        }
+
+        // 2. 构造一个简单的文本：role + content 拼在一起
+        StringBuilder sb = new StringBuilder();
+        for (Map<String, String> m : ctx) {
+            sb.append(m.get("role")).append(": ").append(m.get("content")).append("\n");
+        }
+
+        // 3. 调用一个专门的 summarizer（可以通过 LLMClient 或单独 LangChain4j）
+        String summary = llmClient.chat(
+                Collections.emptyList(),
+                "下面是用户和客服的一段对话，请用不超过 200 字总结当前会话的关键信息（用户是谁、在问什么、已给出哪些答案）：\n\n" +
+                        sb.toString()
+        );
+
+        // 4. 写入 Redis: chat:summary:{sessionId}
+        stringRedisTemplate.opsForValue().set("chat:summary:" + sessionId, summary);
+
+        // 5. 可选：清理一部分旧 context，只保留最近几条
+    }
+
 }

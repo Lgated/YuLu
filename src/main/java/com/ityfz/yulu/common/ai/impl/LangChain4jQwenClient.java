@@ -70,7 +70,21 @@ public class LangChain4jQwenClient implements LLMClient {
         if (context != null) {
             List<Message> sortedContext = new ArrayList<>(context);
             Collections.reverse(sortedContext);
-            for (Message m : context) {
+
+            // ✅ 添加调试日志：打印上下文
+            log.info("========== [AI上下文调试] ==========");
+            log.info("历史上下文数量: {}", sortedContext.size());
+            for (int i = 0; i < sortedContext.size(); i++) {
+                Message m = sortedContext.get(i);
+                log.info("  [{}] role={}, content={}", i, m.getRole(),
+                        m.getContent() != null && m.getContent().length() > 50
+                                ? m.getContent().substring(0, 50) + "..."
+                                : m.getContent());
+            }
+            log.info("当前问题: {}", question);
+            log.info("====================================");
+
+            for (Message m : sortedContext) {
                 if (m == null) continue;
                 String role = m.getRole();
                 String content = m.getContent();
@@ -106,8 +120,49 @@ public class LangChain4jQwenClient implements LLMClient {
         return null;
     }
 
+    //TODO:和  chat（） 共享一次调用结果
     @Override
     public String detectEmotion(String text) {
+
+        if (text == null || text.isEmpty()) {
+            return "NORMAL";
+        }
+
+        try {
+            // 新建一个空列表，用来存放一次对话里的所有消息
+            List<ChatMessage> msgs = new ArrayList<>();
+            // 给模型设定“全局行为准则”
+            msgs.add(SystemMessage.from(
+                    "你是一个情绪分析助手，请根据用户这句话判断情绪。" +
+                            "只返回 JSON：{ \"emotion\": \"HAPPY|ANGRY|NEUTRAL\" }，不要输出其他任何文字。"
+            ));
+            msgs.add(UserMessage.from(text));
+
+            String json = model.chat(msgs).aiMessage().text();
+            // 先判断是否是有效JSON
+            if (!isValidJson(json)) {
+                log.debug("[LLM] 模型返回非JSON格式，回退到规则实现。text={}, response={}", text, json);
+                return fallbackRuleEmotion(text);
+            }
+
+
+            ObjectMapper mapper = new ObjectMapper();
+            // 把上一步的字符串解析成 树形 JSON 节点，方便按路径取值
+            JsonNode node = mapper.readTree(json);
+            String emotion = node.path("emotion").asText("NEUTRAL").toUpperCase();
+            return emotion;
+
+        } catch (Exception e) {
+            log.warn("[LLM] 情绪识别失败，回退到规则实现。text={}", text, e);
+            // 回退为你原来那套关键字规则，确保不会影响主流程
+            return fallbackRuleEmotion(text);
+        }
+    }
+
+    /**
+     * 使用简单关键字规则
+     */
+    private String fallbackRuleEmotion(String text) {
         if (text == null) {
             return "NEUTRAL";
         }
@@ -125,6 +180,16 @@ public class LangChain4jQwenClient implements LLMClient {
     // 解析 JSON 的工具方法
     private ChatResult parseChatResult(String rawText) {
         ChatResult result = new ChatResult();
+
+        // 先判断是否是有效JSON
+        if (!isValidJson(rawText)) {
+            log.debug("[LangChain4jQwenClient] 模型返回非JSON格式，使用原始文本作为 answer，text={}", rawText);
+            result.setAnswer(rawText);
+            result.setEmotion("NORMAL");
+            result.setIntent("GENERAL");
+            return result;
+        }
+
         try {
             JsonNode root = objectMapper.readTree(rawText);
             // answer
@@ -134,6 +199,7 @@ public class LangChain4jQwenClient implements LLMClient {
                 answer = rawText;
             }
             result.setAnswer(answer);
+
 
             // emotion
             String emotion = root.path("emotion").asText("NORMAL");
@@ -150,6 +216,23 @@ public class LangChain4jQwenClient implements LLMClient {
             result.setIntent("GENERAL");
         }
         return result;
+    }
+
+    /**
+     * 判断字符串是否是有效的 JSON 格式
+     * @param text 待判断的文本
+     * @return true 如果是有效JSON，false 否则
+     */
+    private boolean isValidJson(String text) {
+        if (text == null || text.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            objectMapper.readTree(text);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 }

@@ -58,6 +58,11 @@ ai:
     api-key: sk-b7fbdd371bc247548f1fc31057fe5713
     base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
     model: qwen-turbo
+  embedding:
+    api-key: sk-b7fbdd371bc247548f1fc31057fe5713
+    base-url: https://dashscope.aliyuncs.com/api/v1
+    model: text-embedding-v2
+    dimension: 1536  # text-embedding-v2 输出维度
 
 # XXL-Job配置（可选，如果不需要定时任务可以设置为 false）
 xxl:
@@ -73,6 +78,12 @@ xxl:
       logpath: ./logs/xxl-job/jobhandler
       logretentiondays: 30
     accessToken: 
+
+qdrant:
+  host: localhost
+  port: 6333
+  grpc-port: 6334
+  timeout: 5000 # 超时时间（毫秒）
 
 # 日志配置
 logging:
