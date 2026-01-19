@@ -3,7 +3,7 @@ package com.ityfz.yulu.common.enums;
 public final class ErrorCodes {
 
 
-
+    public static final String DOCUMENT_PARSE_FAILED = "DOCUMENT_PARSE_FAILED";
 
     private ErrorCodes() {}
 

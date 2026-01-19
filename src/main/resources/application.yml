@@ -85,6 +85,17 @@ qdrant:
   grpc-port: 6334
   timeout: 5000 # 超时时间（毫秒）
 
+# RAG 配置
+rag:
+  # 文档切分配置
+  chunk:
+    size: 500          # Chunk 大小（字符数）
+    overlap: 50        # 重叠大小
+    min-size: 50       # 最小 Chunk 大小
+  # 文档管理配置
+  document:
+    max-size: 10485760  # 最大文件大小（字节），默认 10MB
+
 # 日志配置
 logging:
   level:
@@ -92,5 +103,6 @@ logging:
     com.ityfz.yulu: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n"
+
 
 debug: false
