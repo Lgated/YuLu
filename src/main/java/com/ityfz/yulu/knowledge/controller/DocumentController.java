@@ -6,7 +6,9 @@ import com.ityfz.yulu.common.model.ApiResponse;
 import com.ityfz.yulu.common.security.SecurityUtil;
 import com.ityfz.yulu.knowledge.dto.DocumentDetailResponse;
 import com.ityfz.yulu.knowledge.dto.DocumentListItemResponse;
+import com.ityfz.yulu.knowledge.entity.Chunk;
 import com.ityfz.yulu.knowledge.entity.Document;
+import com.ityfz.yulu.knowledge.service.ChunkService;
 import com.ityfz.yulu.knowledge.service.DocumentService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +21,12 @@ import java.util.List;
 public class DocumentController {
 
     private final DocumentService documentService;
+    private final ChunkService chunkService;
 
-    public DocumentController (DocumentService documentService){
+    public DocumentController (DocumentService documentService,
+                               ChunkService chunkService){
         this.documentService = documentService;
+        this.chunkService = chunkService;
     }
 
     /**
@@ -70,6 +75,9 @@ public class DocumentController {
     @GetMapping("/{id}")
     public ApiResponse<DocumentDetailResponse> detail(@PathVariable("id") Long id) {
         Long tenantId = SecurityUtil.currentTenantId();
+        if (tenantId == null) {
+            throw new BizException(ErrorCodes.TENANT_REQUIRED, "缺少租户信息，请先登录");
+        }
         Document d = documentService.getDocument(id, tenantId);
         DocumentDetailResponse r = new DocumentDetailResponse();
         r.setId(d.getId());
@@ -97,8 +105,21 @@ public class DocumentController {
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(@PathVariable("id") Long id) {
         Long tenantId = SecurityUtil.currentTenantId();
+        if (tenantId == null) {
+            throw new BizException(ErrorCodes.TENANT_REQUIRED, "缺少租户信息，请先登录");
+        }
         documentService.deleteDocument(id, tenantId);
         return ApiResponse.success();
+    }
+
+    @GetMapping("/file/{id}")
+    public ApiResponse<List<Chunk>> detailByFile(@PathVariable("id") Long documentId) {
+        Long tenantId = SecurityUtil.currentTenantId();
+        if (tenantId == null) {
+            throw new BizException(ErrorCodes.TENANT_REQUIRED, "缺少租户信息，请先登录");
+        }
+        List<Chunk> chunksByDocumentId = chunkService.getChunksByDocumentId(documentId);
+        return ApiResponse.success(chunksByDocumentId);
     }
 
 }

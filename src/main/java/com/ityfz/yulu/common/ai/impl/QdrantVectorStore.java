@@ -87,8 +87,8 @@ public class QdrantVectorStore {
         try {
             // 1. 检查集合是否存在
             // 推荐方式：获取所有集合列表进行比对，避免处理异常
-            boolean exists = client.listCollectionsAsync().get().stream()
-                    .anyMatch(c -> c.equals(collectionName));
+            boolean exists = client.listCollectionsAsync().get().stream() //异步拉取当前 Qdrant 里 所有集合名。
+                    .anyMatch(c -> c.equals(collectionName)); //anyMatch(...)：看返回的列表里有没有同名集合
 
             if (exists) {
                 log.info("[Qdrant] 集合已存在: {}", collectionName);
@@ -97,8 +97,8 @@ public class QdrantVectorStore {
 
             // 2. 配置向量参数
             Collections.VectorParams vectorParams = Collections.VectorParams.newBuilder()
-                    .setSize(vectorSize)
-                    .setDistance(Collections.Distance.Cosine)
+                    .setSize(vectorSize) // // 维度
+                    .setDistance(Collections.Distance.Cosine) // 相似度算法：余弦
                     .build();
 
             // 3. 创建集合
@@ -113,6 +113,7 @@ public class QdrantVectorStore {
 
     /**
      * 插入/更新向量点
+     * “给某条业务记录（已知主键）生成新向量后，一键更新到 Qdrant，保证后续搜索能立即看到最新语义。”
      */
     public void upsertPoint(String collectionName, long pointId, List<Float> vector, Map<String, Object> payload) {
         try {
@@ -155,9 +156,10 @@ public class QdrantVectorStore {
             // 1. 构建搜索请求
             Points.SearchPoints.Builder searchBuilder = Points.SearchPoints.newBuilder()
                     .setCollectionName(collectionName)
-                    .addAllVector(queryVector)
-                    .setLimit(topK)
-                    .setWithPayload(Points.WithPayloadSelector.newBuilder().setEnable(true).build());
+                    .addAllVector(queryVector) // 把 List<Float> 一次性塞进去
+                    .setLimit(topK) // 最多回多少条
+                    .setWithPayload( // 要求把原始字段也带回来
+                            Points.WithPayloadSelector.newBuilder().setEnable(true).build());
 
             if (filter != null) {
                 searchBuilder.setFilter(filter);

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,6 +79,7 @@ public class ChunkServiceImpl implements ChunkService {
                 chunk.setContent(chunkContent);
                 chunk.setContentLength(chunkContent.length());
                 chunk.setChunkIndex(chunkIndex);
+                chunk.setCreateTime(LocalDateTime.now());
                 chunks.add(chunk);
                 chunkIndex++;
             }
