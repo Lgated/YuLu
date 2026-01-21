@@ -25,4 +25,8 @@ public interface ChunkMapper extends BaseMapper<Chunk> {
      */
     void deleteByDocumentId(@Param("documentId") Long documentId);
 
+    /**
+     * 通过文档id和租户id查找chunk
+     */
+    List<Chunk> listByDocumentIdAndTenantId(@Param("documentId")Long documentId, @Param("DId")Long tenantId);
 }

@@ -66,8 +66,15 @@ public class DashScopeEmbeddingService implements EmbeddingService {
             // 构建请求体
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("model", model);
-            requestBody.put("input", text);
+            Map<String, Object> inputMap = new HashMap<>();
+            inputMap.put("texts", List.of(text));
+            requestBody.put("input", inputMap);
 
+            //当前发送的 JSON 是：{"model": "text-embedding-v2", "input": ["文本1", "文本2"]}
+            //正确的格式应该是：{"model": "text-embedding-v2", "input": {"texts": ["文本1", "文本2"]}}
+            /*requestBody.put("input", text);*/
+            String requestBodyJson = objectMapper.writeValueAsString(requestBody);
+            log.debug("[DashScope Embedding] 请求体: {}", requestBodyJson);
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
 
             log.debug("[DashScope Embedding] 请求: model={}, text={}", model, text);
@@ -145,8 +152,11 @@ public class DashScopeEmbeddingService implements EmbeddingService {
                 // 构建请求体（批量）
                 Map<String, Object> requestBody = new HashMap<>();
                 requestBody.put("model", model);
-                requestBody.put("input", batch);  // 批量输入
-
+               /* requestBody.put("input", batch);  // 批量输入*/
+                // DashScope 要求 input 必须是对象格式，包含 texts 数组
+                Map<String, Object> inputMap = new HashMap<>();
+                inputMap.put("texts", batch);
+                requestBody.put("input", inputMap);
                 HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
 
                 log.debug("[DashScope Embedding] 批量请求: model={}, batchSize={}", model, batch.size());

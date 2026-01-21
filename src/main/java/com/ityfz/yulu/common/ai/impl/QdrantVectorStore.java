@@ -28,6 +28,7 @@ import java.util.concurrent.ExecutionException;
 public class QdrantVectorStore {
 
     private final QdrantProperties properties;
+
     /**
      * -- GETTER --
      *  获取客户端（用于高级操作）

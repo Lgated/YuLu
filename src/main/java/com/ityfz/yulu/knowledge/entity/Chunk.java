@@ -45,7 +45,7 @@ public class Chunk {
     private Integer contentLength;
 
     /**
-     * Qdrant 中的 Point ID（后续向量索引时填充）
+     * Qdrant 中的 Point ID
      */
     private Long qdrantPointId;
 
