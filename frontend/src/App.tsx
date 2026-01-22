@@ -10,6 +10,7 @@ import { CustomerLayout } from './components/layout/CustomerLayout';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminSessionsPage from './pages/admin/AdminSessionsPage';
 import CustomerFaqPage from './pages/customer/CustomerFaqPage';
+import KnowledgePage from './pages/admin/KnowledgePage';
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const location = useLocation();
@@ -83,6 +84,16 @@ export default function App() {
           <RequireAuth>
             <AdminLayout>
               <AdminSessionsPage />
+            </AdminLayout>
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/admin/knowledge"
+        element={
+          <RequireAuth>
+            <AdminLayout>
+              <KnowledgePage />
             </AdminLayout>
           </RequireAuth>
         }

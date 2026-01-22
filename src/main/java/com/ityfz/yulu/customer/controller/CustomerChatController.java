@@ -2,8 +2,10 @@ package com.ityfz.yulu.customer.controller;
 
 import com.ityfz.yulu.chat.dto.ChatAskRequest;
 import com.ityfz.yulu.chat.dto.ChatAskResponse;
+import com.ityfz.yulu.chat.dto.CreateSessionRequest;
 import com.ityfz.yulu.chat.entity.ChatMessage;
 import com.ityfz.yulu.chat.entity.ChatSession;
+import com.ityfz.yulu.chat.mapper.ChatSessionMapper;
 import com.ityfz.yulu.chat.service.ChatService;
 import com.ityfz.yulu.common.annotation.RequireRole;
 import com.ityfz.yulu.common.enums.ErrorCodes;
@@ -18,11 +20,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/customer/chat")
-@RequireRole("USER")
+@RequireRole({"USER","ADMIN"})
 @RequiredArgsConstructor
 public class CustomerChatController {
 
     private final ChatService chatService;
+    private final ChatSessionMapper chatSessionMapper;
 
     /**
      * 发送消息给AI（客服对话 + RAG：每轮检索知识库并注入上下文）
@@ -102,6 +105,40 @@ public class CustomerChatController {
         return ApiResponse.success("已转接人工客服，请稍候...", null);
     }
 
+    /**
+     * 新增会话
+     */
+    @PostMapping("/add_session")
+    public ApiResponse<ChatSession> createSession(@RequestBody CreateSessionRequest request) {
+        Long tenantId = TenantContextHolder.getTenantId();
+        Long userId = UserContextHolder.getUserId();
 
+        if (tenantId == null) {
+            throw new BizException(ErrorCodes.TENANT_REQUIRED, "缺少租户信息，请先登录");
+        }
+        if (userId == null) {
+            throw new BizException(ErrorCodes.UNAUTHORIZED, "缺少用户信息，请先登录");
+        }
 
+        Long sessionId = chatService.createSession(userId, tenantId, request.getTitle());
+        ChatSession session = chatSessionMapper.selectById(sessionId);
+
+        return ApiResponse.success("会话创建成功", session);
+    }
+
+    /**
+     * 删除会话
+     */
+    @DeleteMapping("/sessions/{sessionId}")
+    public ApiResponse<Void> deleteSession(@PathVariable Long sessionId) {
+        Long tenantId = TenantContextHolder.getTenantId();
+        Long userId = UserContextHolder.getUserId();
+
+        if (tenantId == null || userId == null) {
+            throw new BizException(ErrorCodes.UNAUTHORIZED, "请先登录");
+        }
+
+        chatService.deleteSession(tenantId, userId, sessionId);
+        return ApiResponse.success("会话删除成功", null);
+    }
 }

@@ -40,4 +40,14 @@ public interface ChatService {
 
     // 检查会话归属，只有用户本人或管理员可以查看
     void checkSessionOwnerOrAgent(Long tenantId, Long userId, Long sessionId);
+
+    /**
+     * 创建新会话
+     */
+    Long createSession(Long userId, Long tenantId, String title);
+
+    /**
+     * 删除会话（软删除）
+     */
+    void deleteSession(Long tenantId, Long userId, Long sessionId);
 }

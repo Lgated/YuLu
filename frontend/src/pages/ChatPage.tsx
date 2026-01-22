@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { Card, List, Input, Button, message as antdMessage, Tag } from 'antd';
+import { Card, List, Input, Button, message as antdMessage, Tag, Popconfirm, Space } from 'antd';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { chatApi } from '../api/chat';
-import type { ChatMessage, ChatSession } from '../api/types';
+import type { ChatMessage, ChatSession, ChatAskResponse, RagRef } from '../api/types';
 import { getCurrentSessionId, setCurrentSessionId as saveSessionId } from '../utils/storage';
 
 const { TextArea } = Input;
@@ -12,6 +13,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
+  const [creatingSession, setCreatingSession] = useState(false);
   const chatWindowRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -89,6 +91,54 @@ export default function ChatPage() {
     }
   };
 
+  // 创建新会话
+  const handleCreateSession = async () => {
+    setCreatingSession(true);
+    try {
+      const res = await chatApi.createSession();
+      if (res.success || res.code === '200') {
+        antdMessage.success('会话创建成功');
+        await loadSessions(false);
+        // 切换到新会话
+        if (res.data) {
+          setCurrentSessionId(res.data.id);
+          saveSessionId(res.data.id);
+          setMessages([]);
+        }
+      }
+    } catch (e: any) {
+      antdMessage.error(e?.response?.data?.message || '创建会话失败');
+    } finally {
+      setCreatingSession(false);
+    }
+  };
+
+  // 删除会话
+  const handleDeleteSession = async (sessionId: number, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    try {
+      const res = await chatApi.deleteSession(sessionId);
+      if (res.success || res.code === '200') {
+        antdMessage.success('会话删除成功');
+        // 如果删除的是当前会话，切换到其他会话
+        if (sessionId === currentSessionId) {
+          const remaining = sessions.filter((s) => s.id !== sessionId);
+          if (remaining.length > 0) {
+            setCurrentSessionId(remaining[0].id);
+            saveSessionId(remaining[0].id);
+            await loadMessages(remaining[0].id);
+          } else {
+            setCurrentSessionId(null);
+            setMessages([]);
+          }
+        }
+        await loadSessions(false);
+      }
+    } catch (e: any) {
+      antdMessage.error(e?.response?.data?.message || '删除会话失败');
+    }
+  };
+
   const handleSend = async () => {
     if (!question.trim()) return;
     setLoading(true);
@@ -97,7 +147,8 @@ export default function ChatPage() {
       const res = await chatApi.ask(payload);
       // 后端 ApiResponse：success=true 且 code='200' 表示成功
       if (res.success || res.code === '200') {
-        const aiMsg = res.data;
+        const data: ChatAskResponse = res.data;
+        const aiMsg = data.aiMessage;
         const userMsg: ChatMessage = {
           id: Date.now(),
           tenantId: aiMsg.tenantId,
@@ -109,15 +160,14 @@ export default function ChatPage() {
         };
         setCurrentSessionId(aiMsg.sessionId);
         saveSessionId(aiMsg.sessionId);
-        setMessages((prev) => [...prev, userMsg, aiMsg]);
+        // 将用户消息和AI消息都添加到消息列表，并保存引用信息
+        setMessages((prev) => [
+          ...prev,
+          { ...userMsg, refs: undefined }, // 用户消息没有引用
+          { ...aiMsg, refs: data.refs } // AI消息包含引用
+        ]);
         setQuestion('');
-        if (!sessions.find((s) => s.id === aiMsg.sessionId)) {
-          // 新会话简单追加
-          setSessions((prev) => [
-            { id: aiMsg.sessionId, tenantId: aiMsg.tenantId, userId: 0, sessionTitle: '默认会话', status: 1, createTime: '', updateTime: '' },
-            ...prev
-          ]);
-        }
+        await loadSessions(false); // 刷新会话列表
       }
     } catch (e: any) {
       antdMessage.error(e?.response?.data?.message || '发送失败');
@@ -135,20 +185,54 @@ export default function ChatPage() {
         overflow: 'hidden'
       }}
     >
-      <Card title="会话列表" style={{ width: 260, overflowY: 'auto', height: '100%' }}>
+      <Card
+        title={
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>会话列表</span>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              size="small"
+              onClick={handleCreateSession}
+              loading={creatingSession}
+            >
+              新建
+            </Button>
+          </div>
+        }
+        style={{ width: 300, overflowY: 'auto', height: '100%' }}
+      >
         <List
           dataSource={sessions}
           renderItem={(item) => (
             <List.Item
               style={{
                 cursor: 'pointer',
-                background: item.id === currentSessionId ? '#e6f4ff' : undefined
+                background: item.id === currentSessionId ? '#e6f4ff' : undefined,
+                padding: '8px 12px',
+                borderRadius: 4
               }}
               onClick={() => {
                 setCurrentSessionId(item.id);
                 saveSessionId(item.id);
                 loadMessages(item.id);
               }}
+              actions={[
+                <Popconfirm
+                  title="确定删除此会话吗？"
+                  onConfirm={(e) => handleDeleteSession(item.id, e)}
+                  onClick={(e) => e.stopPropagation()}
+                  key="delete"
+                >
+                  <Button
+                    type="text"
+                    danger
+                    size="small"
+                    icon={<DeleteOutlined />}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </Popconfirm>
+              ]}
             >
               {item.sessionTitle || `会话 #${item.id}`}
             </List.Item>
@@ -166,13 +250,15 @@ export default function ChatPage() {
           paddingTop: 8
         }}
       >
-        <div className="chat-window" ref={chatWindowRef}>
+        <div className="chat-window" ref={chatWindowRef} style={{ flex: 1, overflowY: 'auto', marginBottom: 16 }}>
           <List
             dataSource={messages}
             renderItem={(msg) => {
               const isUser = msg.senderType === 'USER';
+              const refs: RagRef[] = msg.refs || [];
+              
               return (
-                <div className={`chat-message ${isUser ? 'user' : 'ai'}`}>
+                <div className={`chat-message ${isUser ? 'user' : 'ai'}`} style={{ marginBottom: 16 }}>
                   <div className={`chat-bubble ${isUser ? 'user' : 'ai'}`}>
                     <div style={{ marginBottom: 4, fontSize: 12, opacity: 0.7 }}>
                       {isUser ? '用户' : 'AI'}
@@ -183,6 +269,22 @@ export default function ChatPage() {
                       )}
                     </div>
                     <div>{msg.content}</div>
+                    
+                    {/* 显示引用文档 */}
+                    {!isUser && refs && refs.length > 0 && (
+                      <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid #f0f0f0' }}>
+                        <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>
+                          参考文档：
+                        </div>
+                        <Space size={[8, 8]} wrap>
+                          {refs.map((ref, index) => (
+                            <Tag key={index} color="blue" style={{ margin: 0 }}>
+                              {ref.title}
+                            </Tag>
+                          ))}
+                        </Space>
+                      </div>
+                    )}
                   </div>
                 </div>
               );

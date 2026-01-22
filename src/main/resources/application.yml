@@ -39,6 +39,10 @@ spring:
     publisher-returns: true # 启用发布者返回
     template:
       mandatory: true # 启用强制模式
+  servlet:
+    multipart:
+      max-file-size: 20MB      # 单个文件上限
+      max-request-size: 20MB   # 整个请求上限（可多文件）
 
 # MyBatis Plus 配置
 mybatis-plus:

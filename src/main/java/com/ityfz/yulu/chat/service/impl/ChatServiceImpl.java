@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -311,6 +312,7 @@ public class ChatServiceImpl implements ChatService {
                 Wrappers.<ChatSession>lambdaQuery()
                         .eq(ChatSession::getTenantId, tenantId)
                         .eq(ChatSession::getUserId, userId)
+                        .eq(ChatSession::getStatus, 1) // 只返回正常状态的会话（status=1）
                         .orderByDesc(ChatSession::getCreateTime)
         );
     }
@@ -327,6 +329,58 @@ public class ChatServiceImpl implements ChatService {
         if (Roles.isUser(role) && !userId.equals(session.getUserId())) {
             throw new BizException(ErrorCodes.FORBIDDEN, "无权访问该会话");
         }
+    }
+
+    @Override
+    public Long createSession(Long userId, Long tenantId, String title) {
+
+        // 若标题为空，自动生成
+        if (title == null || title.trim().isEmpty()) {
+            title = "新会话 " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("MM-dd HH:mm"));
+        }
+
+        ChatSession session = new ChatSession();
+        session.setTenantId(tenantId);
+        session.setUserId(userId);
+        session.setSessionTitle(title);
+        session.setStatus(1);
+        session.setCreateTime(LocalDateTime.now());
+        session.setUpdateTime(LocalDateTime.now());
+
+        chatSessionMapper.insert(session);
+
+        log.info("[Chat] 创建会话成功: sessionId={}, userId={}, tenantId={}, title={}",
+                session.getId(), userId, tenantId, title);
+
+        return session.getId();
+    }
+
+    @Override
+    @Transactional
+    public void deleteSession(Long tenantId, Long userId, Long sessionId) {
+        TenantContextHolder.setTenantId(tenantId);
+        
+        // 检查会话归属
+        checkSessionOwnerOrAgent(tenantId, userId, sessionId);
+        
+
+        ChatSession session = chatSessionMapper.selectById(sessionId);
+        if (session == null) {
+            throw new BizException(ErrorCodes.NOT_FOUND, "会话不存在");
+        }
+        // 软删除：更新状态为 0
+        session.setStatus(0);
+        session.setUpdateTime(LocalDateTime.now());
+        chatSessionMapper.updateById(session);
+        
+        // 删除 Redis 中的上下文缓存
+        String contextKey = "chat:context:" + sessionId;
+        stringRedisTemplate.delete(contextKey);
+        String summaryKey = "chat:summary:" + sessionId;
+        stringRedisTemplate.delete(summaryKey);
+        
+        log.info("[Chat] 删除会话成功: sessionId={}, userId={}, tenantId={}", 
+                sessionId, userId, tenantId);
     }
 
     //向redis存入context

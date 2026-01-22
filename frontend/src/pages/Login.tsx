@@ -30,6 +30,9 @@ export default function Login() {
           if (res.data?.username) setUsername(res.data.username);
           message.success(res.message || '登录成功');
           navigate('/admin/dashboard'); // 租户端首页
+        } else {
+          // 如果返回了错误响应但没有抛出异常
+          message.error(res.message || '登录失败，请检查账号密码');
         }
       } else {
         // C端登录：调用客户登录接口
@@ -48,10 +51,22 @@ export default function Login() {
           if (res.data?.username) setUsername(res.data.username);
           message.success(res.message || '登录成功');
           navigate('/customer/chat'); // 客户端首页
+        } else {
+          // 如果返回了错误响应但没有抛出异常
+          message.error(res.message || '登录失败，请检查账号密码');
         }
       }
     } catch (e: any) {
-      message.error(e?.response?.data?.message || '登录失败');
+      // 处理各种错误情况
+      let errorMessage = '登录失败';
+      if (e?.response?.data) {
+        // 后端返回的错误信息
+        errorMessage = e.response.data.message || e.response.data.error || errorMessage;
+      } else if (e?.message) {
+        // 网络错误或其他错误
+        errorMessage = e.message;
+      }
+      message.error(errorMessage);
     }
   };
 

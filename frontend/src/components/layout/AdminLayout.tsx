@@ -1,4 +1,4 @@
-import { MessageOutlined, ProfileOutlined, BellOutlined, DashboardOutlined } from '@ant-design/icons';
+import { MessageOutlined, ProfileOutlined, BellOutlined, DashboardOutlined, BookOutlined } from '@ant-design/icons';
 import type { ReactNode } from 'react';
 import { PortalLayout } from './PortalLayout';
 
@@ -6,7 +6,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <PortalLayout
       logoText="YuLu 租户工作台"
-      headerTitle="智链客服中台 · 租户端"
+      headerTitle="YuLu租户端"
       menuItems={[
         {
           key: '/admin/dashboard',
@@ -24,6 +24,11 @@ export function AdminLayout({ children }: { children: ReactNode }) {
           label: '会话管理'
         },
         {
+          key: '/admin/knowledge',
+          icon: <BookOutlined />,
+          label: '知识库'
+        },
+        {
           key: '/admin/notify',
           icon: <BellOutlined />,
           label: '通知中心'
@@ -34,5 +39,16 @@ export function AdminLayout({ children }: { children: ReactNode }) {
     </PortalLayout>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
 
 

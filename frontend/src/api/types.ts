@@ -27,6 +27,7 @@ export interface ChatMessage {
   content: string;
   emotion: string;
   createTime: string;
+  refs?: RagRef[]; // 可选：RAG 引用（仅 AI 消息有）
 }
 
 export interface ChatSession {
@@ -74,4 +75,66 @@ export interface NotifyMessage {
 }
 
 
+/**
+ * 聊天请求响应（包含引用）
+ */
+export interface ChatAskResponse {
+  aiMessage: ChatMessage;
+  refs: RagRef[];
+}
+
+/**
+ * RAG 引用
+ */
+export interface RagRef {
+  documentId: number;
+  chunkId: number;
+  chunkIndex: number;
+  title: string;  // 文档标题（用于显示）
+  source?: string;
+  fileType?: string;
+  score: number;
+}
+
+/**
+ * 会话响应（增强版，含统计信息）
+ */
+export interface SessionResponse {
+  id: number;
+  title: string;
+  createTime: string;
+  updateTime: string;
+  messageCount: number;
+  lastMessageTime?: string;
+  lastMessagePreview?: string;
+}
+
+/**
+ * 文档列表项
+ */
+export interface DocumentListItem {
+  id: number;
+  title: string;
+  source?: string;
+  fileType?: string;
+  fileSize?: number;
+  status: number; // 0-未索引，1-已索引
+  createTime: string;
+}
+
+/**
+ * 文档详情
+ */
+export interface DocumentDetail {
+  id: number;
+  title: string;
+  source?: string;
+  fileType?: string;
+  fileSize?: number;
+  status: number;
+  indexedAt?: string;
+  createTime: string;
+  updateTime: string;
+  contentPreview?: string;
+}
 
