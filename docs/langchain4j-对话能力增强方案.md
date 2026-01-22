@@ -416,3 +416,14 @@ String aiReply = llmClient.chat(messages, question);
 这样你每一步都是**在原有架构上小步升级**，不会把现在已经稳定跑通的链路搞乱，同时又能一步步把 LangChain4j 的能力（结构化输出、情绪/意图分类、RAG）叠加进去。
 
 
+
+
+
+
+
+
+
+
+
+
+
