@@ -1,5 +1,6 @@
 package com.ityfz.yulu.chat.service;
 
+import com.ityfz.yulu.chat.dto.ChatAskResponse;
 import com.ityfz.yulu.chat.entity.ChatMessage;
 import com.ityfz.yulu.chat.entity.ChatSession;
 
@@ -26,9 +27,10 @@ public interface ChatService {
     List<Map<String, String>> listContextFromRedis(Long sessionId);
 
     /**
-     * 用户发起一次“问 + AI 答”的完整流程。
+     * 用户发起一次“问 + AI 答”的完整流程（含 RAG：每轮检索知识库并注入上下文）。
+     * 返回 AI 消息 + 本轮 RAG 引用。
      */
-    ChatMessage chatWithAi(Long sessionId, Long userId, Long tenantId, String question);
+    ChatAskResponse chatWithAi(Long sessionId, Long userId, Long tenantId, String question);
 
     // 获取租户下所有会话
     List<ChatSession> listAllSessionsByTenant(Long tenantId);

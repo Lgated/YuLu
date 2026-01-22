@@ -11,11 +11,14 @@ import com.ityfz.yulu.common.enums.ErrorCodes;
 import com.ityfz.yulu.common.exception.BizException;
 import com.ityfz.yulu.common.security.SecurityUtil;
 import com.ityfz.yulu.common.tenant.TenantContextHolder;
+import com.ityfz.yulu.chat.dto.ChatAskResponse;
 import com.ityfz.yulu.chat.entity.ChatMessage;
 import com.ityfz.yulu.chat.entity.ChatSession;
 import com.ityfz.yulu.chat.mapper.ChatMessageMapper;
 import com.ityfz.yulu.chat.mapper.ChatSessionMapper;
 import com.ityfz.yulu.chat.service.ChatService;
+import com.ityfz.yulu.knowledge.dto.RagAugmentResult;
+import com.ityfz.yulu.knowledge.service.KnowledgeChatService;
 import com.ityfz.yulu.ticket.entity.Ticket;
 import com.ityfz.yulu.ticket.event.NegativeEmotionEvent;
 import com.ityfz.yulu.ticket.mq.TicketEventPublisher;
@@ -48,19 +51,22 @@ public class ChatServiceImpl implements ChatService {
     private final LLMClient llmClient;
     private final TicketService ticketService;
     private final TicketEventPublisher emotionEventPublisher;
+    private final KnowledgeChatService knowledgeChatService;
 
     public ChatServiceImpl(ChatSessionMapper chatSessionMapper,
                            ChatMessageMapper chatMessageMapper,
                            StringRedisTemplate stringRedisTemplate,
                            @Qualifier("langChain4jQwenClient") LLMClient llmClient,
                            TicketService ticketService,
-                           TicketEventPublisher emotionEventPublisher) {
+                           TicketEventPublisher emotionEventPublisher,
+                           KnowledgeChatService knowledgeChatService) {
         this.chatSessionMapper = chatSessionMapper;
         this.chatMessageMapper = chatMessageMapper;
         this.stringRedisTemplate = stringRedisTemplate;
         this.llmClient = llmClient;
         this.ticketService = ticketService;
         this.emotionEventPublisher = emotionEventPublisher;
+        this.knowledgeChatService = knowledgeChatService;
     }
 
     @Override
@@ -162,43 +168,42 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public ChatMessage chatWithAi(Long sessionId, Long userId, Long tenantId, String question) {
+    public ChatAskResponse chatWithAi(Long sessionId, Long userId, Long tenantId, String question) {
         // 1. 填充租户上下文（保证 DB 操作正确）
         TenantContextHolder.setTenantId(tenantId);
 
-        //// 2. 如果 sessionId 为空 / 不存在，可以自动创建
         if (sessionId == null) {
             sessionId = createSessionIfNotExists(userId, tenantId, "默认会话");
         }
 
-        // 3. 先把用户提问写入 MySQL & Redis
+        // 2. 先把用户提问写入 MySQL（存原始 question）
         ChatMessage userMsg = new ChatMessage();
         userMsg.setTenantId(tenantId);
         userMsg.setSessionId(sessionId);
         userMsg.setSenderType("USER");
         userMsg.setContent(question);
-        userMsg.setEmotion("NORMAL");   // 暂时 NORMAL，可后面用 detectEmotion 再识别
+        userMsg.setEmotion("NORMAL");
         userMsg.setCreateTime(LocalDateTime.now());
         chatMessageMapper.insert(userMsg);
 
-
-
-        // 4. 从 Redis 中取出当前会话最近的上下文，供调用 AI 模型时拼接 Prompt
-        //并转成 List<Message>
+        // 3. 从 Redis 取对话上下文，转成 List<Message>
         List<Map<String, String>> context = listContextFromRedis(sessionId);
         List<Message> messages = context.stream()
                 .map(m -> new Message(m.get("role"), m.get("content")))
                 .collect(Collectors.toList());
 
         String summary = stringRedisTemplate.opsForValue().get("chat:summary:" + sessionId);
-
         if (summary != null && !summary.isEmpty()) {
             messages.add(0, new Message("system",
                     "这是本次会话目前为止的摘要，请在回答问题时参考这些信息：" + summary));
         }
 
-        // 5. 调用 AI
-        String aiReply = llmClient.chat(messages, question);
+        // 4. RAG 增强：检索知识库，拼装「参考资料 + 用户问题」作为本轮发给 LLM 的 user 消息
+        RagAugmentResult rag = knowledgeChatService.buildRagAugment(tenantId, question);
+        String questionToSend = rag.getAugmentedUserMessage();
+
+        // 5. 调用 AI（对话历史 + 本轮增强后的 user 消息）
+        String aiReply = llmClient.chat(messages, questionToSend);
         appendContext(sessionId, "user", question);
 
 
@@ -267,12 +272,14 @@ public class ChatServiceImpl implements ChatService {
                 : (question.length() <= 50 ? question : question.substring(0, 50));
         int answerLen = aiReply == null ? 0 : aiReply.length();
 
-        log.info("[Chat] tenantId={}, userId={}, sessionId={}, questionPreview={}, answerLen={}",
-                tenantId, userId, sessionId, questionPreview, answerLen);
-        // 10. 返回 AI 这一条消息（也可以同时返回用户这条）
-        return aiMsg;
+        log.info("[Chat] tenantId={}, userId={}, sessionId={}, questionPreview={}, answerLen={}, refs={}",
+                tenantId, userId, sessionId, questionPreview, answerLen,
+                rag.getRefs() != null ? rag.getRefs().size() : 0);
 
-
+        return ChatAskResponse.builder()
+                .aiMessage(aiMsg)
+                .refs(rag.getRefs() != null ? rag.getRefs() : Collections.emptyList())
+                .build();
     }
 
     /**

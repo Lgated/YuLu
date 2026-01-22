@@ -112,6 +112,9 @@ public class DocumentController {
         return ApiResponse.success();
     }
 
+    /**
+     *  获取文档详情
+     */
     @GetMapping("/file/{id}")
     public ApiResponse<List<Chunk>> detailByFile(@PathVariable("id") Long documentId) {
         Long tenantId = SecurityUtil.currentTenantId();

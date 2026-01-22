@@ -55,13 +55,13 @@ public class LangChain4jQwenClient implements LLMClient {
     public String chat(List<Message> context, String question) {
         List<ChatMessage> messages = new ArrayList<>();
 
-        // 1）System 提示词：要求模型输出 JSON
+        // 1）System 提示词：要求模型输出 JSON；若用户消息中含【参考资料】，请结合资料作答
         messages.add(SystemMessage.from(
                 "你是一个专业的客服助手，所有输出必须是 JSON：" +
                         "{ \"answer\": \"...\", \"emotion\": \"HAPPY|ANGRY|SAD|NEUTRAL|NORMAL\", " +
                         "\"intent\": \"REFUND|INVOICE|COMPLAIN|GENERAL\" }。" +
-                        "answer 是最终给用户看的自然语言回答；" +
-                        "emotion 是情绪标签；intent 是用户意图标签。" +
+                        "answer 是最终给用户看的自然语言回答；emotion 是情绪标签；intent 是用户意图标签。" +
+                        "当用户消息中包含【参考资料】时，请优先结合这些资料作答，并保持客服语气；否则按常规客服方式回复。" +
                         "不要输出任何说明文字，不要输出 JSON 以外的内容。"
         ));
 

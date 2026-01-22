@@ -1,6 +1,7 @@
 package com.ityfz.yulu.customer.controller;
 
 import com.ityfz.yulu.chat.dto.ChatAskRequest;
+import com.ityfz.yulu.chat.dto.ChatAskResponse;
 import com.ityfz.yulu.chat.entity.ChatMessage;
 import com.ityfz.yulu.chat.entity.ChatSession;
 import com.ityfz.yulu.chat.service.ChatService;
@@ -24,11 +25,12 @@ public class CustomerChatController {
     private final ChatService chatService;
 
     /**
-     * 发送消息给AI
+     * 发送消息给AI（客服对话 + RAG：每轮检索知识库并注入上下文）
      * POST /api/customer/chat/ask
+     * 返回 AI 消息 + 本轮 RAG 引用（data.aiMessage、data.refs）
      */
     @PostMapping("/ask")
-    public ApiResponse<ChatMessage> ask(@RequestBody ChatAskRequest req) {
+    public ApiResponse<ChatAskResponse> ask(@RequestBody ChatAskRequest req) {
         Long tenantId = TenantContextHolder.getTenantId();
         Long userId = UserContextHolder.getUserId();
 
@@ -39,8 +41,8 @@ public class CustomerChatController {
             throw new BizException(ErrorCodes.UNAUTHORIZED, "缺少用户信息，请先登录");
         }
 
-        ChatMessage aiMsg = chatService.chatWithAi(req.getSessionId(), userId, tenantId, req.getQuestion());
-        return ApiResponse.success("OK", aiMsg);
+        ChatAskResponse res = chatService.chatWithAi(req.getSessionId(), userId, tenantId, req.getQuestion());
+        return ApiResponse.success("OK", res);
     }
 
     /**
