@@ -2,11 +2,15 @@ package com.ityfz.yulu.knowledge.service.Impl;
 
 import com.ityfz.yulu.common.ai.LLMClient;
 import com.ityfz.yulu.common.ai.Message;
+import com.ityfz.yulu.common.ai.impl.QdrantVectorStore;
 import com.ityfz.yulu.knowledge.dto.RagAugmentResult;
 import com.ityfz.yulu.knowledge.dto.RagChatRequest;
 import com.ityfz.yulu.knowledge.dto.RagChatResponse;
 import com.ityfz.yulu.knowledge.dto.RagRefDTO;
 import com.ityfz.yulu.knowledge.dto.RetrievalResultDTO;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ityfz.yulu.knowledge.entity.Chunk;
+import com.ityfz.yulu.knowledge.mapper.ChunkMapper;
 import com.ityfz.yulu.knowledge.service.KnowledgeChatService;
 import com.ityfz.yulu.knowledge.service.KnowledgeSearchService;
 import lombok.extern.slf4j.Slf4j;
@@ -32,11 +36,15 @@ public class KnowledgeChatServiceImpl implements KnowledgeChatService {
 
     private final KnowledgeSearchService searchService;
     private final LLMClient llmClient;
+    private final ChunkMapper chunkMapper;
 
     public KnowledgeChatServiceImpl(KnowledgeSearchService searchService,
-                                    @Qualifier("langChain4jQwenClient") LLMClient llmClient) {
+                                    @Qualifier("langChain4jQwenClient") LLMClient llmClient,
+                                    QdrantVectorStore qdrantVectorStore,
+                                    ChunkMapper chunkMapper) {
         this.searchService = searchService;
         this.llmClient = llmClient;
+        this.chunkMapper = chunkMapper;
     }
 
     @Override
@@ -103,10 +111,11 @@ public class KnowledgeChatServiceImpl implements KnowledgeChatService {
         }
 
         int topK = 8;
-        // 降低 minScore 到 0.35，让更多相关结果通过（特别是简短问题）
-        // TODO: 动态调整score
-        double minScore = 0.35;
-
+        // 动态调整 minScore：根据问题长度和知识库大小
+        int knowledgeBaseSize = getKnowledgeBaseSize(tenantId);
+        double minScore = calculateMinScore(question, knowledgeBaseSize);
+        log.debug("[RAG] 动态 minScore: question={}, knowledgeBaseSize={}, minScore={}", 
+                question, knowledgeBaseSize, minScore);
 
         // 对用户问题检索
         List<RetrievalResultDTO> hits = searchService.search(tenantId, question.trim(), topK, minScore);
@@ -203,6 +212,59 @@ public class KnowledgeChatServiceImpl implements KnowledgeChatService {
     // 防空处理
     private String safe(String v) {
         return v == null ? "" : v;
+    }
+
+    /**
+     * 获取知识库大小（按租户统计已索引的 Chunk 数量）
+     * 
+     * 如果知识库大小变化不频繁，则考虑添加缓存：
+     * @Cacheable(value = "knowledge-base-size", key = "#tenantId")
+     * 需配置Spring Cache(Redis) 并在文档索引/删除时清除缓存
+     * 
+     * @param tenantId 租户ID
+     * @return 已索引的 Chunk 数量
+     */
+    private int getKnowledgeBaseSize(Long tenantId) {
+        if (tenantId == null) {
+            return 0;
+        }
+        
+        // 统计该租户下已索引的 Chunk 数量（qdrantPointId 不为空表示已索引）
+        Long count = chunkMapper.selectCount(new LambdaQueryWrapper<Chunk>()
+                .eq(Chunk::getTenantId, tenantId)
+                .isNotNull(Chunk::getQdrantPointId));
+        
+        int size = count != null ? count.intValue() : 0;
+        log.debug("[RAG] 知识库大小: tenantId={}, size={}", tenantId, size);
+        return size;
+    }
+
+    /**
+     * 动态调整 minScore：根据问题长度和知识库大小
+     * 
+     * @param question 用户问题
+     * @param knowledgeBaseSize 知识库大小（Chunk 数量）
+     * @return 调整后的 minScore
+     */
+    private double calculateMinScore(String question, int knowledgeBaseSize) {
+        // 根据问题长度调整
+        int len = question.length();
+        double baseScore = 0.35;
+
+        if (len < 10) {
+            baseScore = 0.3;  // 简短问题，降低阈值
+        } else if (len > 30) {
+            baseScore = 0.4;  // 长问题，提高阈值
+        }
+
+        // 根据知识库大小调整
+        if (knowledgeBaseSize < 100) {
+            baseScore -= 0.05;  // 知识库小，降低阈值
+        } else if (knowledgeBaseSize > 10000) {
+            baseScore += 0.05;  // 知识库大，提高阈值
+        }
+
+        return Math.max(0.2, Math.min(0.6, baseScore));  // 限制在合理范围
     }
 
     private List<RagRefDTO> toRefs(List<RetrievalResultDTO> hits) {

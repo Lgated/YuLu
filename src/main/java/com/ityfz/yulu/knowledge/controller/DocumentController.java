@@ -1,5 +1,6 @@
 package com.ityfz.yulu.knowledge.controller;
 
+import com.ityfz.yulu.common.annotation.RequireRole;
 import com.ityfz.yulu.common.enums.ErrorCodes;
 import com.ityfz.yulu.common.exception.BizException;
 import com.ityfz.yulu.common.model.ApiResponse;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/document")
+@RequireRole("ADMIN")
 public class DocumentController {
 
     private final DocumentService documentService;
