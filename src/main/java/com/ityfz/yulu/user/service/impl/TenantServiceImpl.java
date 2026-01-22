@@ -16,6 +16,7 @@ import com.ityfz.yulu.admin.dto.TenantRegisterResponse;
 import com.ityfz.yulu.user.entity.Tenant;
 import com.ityfz.yulu.user.entity.User;
 import com.ityfz.yulu.user.mapper.TenantMapper;
+import com.ityfz.yulu.user.service.AgentStatusService;
 import com.ityfz.yulu.user.service.TenantService;
 import com.ityfz.yulu.user.service.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,9 +33,12 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
 
      private final UserService userService;
      private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+     private final AgentStatusService agentStatusService;
 
-     public TenantServiceImpl(UserService userService) {
+     public TenantServiceImpl(UserService userService,
+                              AgentStatusService agentStatusService) {
          this.userService = userService;
+         this.agentStatusService = agentStatusService;
      }
 
     //注册租户并且注册管理员角色的用户
@@ -148,6 +152,7 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
             response.setRole(user.getRole());
             response.setUsername(user.getUsername());
 
+
             return response;
         } finally {
             // 清除租户上下文（虽然请求结束后会自动清除，但显式清除更安全）
@@ -166,6 +171,8 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
             // 不返回token给USER，避免误登录到B端
             throw new BizException(ErrorCodes.FORBIDDEN, "当前账号不是租户端账号，请使用客户登录入口");
         }
+        // 登录时自动设置在线状态
+        agentStatusService.setOffline(response.getTenantId(),response.getUserId());
         return response;
     }
 }

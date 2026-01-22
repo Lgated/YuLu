@@ -1,10 +1,15 @@
 package com.ityfz.yulu.admin.controller;
 
+import com.ityfz.yulu.common.annotation.RequireRole;
+import com.ityfz.yulu.common.enums.ErrorCodes;
+import com.ityfz.yulu.common.exception.BizException;
 import com.ityfz.yulu.common.model.ApiResponse;
 import com.ityfz.yulu.common.dto.LoginRequest;
 import com.ityfz.yulu.common.dto.LoginResponse;
 import com.ityfz.yulu.admin.dto.TenantRegisterRequest;
 import com.ityfz.yulu.admin.dto.TenantRegisterResponse;
+import com.ityfz.yulu.common.security.SecurityUtil;
+import com.ityfz.yulu.user.service.AgentStatusService;
 import com.ityfz.yulu.user.service.TenantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +29,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class AdminAuthController {
     private final TenantService tenantService;
+    private final AgentStatusService agentStatusService;
 
     /**
      * B端登录（管理员/客服）
@@ -48,4 +54,24 @@ public class AdminAuthController {
         TenantRegisterResponse response = tenantService.registerTenant(request);
         return ApiResponse.success("租户注册成功", response);
     }
+
+    /**
+     * 心跳接口（客服保持在线状态）
+     * POST /api/admin/user/heartbeat
+     */
+    @PostMapping("/heartbeat")
+    @RequireRole({"ADMIN", "AGENT"})
+    public ApiResponse<Void> heartbeat() {
+        Long tenantId = SecurityUtil.currentTenantId();
+        Long userId = SecurityUtil.currentUserId();
+
+        if (tenantId == null || userId == null) {
+            throw new BizException(ErrorCodes.UNAUTHORIZED, "请先登录");
+        }
+
+        agentStatusService.updateHeartbeat(tenantId, userId);
+        return ApiResponse.success("心跳成功");
+    }
+
+    //TODO:登出逻辑 ： 加入黑名单、清除在线状态
 }
