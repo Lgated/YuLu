@@ -35,6 +35,14 @@ export const chatApi = {
   // 删除会话
   deleteSession(sessionId: number) {
     return http.delete<ApiResponse<void>>(`/customer/chat/sessions/${sessionId}`);
+  },
+
+  // 编辑会话名称
+  editSession(sessionId: number, newTitle: string) {
+    return http.put<ApiResponse<ChatSession>>('/customer/chat/edit', {
+      id: sessionId,
+      newTitle
+    });
   }
 };
 

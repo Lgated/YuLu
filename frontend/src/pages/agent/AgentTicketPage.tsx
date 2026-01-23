@@ -116,14 +116,16 @@ export default function AgentTicketPage() {
           <Button 
             type="link" 
             onClick={() => handleStatusChange(record.id, 'PROCESSING')}
-            disabled={record.status === 'PROCESSING'}
+            // 只有 PENDING 才允许“开始处理”
+            disabled={record.status !== 'PENDING'}
           >
             开始处理
           </Button>
           <Button 
             type="link" 
             onClick={() => handleStatusChange(record.id, 'DONE')}
-            disabled={record.status === 'DONE' || record.status === 'CLOSED'}
+            // 只有 PROCESSING 才允许“完成”
+            disabled={record.status !== 'PROCESSING'}
           >
             完成
           </Button>

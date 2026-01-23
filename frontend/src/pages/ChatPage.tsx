@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Card, List, Input, Button, message as antdMessage, Tag, Popconfirm, Space } from 'antd';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Card, List, Input, Button, message as antdMessage, Tag, Popconfirm, Space, Modal } from 'antd';
+import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { chatApi } from '../api/chat';
 import type { ChatMessage, ChatSession, ChatAskResponse, RagRef } from '../api/types';
 import { getCurrentSessionId, setCurrentSessionId as saveSessionId } from '../utils/storage';
@@ -14,6 +14,11 @@ export default function ChatPage() {
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
   const [creatingSession, setCreatingSession] = useState(false);
+  const [titleModalOpen, setTitleModalOpen] = useState(false);
+  const [newSessionTitle, setNewSessionTitle] = useState('');
+  const [renameModalOpen, setRenameModalOpen] = useState(false);
+  const [renameSession, setRenameSession] = useState<ChatSession | null>(null);
+  const [renameTitle, setRenameTitle] = useState('');
   const chatWindowRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -92,10 +97,10 @@ export default function ChatPage() {
   };
 
   // 创建新会话
-  const handleCreateSession = async () => {
+  const doCreateSession = async (title?: string) => {
     setCreatingSession(true);
     try {
-      const res = await chatApi.createSession();
+      const res = await chatApi.createSession(title);
       if (res.success || res.code === '200') {
         antdMessage.success('会话创建成功');
         await loadSessions(false);
@@ -111,6 +116,18 @@ export default function ChatPage() {
     } finally {
       setCreatingSession(false);
     }
+  };
+
+  const handleCreateSession = () => {
+    // 弹出“可选标题”提示
+    setNewSessionTitle('');
+    setTitleModalOpen(true);
+  };
+
+  const confirmCreateSession = async () => {
+    const title = newSessionTitle.trim();
+    setTitleModalOpen(false);
+    await doCreateSession(title ? title : undefined);
   };
 
   // 删除会话
@@ -176,6 +193,38 @@ export default function ChatPage() {
     }
   };
 
+  // 打开重命名弹窗
+  const openRenameModal = (session: ChatSession, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setRenameSession(session);
+    setRenameTitle(session.sessionTitle || '');
+    setRenameModalOpen(true);
+  };
+
+  // 提交重命名
+  const confirmRename = async () => {
+    if (!renameSession) return;
+    const title = renameTitle.trim();
+    if (!title) {
+      antdMessage.warning('会话名称不能为空');
+      return;
+    }
+    try {
+      const res = await chatApi.editSession(renameSession.id, title);
+      if (res.success || res.code === '200') {
+        const updated = res.data;
+        antdMessage.success('会话名称已更新');
+        setSessions((prev) =>
+          prev.map((s) => (s.id === updated.id ? { ...s, sessionTitle: updated.sessionTitle } : s))
+        );
+        setRenameModalOpen(false);
+        setRenameSession(null);
+      }
+    } catch (e: any) {
+      antdMessage.error(e?.response?.data?.message || '更新会话名称失败');
+    }
+  };
+
   return (
     <div
       style={{
@@ -202,6 +251,51 @@ export default function ChatPage() {
         }
         style={{ width: 300, overflowY: 'auto', height: '100%' }}
       >
+        {/* 新建会话弹窗 */}
+        <Modal
+          title="新建会话"
+          open={titleModalOpen}
+          okText="确定"
+          cancelText="取消"
+          onCancel={() => setTitleModalOpen(false)}
+          onOk={confirmCreateSession}
+          confirmLoading={creatingSession}
+          destroyOnClose
+        >
+          <div style={{ marginBottom: 8, color: '#999', fontSize: 12 }}>
+            可选：给本次会话起个标题（不填则使用默认标题）。
+          </div>
+          <Input
+            placeholder="例如：年假政策咨询 / 发票开具问题"
+            value={newSessionTitle}
+            onChange={(e) => setNewSessionTitle(e.target.value)}
+            maxLength={30}
+            allowClear
+            onPressEnter={confirmCreateSession}
+          />
+        </Modal>
+        {/* 重命名会话弹窗 */}
+        <Modal
+          title="重命名会话"
+          open={renameModalOpen}
+          okText="确定"
+          cancelText="取消"
+          onCancel={() => {
+            setRenameModalOpen(false);
+            setRenameSession(null);
+          }}
+          onOk={confirmRename}
+          destroyOnClose
+        >
+          <Input
+            placeholder="请输入新的会话名称"
+            value={renameTitle}
+            onChange={(e) => setRenameTitle(e.target.value)}
+            maxLength={30}
+            allowClear
+            onPressEnter={confirmRename}
+          />
+        </Modal>
         <List
           dataSource={sessions}
           renderItem={(item) => (
@@ -218,6 +312,13 @@ export default function ChatPage() {
                 loadMessages(item.id);
               }}
               actions={[
+                <Button
+                  key="edit"
+                  type="text"
+                  size="small"
+                  icon={<EditOutlined />}
+                  onClick={(e) => openRenameModal(item, e)}
+                />,
                 <Popconfirm
                   title="确定删除此会话吗？"
                   onConfirm={(e) => handleDeleteSession(item.id, e)}

@@ -2,8 +2,10 @@ package com.ityfz.yulu.chat.service.impl;
 
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.ityfz.yulu.chat.dto.EditSessionRequest;
 import com.ityfz.yulu.common.ai.LLMClient;
 import com.ityfz.yulu.common.ai.Message;
 import com.ityfz.yulu.common.enums.Roles;
@@ -381,6 +383,31 @@ public class ChatServiceImpl implements ChatService {
         
         log.info("[Chat] 删除会话成功: sessionId={}, userId={}, tenantId={}", 
                 sessionId, userId, tenantId);
+    }
+
+    @Override
+    public Long editSession(Long userId, Long tenantId, EditSessionRequest request) {
+
+        if (tenantId == null || userId == null) {
+            throw new BizException(ErrorCodes.VALIDATION_ERROR, "租户ID和用户ID不能为空");
+        }
+
+        // 只允许编辑当前租户、当前用户自己的会话标题
+        ChatSession chatSession = chatSessionMapper.selectOne(
+                new LambdaQueryWrapper<ChatSession>()
+                        .eq(ChatSession::getTenantId, tenantId)
+                        .eq(ChatSession::getUserId, userId)
+                        .eq(ChatSession::getId, request.getId())
+        );
+        if (chatSession == null) {
+            throw new BizException(ErrorCodes.SESSION_NOT_FOUND, "会话不存在");
+        }
+
+        chatSession.setSessionTitle(request.getNewTitle());
+        chatSession.setUpdateTime(LocalDateTime.now());
+        chatSessionMapper.updateById(chatSession);
+
+        return chatSession.getId();
     }
 
     //向redis存入context

@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "RAG测试步骤.md",
+                "file": "租户接入与账号体系设计方案.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "RAG测试步骤"
+              "title": "租户接入与账号体系设计方案"
             }
           }
         ],
@@ -109,7 +109,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "langchain4j-改造教学-从零到跑通.md",
+                "file": "租户接入与账号体系设计方案.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -119,7 +119,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for langchain4j-改造教学-从零到跑通"
+              "title": "Backlinks for 租户接入与账号体系设计方案"
             }
           },
           {
@@ -184,8 +184,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -200,37 +199,37 @@
   },
   "active": "d3a783cd54340f95",
   "lastOpenFiles": [
-    "后端删除会话接口补充.md",
-    "后端架构重构-详细实现指南.md",
-    "会话管理功能后端实现.md",
-    "多租户智能客服中台-产品与技术架构设计.md",
-    "后端架构整理方案.md",
-    "前端优化实现方案.md",
-    "前端类型定义更新.md",
-    "Logo设计规范与集成指南.md",
-    "前端API路径修改说明.md",
-    "RAG检索优化说明.md",
-    "RAG实现方案-完整步骤与架构设计.md",
-    "RAG系统分析与未来规划.md",
-    "RAG向量检索增强生成-完整实现方案.md",
-    "RAG改进执行计划.md",
-    "TenantIdentifier工具类清理说明.md",
-    "react-frontend-设计与实现指南.md",
-    "RAG测试步骤.md",
-    "minScore完整链路解析.md",
-    "minScore代码追踪.md",
-    "minScore流程图.md",
+    "多租户工单系统设计方案.md",
+    "租户接入与账号体系设计方案.md",
+    "实现目标.md",
+    "project-architecture-single-tenant-ai-chat.md",
     "next-steps-roadmap.md",
+    "project-overview.md",
+    "多租户智能客服中台-产品与技术架构设计.md",
+    "Swagger接口文档接入指南.md",
+    "客服身份系统前端实现检查报告.md",
+    "客服知识库查询页面无数据问题分析.md",
+    "客服身份系统与界面实现方案.md",
+    "客服状态管理-企业级数据库设计方案.md",
+    "项目功能完成度分析与详细规划.md",
+    "知识库索引与检索服务-完整实现指南.md",
+    "账号管理功能实现方案.md",
+    "启动错误修复方案-AgentConfigService缺失.md",
+    "文档管理与Tika接入实现方案.md",
+    "上下文构造逻辑详解与Redis交互机制.md",
+    "会话管理功能后端实现.md",
     "客服对话+RAG集成方案.md",
+    "登出功能实现方案-企业级最佳实践.md",
+    "登录注册功能简化方案-最终版.md",
+    "后端架构整理方案.md",
+    "登录注册逻辑重构方案.md",
+    "RAG测试步骤.md",
+    "后端删除会话接口补充.md",
     "test-knowledge/测试文档4-星云科技内部开发规范.txt",
     "test-knowledge/测试文档3-星云科技客户服务政策.txt",
     "test-knowledge/测试文档2-星云AI助手产品说明.txt",
     "test-knowledge/测试文档1-星云科技员工手册.txt",
     "test-knowledge",
-    "RAG集成完整方案.md",
-    "LLM检索注入方案.md",
-    "知识库索引与检索服务-完整实现指南.md",
-    "AI对话上下文问题诊断与修复方案.md",
     "sql/xxl-job-init.sql",
     "sql/init.sql",
     "sql",

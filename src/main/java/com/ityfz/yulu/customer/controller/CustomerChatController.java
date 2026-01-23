@@ -3,6 +3,7 @@ package com.ityfz.yulu.customer.controller;
 import com.ityfz.yulu.chat.dto.ChatAskRequest;
 import com.ityfz.yulu.chat.dto.ChatAskResponse;
 import com.ityfz.yulu.chat.dto.CreateSessionRequest;
+import com.ityfz.yulu.chat.dto.EditSessionRequest;
 import com.ityfz.yulu.chat.entity.ChatMessage;
 import com.ityfz.yulu.chat.entity.ChatSession;
 import com.ityfz.yulu.chat.mapper.ChatSessionMapper;
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -149,5 +151,27 @@ public class CustomerChatController {
 
         chatService.deleteSession(tenantId, userId, sessionId);
         return ApiResponse.success("会话删除成功", null);
+    }
+
+    /**
+     *  编辑会话名称
+     */
+    @PutMapping("/edit")
+    @Operation(summary = "编辑会话名称")
+    public ApiResponse<ChatSession> editSession(@Valid @RequestBody EditSessionRequest request) {
+        Long tenantId = TenantContextHolder.getTenantId();
+        Long userId = UserContextHolder.getUserId();
+
+        if (tenantId == null) {
+            throw new BizException(ErrorCodes.TENANT_REQUIRED, "缺少租户信息，请先登录");
+        }
+        if (userId == null) {
+            throw new BizException(ErrorCodes.UNAUTHORIZED, "缺少用户信息，请先登录");
+        }
+
+        Long sessionId = chatService.editSession(userId,tenantId,request);
+        ChatSession session = chatSessionMapper.selectById(sessionId);
+
+        return ApiResponse.success("会话修改名称成功", session);
     }
 }

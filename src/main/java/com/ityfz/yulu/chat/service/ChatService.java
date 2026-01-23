@@ -1,6 +1,7 @@
 package com.ityfz.yulu.chat.service;
 
 import com.ityfz.yulu.chat.dto.ChatAskResponse;
+import com.ityfz.yulu.chat.dto.EditSessionRequest;
 import com.ityfz.yulu.chat.entity.ChatMessage;
 import com.ityfz.yulu.chat.entity.ChatSession;
 
@@ -50,4 +51,9 @@ public interface ChatService {
      * 删除会话（软删除）
      */
     void deleteSession(Long tenantId, Long userId, Long sessionId);
+
+    /**
+     *  编辑会话名称
+     */
+    Long editSession(Long userId, Long tenantId, EditSessionRequest request);
 }

@@ -159,3 +159,14 @@ SELECT 'XXL-Job 数据库初始化完成！' AS message;
 SELECT '默认管理员账号：admin / 123456' AS login_info;
 
 
+
+
+
+
+
+
+
+
+
+
+
