@@ -119,7 +119,7 @@ public class DocumentController {
     }
 
     /**
-     *  获取文档详情
+     *  根据文档ID获取所有 Chunk
      */
     @GetMapping("/file/{id}")
     @RequireRole({"ADMIN","AGENT"})

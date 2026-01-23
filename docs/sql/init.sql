@@ -161,3 +161,14 @@ CREATE TABLE `notify_message` (
 SELECT '数据库初始化完成！' AS message;
 
 
+
+
+
+
+
+
+
+
+
+
+

@@ -80,4 +80,28 @@ public interface TicketService {
      * @return
      */
     TicketStatsResponse stats(Long tenantId);
+
+    /**
+     * 按租户、状态和分配人分页查询工单列表（客服使用）
+     *
+     * @param tenantId 租户ID
+     * @param assigneeId 分配人ID（客服ID），如果为null则查询未分配的工单
+     * @param status 状态（可为null，表示查询所有状态）
+     * @param page 页码（从1开始）
+     * @param size 每页大小
+     * @return 分页结果
+     */
+    IPage<Ticket> listTicketsByAssignee(Long tenantId, Long assigneeId, String status, int page, int size);
+
+    /**
+     * 管理员查询所有工单（包括未分配和已分配的）
+     *
+     * @param tenantId 租户ID
+     * @param status 状态（可为null）
+     * @param assigneeId 分配人ID（可为null，表示查询所有）
+     * @param page 页码
+     * @param size 每页大小
+     * @return 分页结果
+     */
+    IPage<Ticket> listAllTickets(Long tenantId, String status, Long assigneeId, int page, int size);
 }

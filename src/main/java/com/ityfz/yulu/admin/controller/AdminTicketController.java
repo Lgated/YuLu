@@ -4,6 +4,7 @@ package com.ityfz.yulu.admin.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ityfz.yulu.common.annotation.RequireRole;
 import com.ityfz.yulu.common.enums.ErrorCodes;
+import com.ityfz.yulu.common.enums.Roles;
 import com.ityfz.yulu.common.exception.BizException;
 import com.ityfz.yulu.common.model.ApiResponse;
 import com.ityfz.yulu.common.security.SecurityUtil;
@@ -14,6 +15,9 @@ import com.ityfz.yulu.ticket.entity.Ticket;
 import com.ityfz.yulu.ticket.entity.TicketComment;
 import com.ityfz.yulu.ticket.enums.TicketStatsResponse;
 import com.ityfz.yulu.ticket.service.TicketService;
+import com.ityfz.yulu.user.entity.User;
+import com.ityfz.yulu.user.mapper.UserMapper;
+import com.ityfz.yulu.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +37,7 @@ import java.util.List;
 @RequireRole({"ADMIN", "AGENT"})  // 管理员或客服都可以访问
 public class AdminTicketController {
     private final TicketService ticketService;
+    private final UserService userService;
 
     /**
      * 分页查询工单列表
@@ -41,11 +46,13 @@ public class AdminTicketController {
     @GetMapping("/list")
     public ApiResponse<IPage<Ticket>> list(
             @RequestParam(required = false) String status,
+            @RequestParam(required = false) Long assigneeId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Long tenantId = SecurityUtil.currentTenantId();
         Long userId = SecurityUtil.currentUserId();
+        String role = SecurityUtil.currentRole();
 
         if (tenantId == null || userId == null) {
             throw new BizException(ErrorCodes.UNAUTHORIZED, "请先登录");
@@ -54,8 +61,37 @@ public class AdminTicketController {
         if (page < 1) page = 1;
         if (size < 1 || size > 100) size = 10;
 
-        IPage<Ticket> result = ticketService.listTickets(tenantId, status, page, size);
+        IPage<Ticket> result;
+
+        if (Roles.isAgent(role)) {
+            // 客服：只能看到分配给自己的工单
+            result = ticketService.listTicketsByAssignee(tenantId, userId, status, page, size);
+        } else if (Roles.isAdmin(role)) {
+            // 管理员：可以看到所有工单，可以按assigneeId筛选
+            result = ticketService.listAllTickets(tenantId, status, assigneeId, page, size);
+        } else {
+            throw new BizException(ErrorCodes.FORBIDDEN, "无权限访问");
+        }
+
         return ApiResponse.success("查询成功", result);
+    }
+
+
+    /**
+     * 获取租户下的客服列表（管理员派单时使用）
+     */
+    @GetMapping("/agents")
+    @RequireRole("ADMIN") // 仅管理员可查看客服列表
+    public ApiResponse<List<User>> listAgents() {
+        Long tenantId = SecurityUtil.currentTenantId();
+        if (tenantId == null) {
+            throw new BizException(ErrorCodes.TENANT_REQUIRED, "缺少租户信息");
+        }
+
+        // 查询该租户下所有客服（AGENT角色）
+        List<User> agents = userService.listByTenantIdAndRole(tenantId, Roles.AGENT);
+
+        return ApiResponse.success("查询成功", agents);
     }
 
     /**

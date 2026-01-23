@@ -6,8 +6,17 @@ import type { ApiResponse, Ticket, TicketComment } from './types';
  */
 export const ticketApi = {
   // 分页查询工单列表
-  list(params: { status?: string; page?: number; size?: number }) {
-    return http.get<ApiResponse<{ records: Ticket[]; total: number }>>('/admin/ticket/list', {
+  list(params: { status?: string; assigneeId?: number; page?: number; size?: number }) {
+    // 后端返回 MyBatis-Plus IPage：{ records, total, current, size, pages ... }
+    return http.get<
+      ApiResponse<{
+        records: Ticket[];
+        total: number;
+        current?: number;
+        size?: number;
+        pages?: number;
+      }>
+    >('/admin/ticket/list', {
       params
     });
   },

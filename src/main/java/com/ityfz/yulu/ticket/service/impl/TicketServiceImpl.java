@@ -275,6 +275,53 @@ public class TicketServiceImpl implements TicketService {
         return r;
     }
 
+    @Override
+    public IPage<Ticket> listTicketsByAssignee(Long tenantId, Long assigneeId, String status, int page, int size) {
+        if (tenantId == null) {
+            throw new BizException(ErrorCodes.TENANT_REQUIRED, "租户ID不能为空");
+        }
+        if (assigneeId == null) {
+            throw new BizException(ErrorCodes.VALIDATION_ERROR, "分配人ID不能为空");
+        }
+
+        Page<Ticket> pageParam = new Page<>(page, size);
+        LambdaQueryWrapper<Ticket> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Ticket::getTenantId, tenantId)
+                .eq(Ticket::getAssignee, assigneeId); // 只查询分配给自己的
+
+        if (status != null && !status.trim().isEmpty()) {
+            wrapper.eq(Ticket::getStatus, status);
+        }
+
+        // 按照最新创建时间展示
+        wrapper.orderByDesc(Ticket::getCreateTime);
+
+        return ticketMapper.selectPage(pageParam, wrapper);
+    }
+
+    @Override
+    public IPage<Ticket> listAllTickets(Long tenantId, String status, Long assigneeId, int page, int size) {
+        if (tenantId == null) {
+            throw new BizException(ErrorCodes.TENANT_REQUIRED, "租户ID不能为空");
+        }
+
+        Page<Ticket> pageParam = new Page<>(page, size);
+        LambdaQueryWrapper<Ticket> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Ticket::getTenantId, tenantId);
+
+        if (status != null && !status.trim().isEmpty()) {
+            wrapper.eq(Ticket::getStatus, status);
+        }
+
+        if (assigneeId != null) {
+            wrapper.eq(Ticket::getAssignee, assigneeId);
+        }
+
+        wrapper.orderByDesc(Ticket::getCreateTime);
+
+        return ticketMapper.selectPage(pageParam, wrapper);
+    }
+
     /**
      * 将List<Map<String,Object>>转换为Map<String, Long>
      * */

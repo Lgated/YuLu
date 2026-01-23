@@ -15,15 +15,21 @@ import com.ityfz.yulu.user.service.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     private final TenantMapper tenantMapper;
+    private final UserMapper userMapper;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public UserServiceImpl(TenantMapper tenantMapper) {
+
+    public UserServiceImpl(TenantMapper tenantMapper,
+                           UserMapper userMapper) {
         this.tenantMapper = tenantMapper;
+        this.userMapper = userMapper;
     }
 
     /**
@@ -74,6 +80,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         resp.setUsername(user.getUsername());
         resp.setRole(user.getRole());
         return resp;
+    }
+
+
+    //TODO : 需要查询状态正常且上线的客服
+    @Override
+    public List<User> listByTenantIdAndRole(Long tenantId, String role) {
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getTenantId, tenantId)
+                .eq(User::getRole, role)
+                .eq(User::getStatus, 1) // 只查询正常状态的用户
+                .orderByDesc(User::getCreateTime);
+
+        return userMapper.selectList(wrapper);
     }
 
     private boolean isValidRole(String role) {
