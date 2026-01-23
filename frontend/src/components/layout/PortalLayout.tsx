@@ -3,7 +3,7 @@ import { BellOutlined, LogoutOutlined } from '@ant-design/icons';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
-import { clearToken, getUsername } from '../../utils/storage';
+import { clearToken, getUsername, getRole } from '../../utils/storage';
 
 const { Header, Sider, Content } = Layout;
 
@@ -32,7 +32,18 @@ export function PortalLayout({ children, logoText, headerTitle, menuItems }: Por
     return matched?.key || menuItems[0]?.key;
   }, [location.pathname, menuItems]);
 
-  const onLogout = () => {
+  const onLogout = async () => {
+    // 如果是客服，登出前设置为离线状态
+    const role = getRole();
+    if (role === 'AGENT') {
+      try {
+        const { agentApi } = await import('../../api/agent');
+        await agentApi.updateOnlineStatus('OFFLINE');
+      } catch (error) {
+        // 登出时状态更新失败不影响登出流程
+        console.warn('登出时更新状态失败:', error);
+      }
+    }
     clearToken();
     navigate('/login');
   };

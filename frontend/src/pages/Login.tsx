@@ -3,6 +3,7 @@ import { Card, Form, Input, Button, Typography, message, Select } from 'antd';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { authApi } from '../api/auth';
 import { setRole, setToken, setUsername, setUserId } from '../utils/storage';
+import { agentApi } from '../api/agent';
 
 const { Title, Paragraph, Link } = Typography;
 
@@ -36,8 +37,28 @@ export default function Login() {
           if (res.data?.role) setRole(res.data.role);
           if (res.data?.username) setUsername(res.data.username);
           if (res.data?.userId) setUserId(res.data.userId);
+          
+          // 如果是客服，登录后自动设置为在线状态
+          const role = res.data?.role;
+          if (role === 'AGENT') {
+            try {
+              await agentApi.updateOnlineStatus('ONLINE');
+            } catch (error) {
+              // 状态更新失败不影响登录流程
+              console.warn('登录后设置在线状态失败:', error);
+            }
+          }
+          
           message.success(res.message || '登录成功');
-          navigate('/admin/dashboard'); // 租户端首页
+          
+          // 根据角色跳转到不同页面
+          if (role === 'ADMIN') {
+            navigate('/admin/dashboard');
+          } else if (role === 'AGENT') {
+            navigate('/agent/tickets');
+          } else {
+            navigate('/admin/dashboard'); // 默认跳转
+          }
         } else {
           // 如果返回了错误响应但没有抛出异常
           message.error(res.message || '登录失败，请检查账号密码');

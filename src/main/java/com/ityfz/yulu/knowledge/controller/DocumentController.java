@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/document")
-@RequireRole("ADMIN")
+
 public class DocumentController {
 
     private final DocumentService documentService;
@@ -36,6 +36,7 @@ public class DocumentController {
      */
     // 就是告诉 Spring：只收‘带文件上传的表单’
     @PostMapping(value = "/upload" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @RequireRole("ADMIN")
     public ApiResponse<Long> upload(@RequestPart("file") MultipartFile file,
                                     @RequestParam(value = "title", required = false) String title,
                                     @RequestParam(value = "source", required = false) String source) {
@@ -52,6 +53,7 @@ public class DocumentController {
      * 分页查询文档列表
      */
     @GetMapping("/list")
+    @RequireRole({"ADMIN","AGENT"})
     public ApiResponse<List<DocumentListItemResponse>> list(
             @RequestParam(value = "pageNum", required = false) Integer pageNum,
             @RequestParam(value = "pageSize", required = false) Integer pageSize) {
@@ -75,6 +77,7 @@ public class DocumentController {
      * 获取文档详情
      */
     @GetMapping("/{id}")
+    @RequireRole({"ADMIN","AGENT"})
     public ApiResponse<DocumentDetailResponse> detail(@PathVariable("id") Long id) {
         Long tenantId = SecurityUtil.currentTenantId();
         if (tenantId == null) {
@@ -105,6 +108,7 @@ public class DocumentController {
      * 删除文档
      */
     @DeleteMapping("/{id}")
+    @RequireRole("ADMIN")
     public ApiResponse<Void> delete(@PathVariable("id") Long id) {
         Long tenantId = SecurityUtil.currentTenantId();
         if (tenantId == null) {
@@ -118,6 +122,7 @@ public class DocumentController {
      *  获取文档详情
      */
     @GetMapping("/file/{id}")
+    @RequireRole({"ADMIN","AGENT"})
     public ApiResponse<List<Chunk>> detailByFile(@PathVariable("id") Long documentId) {
         Long tenantId = SecurityUtil.currentTenantId();
         if (tenantId == null) {

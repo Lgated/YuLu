@@ -12,13 +12,6 @@ export const ticketApi = {
     });
   },
 
-  // 分配工单（仅管理员）
-  assign(ticketId: number, assigneeUserId: number) {
-    return http.post<ApiResponse<void>>('/admin/ticket/assign', {
-      ticketId,
-      assigneeUserId
-    });
-  },
 
   // 工单状态流转
   transition(ticketId: number, targetStatus: string, comment?: string) {
@@ -47,8 +40,16 @@ export const ticketApi = {
   // 获取工单统计信息
   stats() {
     return http.get<ApiResponse<any>>('/admin/ticket/stats');
+  },
+
+
+  // 获取客服列表（管理员派单用）
+  getAgents() {
+    return http.get<ApiResponse<any[]>>('/admin/ticket/agents');
+  },
+
+  // 派单
+  assign(request: { ticketId: number; assigneeUserId: number }) {
+    return http.post<ApiResponse<void>>('/admin/ticket/assign', request);
   }
 };
-
-
-

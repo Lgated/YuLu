@@ -2,16 +2,21 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ChatPage from './pages/ChatPage';
-import TicketListPage from './pages/TicketListPage';
+import TicketListPage from './pages/admin/TicketListPage';
 import NotifyCenterPage from './pages/NotifyCenterPage';
 import { getRole, getToken } from './utils/storage';
 import { AdminLayout } from './components/layout/AdminLayout';
 import { CustomerLayout } from './components/layout/CustomerLayout';
+import { AgentLayout } from './components/layout/AgentLayout';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminSessionsPage from './pages/admin/AdminSessionsPage';
 import CustomerFaqPage from './pages/customer/CustomerFaqPage';
 import KnowledgePage from './pages/admin/KnowledgePage';
-import UserManagementPage from './pages/admin/UserManagementPage.tsx';
+import UserManagementPage from './pages/admin/UserManagementPage';
+import AgentTicketPage from './pages/agent/AgentTicketPage';
+import AgentSessionsPage from './pages/agent/AgentSessionsPage';
+import AgentProfilePage from './pages/agent/AgentProfilePage';
+import AgentKnowledgePage from './pages/agent/AgentKnowledgePage';
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const location = useLocation();
@@ -26,8 +31,17 @@ function HomeRedirect() {
   const token = getToken();
   const role = getRole();
   if (!token) return <Navigate to="/login" replace />;
-  // USER -> C端；ADMIN/AGENT -> B端
-  return <Navigate to={role === 'USER' ? '/customer/chat' : '/admin/dashboard'} replace />;
+
+  // 根据角色跳转
+  if (role === 'USER') {
+    return <Navigate to="/customer/chat" replace />;
+  } else if (role === 'ADMIN') {
+    return <Navigate to="/admin/dashboard" replace />;
+  } else if (role === 'AGENT') {
+    return <Navigate to="/agent/tickets" replace />;
+  }
+
+  return <Navigate to="/login" replace />;
 }
 
 export default function App() {
@@ -58,7 +72,7 @@ export default function App() {
         }
       />
 
-      {/* B端（租户/客服） */}
+      {/* B端（租户） */}
       <Route
         path="/admin/dashboard"
         element={
@@ -116,6 +130,47 @@ export default function App() {
             <AdminLayout>
               <UserManagementPage />
             </AdminLayout>
+          </RequireAuth>
+        }
+      />
+       {/* B端（客服） */}
+      <Route
+        path="/agent/tickets"
+        element={
+          <RequireAuth>
+            <AgentLayout>
+              <AgentTicketPage />
+            </AgentLayout>
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/agent/sessions"
+        element={
+          <RequireAuth>
+            <AgentLayout>
+              <AgentSessionsPage />
+            </AgentLayout>
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/agent/profile"
+        element={
+          <RequireAuth>
+            <AgentLayout>
+              <AgentProfilePage />
+            </AgentLayout>
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/agent/knowledge"
+        element={
+          <RequireAuth>
+            <AgentLayout>
+              <AgentKnowledgePage />
+            </AgentLayout>
           </RequireAuth>
         }
       />
