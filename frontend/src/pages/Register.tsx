@@ -1,10 +1,17 @@
 import { useState } from 'react';
-import { Card, Form, Input, Button, Typography, message } from 'antd';
+import { Card, Form, Input, Button, Typography, message, Select } from 'antd';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { authApi } from '../api/auth';
 import { setRole, setToken, setUsername } from '../utils/storage';
 
 const { Title, Paragraph, Link } = Typography;
+
+// 固定的租户选项
+const TENANT_OPTIONS = [
+  { label: 'EDU_001', value: 'EDU_001' },
+  { label: 'EDU_002', value: 'EDU_002' },
+  { label: 'EDU_003', value: 'EDU_003' }
+];
 
 export default function Register() {
   const navigate = useNavigate();
@@ -79,9 +86,9 @@ export default function Register() {
               <Form.Item
                 label="租户编码"
                 name="tenantCode"
-                rules={[{ required: true, message: '请输入租户编码' }]}
+                rules={[{ required: true, message: '请选择租户编码' }]}
               >
-                <Input placeholder="例如 TENANT_001" />
+                <Select placeholder="请选择租户编码" options={TENANT_OPTIONS} />
               </Form.Item>
               <Form.Item
                 label="租户名称"
@@ -95,7 +102,11 @@ export default function Register() {
                 name="tenantIdentifier"
                 tooltip="如果不填写，默认等于租户编码。C端用户使用此标识登录"
               >
-                <Input placeholder="例如 EDU_001（留空则等于租户编码）" />
+                <Select 
+                  placeholder="请选择租户标识码（留空则等于租户编码）" 
+                  options={TENANT_OPTIONS}
+                  allowClear
+                />
               </Form.Item>
               <Form.Item
                 label="管理员用户名"
@@ -118,9 +129,9 @@ export default function Register() {
               <Form.Item
                 label="租户标识"
                 name="tenantIdentifier"
-                rules={[{ required: true, message: '请输入租户标识' }]}
+                rules={[{ required: true, message: '请选择租户标识' }]}
               >
-                <Input placeholder="例如 EDU_001" />
+                <Select placeholder="请选择租户标识" options={TENANT_OPTIONS} />
               </Form.Item>
               <Form.Item
                 label="用户名"

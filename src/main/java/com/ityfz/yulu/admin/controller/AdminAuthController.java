@@ -74,4 +74,8 @@ public class AdminAuthController {
     }
 
     //TODO:登出逻辑 ： 加入黑名单、清除在线状态
+
+
+    //TODO: 更改注册逻辑： 区分 租户机构 和 用户 的注册
+
 }

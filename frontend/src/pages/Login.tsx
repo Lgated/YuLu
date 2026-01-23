@@ -1,10 +1,17 @@
 import { useState } from 'react';
-import { Card, Form, Input, Button, Typography, message } from 'antd';
+import { Card, Form, Input, Button, Typography, message, Select } from 'antd';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { authApi } from '../api/auth';
-import { setRole, setToken, setUsername } from '../utils/storage';
+import { setRole, setToken, setUsername, setUserId } from '../utils/storage';
 
 const { Title, Paragraph, Link } = Typography;
+
+// 固定的租户选项
+const TENANT_OPTIONS = [
+  { label: 'EDU_001', value: 'EDU_001' },
+  { label: 'EDU_002', value: 'EDU_002' },
+  { label: 'EDU_003', value: 'EDU_003' }
+];
 
 export default function Login() {
   const navigate = useNavigate();
@@ -28,6 +35,7 @@ export default function Login() {
           }
           if (res.data?.role) setRole(res.data.role);
           if (res.data?.username) setUsername(res.data.username);
+          if (res.data?.userId) setUserId(res.data.userId);
           message.success(res.message || '登录成功');
           navigate('/admin/dashboard'); // 租户端首页
         } else {
@@ -49,6 +57,7 @@ export default function Login() {
           // C端固定为USER（后端若返回role也会覆盖）
           setRole(res.data?.role || 'USER');
           if (res.data?.username) setUsername(res.data.username);
+          if (res.data?.userId) setUserId(res.data.userId);
           message.success(res.message || '登录成功');
           navigate('/customer/chat'); // 客户端首页
         } else {
@@ -95,9 +104,9 @@ export default function Login() {
               <Form.Item
                 label="租户编码"
                 name="tenantCode"
-                rules={[{ required: true, message: '请输入租户编码' }]}
+                rules={[{ required: true, message: '请选择租户编码' }]}
               >
-                <Input placeholder="例如 TENANT_001" />
+                <Select placeholder="请选择租户编码" options={TENANT_OPTIONS} />
               </Form.Item>
               <Form.Item
                 label="用户名"
@@ -120,9 +129,9 @@ export default function Login() {
               <Form.Item
                 label="租户标识"
                 name="tenantIdentifier"
-                rules={[{ required: true, message: '请输入租户标识' }]}
+                rules={[{ required: true, message: '请选择租户标识' }]}
               >
-                <Input placeholder="例如 EDU_001" />
+                <Select placeholder="请选择租户标识" options={TENANT_OPTIONS} />
               </Form.Item>
               <Form.Item
                 label="用户名"

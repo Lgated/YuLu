@@ -11,6 +11,7 @@ import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminSessionsPage from './pages/admin/AdminSessionsPage';
 import CustomerFaqPage from './pages/customer/CustomerFaqPage';
 import KnowledgePage from './pages/admin/KnowledgePage';
+import UserManagementPage from './pages/admin/UserManagementPage.tsx';
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const location = useLocation();
@@ -108,7 +109,16 @@ export default function App() {
           </RequireAuth>
         }
       />
-
+      <Route
+        path="/admin/users"
+        element={
+          <RequireAuth>
+            <AdminLayout>
+              <UserManagementPage />
+            </AdminLayout>
+          </RequireAuth>
+        }
+      />
       <Route path="*" element={<HomeRedirect />} />
     </Routes>
   );

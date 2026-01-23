@@ -138,3 +138,35 @@ export interface DocumentDetail {
   contentPreview?: string;
 }
 
+export interface UserResponse {
+  id: number;
+  tenantId: number;
+  username: string;
+  role: string;
+  status: number;
+  nickName?: string;
+  email?: string;
+  phone?: string;
+  createTime: string;
+  updateTime: string;
+  statusText: string;
+  roleText: string;
+}
+
+export interface CreateUserRequest {
+  username: string;
+  password: string;
+  role: string;
+  nickName?: string;
+  email?: string;
+  phone?: string;
+  status?: number;
+}
+
+export interface UpdateUserRequest {
+  nickName?: string;
+  email?: string;
+  phone?: string;
+  role?: string;
+  status?: number;
+}

@@ -11,7 +11,7 @@ export function CustomerLayout({ children }: { children: ReactNode }) {
   return (
     <PortalLayout
       logoText="YuLu 客户助手"
-      headerTitle="在线客服 · 智能对话"
+      headerTitle="在线客服"
       menuItems={[
         {
           key: '/customer/chat',
@@ -29,5 +29,16 @@ export function CustomerLayout({ children }: { children: ReactNode }) {
     </PortalLayout>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
 
 

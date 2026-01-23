@@ -1,4 +1,4 @@
-import { MessageOutlined, ProfileOutlined, BellOutlined, DashboardOutlined, BookOutlined } from '@ant-design/icons';
+import { MessageOutlined, ProfileOutlined, BellOutlined, DashboardOutlined, BookOutlined,UserOutlined } from '@ant-design/icons';
 import type { ReactNode } from 'react';
 import { PortalLayout } from './PortalLayout';
 
@@ -32,6 +32,11 @@ export function AdminLayout({ children }: { children: ReactNode }) {
           key: '/admin/notify',
           icon: <BellOutlined />,
           label: '通知中心'
+        },
+               {
+          key: '/admin/users',  
+          icon: <UserOutlined />,
+          label: '账号管理'
         }
       ]}
     >
