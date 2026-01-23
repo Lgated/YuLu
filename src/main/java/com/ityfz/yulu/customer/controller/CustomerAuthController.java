@@ -14,6 +14,8 @@ import com.ityfz.yulu.user.entity.User;
 import com.ityfz.yulu.user.mapper.TenantMapper;
 import com.ityfz.yulu.user.mapper.UserMapper;
 import com.ityfz.yulu.user.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +30,7 @@ import java.time.Duration;
 @RestController
 @RequestMapping("/api/customer/auth")
 @RequiredArgsConstructor
+@Tag(name = "C端-认证（Customer/Auth）", description = "客户登录与注册（公开接口）")
 public class CustomerAuthController {
 
     private final TenantMapper tenantMapper;
@@ -41,6 +44,7 @@ public class CustomerAuthController {
      * 用户需要输入租户标识码
      */
     @PostMapping("/login")
+    @Operation(summary = "C端登录", description = "客户登录：通过 tenantIdentifier + username/password 登录，返回 JWT Token")
     public ApiResponse<LoginResponse> login(@Valid @RequestBody CustomerLoginRequest request) {
         // 1. 根据租户标识码查询租户ID（方法内部已校验租户状态）
         Long tenantId = getTenantIdByIdentifier(request.getTenantIdentifier());
@@ -93,6 +97,7 @@ public class CustomerAuthController {
      * 用户需要输入租户标识码
      */
     @PostMapping("/register")
+    @Operation(summary = "C端注册", description = "客户注册：tenantIdentifier + username/password + 可选资料；注册成功可返回 token（按后端实现）")
     public ApiResponse<LoginResponse> register(@Valid @RequestBody CustomerRegisterRequest request) {
         // 1. 根据租户标识码查询租户ID（方法内部已校验租户状态）
         Long tenantId = getTenantIdByIdentifier(request.getTenantIdentifier());

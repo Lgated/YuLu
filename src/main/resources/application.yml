@@ -110,3 +110,15 @@ logging:
 
 
 debug: false
+
+# Swagger / OpenAPI (springdoc)
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    display-request-duration: true
+    operations-sorter: alpha
+    tags-sorter: alpha

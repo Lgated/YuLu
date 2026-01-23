@@ -154,6 +154,13 @@
         <version>3.25.1</version>
     </dependency>
 
+    <!-- Swagger/OpenAPI (Spring Boot 2.7.x 推荐 springdoc-openapi 1.x) -->
+    <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-ui</artifactId>
+        <version>1.7.0</version>
+    </dependency>
+
 </dependencies>
 
 <build>

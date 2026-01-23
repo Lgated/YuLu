@@ -13,6 +13,8 @@ import com.ityfz.yulu.common.exception.BizException;
 import com.ityfz.yulu.common.model.ApiResponse;
 import com.ityfz.yulu.common.tenant.TenantContextHolder;
 import com.ityfz.yulu.common.tenant.UserContextHolder;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +24,7 @@ import java.util.List;
 @RequestMapping("/api/customer/chat")
 @RequireRole({"USER","ADMIN"})
 @RequiredArgsConstructor
+@Tag(name = "C端-聊天（Customer/Chat）", description = "客户聊天：会话、消息、RAG增强问答、转人工")
 public class CustomerChatController {
 
     private final ChatService chatService;
@@ -33,6 +36,7 @@ public class CustomerChatController {
      * 返回 AI 消息 + 本轮 RAG 引用（data.aiMessage、data.refs）
      */
     @PostMapping("/ask")
+    @Operation(summary = "发送消息给AI", description = "客户对话入口：支持上下文 + RAG 知识库检索增强；返回 AI 消息与 refs 引用列表")
     public ApiResponse<ChatAskResponse> ask(@RequestBody ChatAskRequest req) {
         Long tenantId = TenantContextHolder.getTenantId();
         Long userId = UserContextHolder.getUserId();
@@ -55,6 +59,7 @@ public class CustomerChatController {
      * 注意：C端用户只能查看自己的会话
      */
     @GetMapping("/messages/{sessionId}")
+    @Operation(summary = "查询会话消息列表", description = "查询指定会话的历史消息（仅限本用户/本租户）")
     public ApiResponse<List<ChatMessage>> listMessages(@PathVariable Long sessionId) {
         Long tenantId = TenantContextHolder.getTenantId();
         Long userId = UserContextHolder.getUserId();
@@ -74,6 +79,7 @@ public class CustomerChatController {
      * GET /api/customer/chat/sessions
      */
     @GetMapping("/sessions")
+    @Operation(summary = "查询会话列表", description = "查询当前用户在当前租户下的会话列表")
     public ApiResponse<List<ChatSession>> listMySessions() {
         Long tenantId = TenantContextHolder.getTenantId();
         Long userId = UserContextHolder.getUserId();
@@ -93,6 +99,7 @@ public class CustomerChatController {
      * 功能：当AI无法解决或客户主动要求时，转接人工客服
      */
     @PostMapping("/transfer")
+    @Operation(summary = "转人工", description = "客户申请转人工（后端按业务创建工单/通知等）")
     public ApiResponse<Void> transferToAgent(@RequestParam Long sessionId) {
         Long tenantId = TenantContextHolder.getTenantId();
         Long userId = UserContextHolder.getUserId();
@@ -109,6 +116,7 @@ public class CustomerChatController {
      * 新增会话
      */
     @PostMapping("/add_session")
+    @Operation(summary = "创建新会话", description = "创建新的聊天会话（可选 title）")
     public ApiResponse<ChatSession> createSession(@RequestBody CreateSessionRequest request) {
         Long tenantId = TenantContextHolder.getTenantId();
         Long userId = UserContextHolder.getUserId();
@@ -130,6 +138,7 @@ public class CustomerChatController {
      * 删除会话
      */
     @DeleteMapping("/sessions/{sessionId}")
+    @Operation(summary = "删除会话", description = "软删除会话并清理 Redis 上下文缓存")
     public ApiResponse<Void> deleteSession(@PathVariable Long sessionId) {
         Long tenantId = TenantContextHolder.getTenantId();
         Long userId = UserContextHolder.getUserId();

@@ -11,6 +11,9 @@ import com.ityfz.yulu.knowledge.entity.Chunk;
 import com.ityfz.yulu.knowledge.entity.Document;
 import com.ityfz.yulu.knowledge.service.ChunkService;
 import com.ityfz.yulu.knowledge.service.DocumentService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +22,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/document")
+@Tag(name = "知识库-文档（Knowledge/Document）", description = "文档上传、列表、详情、删除（管理员为主；只读接口可开放给客服）")
 
 public class DocumentController {
 
@@ -37,9 +41,10 @@ public class DocumentController {
     // 就是告诉 Spring：只收‘带文件上传的表单’
     @PostMapping(value = "/upload" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @RequireRole("ADMIN")
+    @Operation(summary = "上传知识库文档", description = "上传文档并落库（随后可调用索引接口进行 chunk 切分与向量化）")
     public ApiResponse<Long> upload(@RequestPart("file") MultipartFile file,
-                                    @RequestParam(value = "title", required = false) String title,
-                                    @RequestParam(value = "source", required = false) String source) {
+                                    @Parameter(description = "文档标题（可选）") @RequestParam(value = "title", required = false) String title,
+                                    @Parameter(description = "来源（可选）") @RequestParam(value = "source", required = false) String source) {
         Long tenantId = SecurityUtil.currentTenantId();
         if (tenantId == null) {
             throw new BizException(ErrorCodes.TENANT_REQUIRED, "缺少租户信息，请先登录");
@@ -54,9 +59,10 @@ public class DocumentController {
      */
     @GetMapping("/list")
     @RequireRole({"ADMIN","AGENT"})
+    @Operation(summary = "查询文档列表", description = "按租户查询文档列表。当前实现返回 List（非 IPage），pageNum/pageSize 由 service 内部裁剪")
     public ApiResponse<List<DocumentListItemResponse>> list(
-            @RequestParam(value = "pageNum", required = false) Integer pageNum,
-            @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+            @Parameter(description = "页码（可选）") @RequestParam(value = "pageNum", required = false) Integer pageNum,
+            @Parameter(description = "每页大小（可选）") @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         Long tenantId = SecurityUtil.currentTenantId();
         List<Document> docs = documentService.listDocuments(tenantId, pageNum, pageSize);
         List<DocumentListItemResponse> resp = docs.stream().map(d -> {
@@ -78,6 +84,7 @@ public class DocumentController {
      */
     @GetMapping("/{id}")
     @RequireRole({"ADMIN","AGENT"})
+    @Operation(summary = "查询文档详情", description = "返回文档元数据 + contentPreview（内容截断预览）")
     public ApiResponse<DocumentDetailResponse> detail(@PathVariable("id") Long id) {
         Long tenantId = SecurityUtil.currentTenantId();
         if (tenantId == null) {
@@ -109,6 +116,7 @@ public class DocumentController {
      */
     @DeleteMapping("/{id}")
     @RequireRole("ADMIN")
+    @Operation(summary = "删除文档", description = "删除文档（以及相关数据，按后端 service 实现）")
     public ApiResponse<Void> delete(@PathVariable("id") Long id) {
         Long tenantId = SecurityUtil.currentTenantId();
         if (tenantId == null) {
