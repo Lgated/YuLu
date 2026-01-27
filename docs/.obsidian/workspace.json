@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "租户接入与账号体系设计方案.md",
+                "file": "开题报告-文献综述与研究现状.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "租户接入与账号体系设计方案"
+              "title": "开题报告-文献综述与研究现状"
             }
           }
         ],
@@ -109,7 +109,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "租户接入与账号体系设计方案.md",
+                "file": "开题报告-文献综述与研究现状.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -119,7 +119,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for 租户接入与账号体系设计方案"
+              "title": "Backlinks for 开题报告-文献综述与研究现状"
             }
           },
           {
@@ -199,8 +199,18 @@
   },
   "active": "d3a783cd54340f95",
   "lastOpenFiles": [
-    "多租户工单系统设计方案.md",
+    "优化点/dbConvertor.md",
+    "企业微信截图_17693963697859.png",
+    "Pasted image 20260126104432.png",
+    "Pasted image 20260126103945.png",
+    "Pasted image 20260126103636.png",
+    "Pasted image 20260126102510.png",
+    "开题报告-文献综述与研究现状.md",
+    "优化点",
+    "进度安排.md",
+    "论文提纲-完整版.md",
     "租户接入与账号体系设计方案.md",
+    "多租户工单系统设计方案.md",
     "实现目标.md",
     "project-architecture-single-tenant-ai-chat.md",
     "next-steps-roadmap.md",
@@ -220,11 +230,6 @@
     "会话管理功能后端实现.md",
     "客服对话+RAG集成方案.md",
     "登出功能实现方案-企业级最佳实践.md",
-    "登录注册功能简化方案-最终版.md",
-    "后端架构整理方案.md",
-    "登录注册逻辑重构方案.md",
-    "RAG测试步骤.md",
-    "后端删除会话接口补充.md",
     "test-knowledge/测试文档4-星云科技内部开发规范.txt",
     "test-knowledge/测试文档3-星云科技客户服务政策.txt",
     "test-knowledge/测试文档2-星云AI助手产品说明.txt",
@@ -233,7 +238,6 @@
     "sql/xxl-job-init.sql",
     "sql/init.sql",
     "sql",
-    "project-overview.md~",
-    "Untitled"
+    "project-overview.md~"
   ]
 }

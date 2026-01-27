@@ -181,3 +181,4 @@ curl -X POST 'http://localhost:8080/api/admin/knowledge/chat' \
 
 按上述链路与接口调用即可完成从 **检索 → 上下文 → LLM → 返回** 的完整 RAG 集成。
 
+
