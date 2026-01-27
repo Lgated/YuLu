@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -154,7 +154,14 @@ public class QdrantVectorStore {
      */
     public List<Points.ScoredPoint> search(String collectionName, List<Float> queryVector, int topK, Points.Filter filter) {
         try {
-            // 1. 构建搜索请求
+
+            // 1. 先检查集合是否存在，不存在则返回空列表（兜底策略）
+            if (!collectionExists(collectionName)) {
+                log.warn("[Qdrant] 集合不存在，返回空结果: collection={}", collectionName);
+                return java.util.Collections.emptyList();
+            }
+
+            // 2. 构建搜索请求
             Points.SearchPoints.Builder searchBuilder = Points.SearchPoints.newBuilder()
                     .setCollectionName(collectionName)
                     .addAllVector(queryVector) // 把 List<Float> 一次性塞进去
@@ -166,7 +173,7 @@ public class QdrantVectorStore {
                 searchBuilder.setFilter(filter);
             }
 
-            // 2. 执行搜索
+            // 3. 执行搜索
             // 返回值直接就是 List<ScoredPoint>，不再需要从 response.getResultList() 获取
             List<Points.ScoredPoint> results = client.searchAsync(searchBuilder.build()).get();
 
@@ -178,6 +185,21 @@ public class QdrantVectorStore {
         } catch (Exception e) {
             log.error("[Qdrant] 搜索失败: collection={}", collectionName, e);
             throw new RuntimeException("搜索失败", e);
+        }
+    }
+
+    /**
+     * 检查集合是否存在
+     * @param collectionName 集合名称
+     * @return 是否存在
+     */
+    private boolean collectionExists(String collectionName) {
+        try {
+            List<String> collections = client.listCollectionsAsync().get();
+            return collections.stream().anyMatch(c -> c.equals(collectionName));
+        } catch (Exception e) {
+            log.warn("[Qdrant] 检查集合是否存在失败: collection={}", collectionName, e);
+            return false;
         }
     }
 
