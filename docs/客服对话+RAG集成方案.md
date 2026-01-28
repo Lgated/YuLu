@@ -165,3 +165,7 @@ return ChatAskResponse.builder()
 - **接口**：仍是 `ask`，返回 `aiMessage` + `refs`，前端稍作适配即可同时获得客服对话与 RAG 引用。
 
 
+
+
+
+

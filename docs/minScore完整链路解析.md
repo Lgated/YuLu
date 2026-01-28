@@ -485,3 +485,7 @@ GET /api/admin/knowledge/search?q=满三年后年假&topK=10&minScore=0.4
 通过理解 minScore 的完整链路，可以更好地调优 RAG 系统的检索效果。
 
 
+
+
+
+
