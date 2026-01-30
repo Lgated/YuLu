@@ -191,7 +191,7 @@ public class TicketServiceImpl implements TicketService {
 
         // 2. 目标状态校验
         TicketStatus target = TicketStatus.fromCode(targetStatus);
-        if (target == null || target == TicketStatus.PENDING || target == TicketStatus.PROCESSING) {
+        if (target == null || target == TicketStatus.PENDING) {
             throw new BizException(ErrorCodes.TICKET_STATUS_INVALID, "目标状态非法");
         }
 
@@ -206,6 +206,8 @@ public class TicketServiceImpl implements TicketService {
          */
         TicketStatus current = TicketStatus.fromCode(ticket.getStatus());
         boolean ok = false;
+        // 允许管理员/客服手动开始处理：PENDING -> PROCESSING
+        if (current == TicketStatus.PENDING && target == TicketStatus.PROCESSING) ok = true;
         if (current == TicketStatus.PROCESSING && (target == TicketStatus.DONE || target == TicketStatus.CLOSED)) ok = true;
         if (current == TicketStatus.DONE && target == TicketStatus.CLOSED) ok = true;
         if (current == TicketStatus.PENDING && target == TicketStatus.CLOSED && Roles.isAdmin(role)) ok = true;
@@ -214,6 +216,10 @@ public class TicketServiceImpl implements TicketService {
         }
         //4. 更新工单状态&&记录日志
         ticket.setStatus(target.getCode());
+        // 如果开始处理且还未分配，则默认把处理人设为当前操作用户（管理员也允许）
+        if (current == TicketStatus.PENDING && target == TicketStatus.PROCESSING && ticket.getAssignee() == null) {
+            ticket.setAssignee(userId);
+        }
         ticket.setUpdateTime(LocalDateTime.now());
         ticketMapper.updateById(ticket);
 

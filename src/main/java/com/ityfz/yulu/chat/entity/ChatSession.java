@@ -15,6 +15,9 @@ public class ChatSession {
     private Long userId;
     private String sessionTitle;
     private Integer status;
+    private Long handoffRequestId;
+    private Long agentId;
+    private String chatMode;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
     @TableField(fill = FieldFill.INSERT)
