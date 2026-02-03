@@ -39,7 +39,12 @@ public enum HandoffStatus {
     /**
      * 已拒绝（客服拒绝）
      */
-    REJECTED("REJECTED", "已拒绝");
+    REJECTED("REJECTED", "已拒绝"),
+
+    /**
+     * 客户取消
+     */
+    CANCELLED("CANCELLED","已取消" );
 
     private final String code;
     private final String desc;

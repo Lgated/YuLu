@@ -1,11 +1,13 @@
 package com.ityfz.yulu.handoff.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 /**
  * 转人工状态查询响应DTO
  */
 @Data
+@Builder
 public class HandoffStatusResponse {
 
     /**

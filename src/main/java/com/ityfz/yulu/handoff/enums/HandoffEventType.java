@@ -39,7 +39,9 @@ public enum HandoffEventType {
     /**
      * 关闭
      */
-    CLOSED("CLOSED", "关闭");
+    CLOSED("CLOSED", "关闭"),
+
+    CANCELLED("CANCELLED","取消");
 
     private final String code;
     private final String desc;
