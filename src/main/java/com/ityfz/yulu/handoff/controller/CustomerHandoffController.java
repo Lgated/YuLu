@@ -3,6 +3,7 @@ package com.ityfz.yulu.handoff.controller;
 import com.ityfz.yulu.common.annotation.RequireRole;
 import com.ityfz.yulu.common.model.ApiResponse;
 import com.ityfz.yulu.common.security.SecurityUtil;
+import com.ityfz.yulu.handoff.dto.EndHandoffByUserRequest;
 import com.ityfz.yulu.handoff.dto.HandoffStatusResponse;
 import com.ityfz.yulu.handoff.dto.HandoffTransferRequest;
 import com.ityfz.yulu.handoff.dto.HandoffTransferResponse;
@@ -50,6 +51,19 @@ public class CustomerHandoffController {
         Long userId = SecurityUtil.currentUserId();
         handoffService.cancel(tenantId, userId, handoffRequestId);
         return ApiResponse.success("已取消转人工申请");
+    }
+
+    /**
+     * 用户结束对话
+     */
+    @PostMapping("/end-by-user")
+    @ResponseBody
+    public ApiResponse<Void> endByUser(@RequestBody EndHandoffByUserRequest request) {
+        Long tenantId = SecurityUtil.currentTenantId();
+        Long userId = SecurityUtil.currentUserId();
+
+        handoffService.endByUser(tenantId, userId, request.getHandoffRequestId());
+        return ApiResponse.success("对话已结束");
     }
 
 }

@@ -3,6 +3,7 @@ package com.ityfz.yulu.handoff.websocket;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ityfz.yulu.handoff.dto.WebSocketMessage;
 import com.ityfz.yulu.handoff.websocket.service.WebSocketMessageService;
+import com.ityfz.yulu.common.tenant.TenantContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -69,8 +70,15 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
             Long agentId = (Long) session.getAttributes().get("userId");
             Long tenantId = (Long) session.getAttributes().get("tenantId");
 
-            // 处理消息
-            messageService.handleAgentMessage(tenantId, agentId, wsMessage);
+            // 设置租户上下文（确保 MyBatis-Plus 租户插件正确生效）
+            TenantContextHolder.setTenantId(tenantId);
+            try {
+                // 处理消息
+                messageService.handleAgentMessage(tenantId, agentId, wsMessage);
+            } finally {
+                // 清理租户上下文
+                TenantContextHolder.clear();
+            }
 
         } catch (Exception e) {
             log.error("[WebSocket] 处理客服消息失败", e);
@@ -95,6 +103,7 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
     /**
      * 发送消息给客服
      */
+    // TODO: 添加同步锁，避免并发发送消息导致的错误
     public void sendToAgent(Long tenantId, Long agentId, WebSocketMessage message) {
         String connectionKey = buildConnectionKey(tenantId, agentId);
         WebSocketSession session = agentSessions.get(connectionKey);

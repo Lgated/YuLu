@@ -2,7 +2,9 @@ package com.ityfz.yulu.handoff.websocket.service;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.ityfz.yulu.chat.entity.ChatMessage;
 import com.ityfz.yulu.chat.entity.ChatSession;
+import com.ityfz.yulu.chat.mapper.ChatMessageMapper;
 import com.ityfz.yulu.chat.mapper.ChatSessionMapper;
 import com.ityfz.yulu.common.enums.ErrorCodes;
 import com.ityfz.yulu.common.exception.BizException;
@@ -53,6 +55,8 @@ public class HandoffService {
     private final AgentStatusService agentStatusService;
     private final HandoffQueueService queueService;
     private final CustomerWebSocketHandler customerHandler;
+    private final ChatMessageMapper chatMessageMapper;
+
 
     /**
      * 转人工申请
@@ -70,6 +74,13 @@ public class HandoffService {
         HandoffRequest existing = handoffRequestMapper.selectUncompletedBySessionId(sessionId);
         if (existing != null && !HandoffStatus.isCompleted(existing.getStatus())){
             throw new BizException(ErrorCodes.VALIDATION_ERROR,"已有转人工请求，请勿重复申请");
+        }
+
+        // 3. 【核心变更】检查是否有客服在线
+        List<Long> onlineAgents = agentStatusService.getOnlineAgents(tenantId);
+        if (onlineAgents.isEmpty()) {
+            log.info("[HandoffService] 租户 {} 无在线客服，执行自动转工单兜底策略", tenantId);
+            return handleFallbackToTicket(tenantId, userId, chatSession, reason);
         }
 
         // 3、检查/创建工单
@@ -173,6 +184,55 @@ public class HandoffService {
     }
 
     /**
+     * 新增：处理转为工单的兜底逻辑
+     */
+    private HandoffTransferResponse handleFallbackToTicket(Long tenantId, Long userId, ChatSession session, String reason) {
+        // 1. 创建工单
+        String ticketDescription = "客户因[无客服在线]自动转为工单。转人工原因: " + (reason != null ? reason : "未提供");
+        Ticket ticket = ticketService.createTicketOnNegative(tenantId, userId, session.getId(), ticketDescription, TicketPriority.HIGH.getCode());
+
+        // 2. 创建转人工记录，状态直接设为 FALLBACK_TICKET
+        HandoffRequest request = new HandoffRequest();
+        request.setTenantId(tenantId);
+        request.setSessionId(session.getId());
+        request.setUserId(userId);
+        request.setTicketId(ticket.getId());
+        request.setStatus(HandoffStatus.FALLBACK_TICKET.getCode()); // 设置为兜底状态
+        request.setReason(reason);
+        request.setPriority(TicketPriority.HIGH.getCode());
+        request.setClosedAt(LocalDateTime.now()); // 直接关闭
+        handoffRequestMapper.insert(request);
+
+        // 3. 记录事件
+        recordEvent(request.getId(), HandoffEventType.FALLBACK_TICKET, userId, OperatorType.SYSTEM, null);
+
+        // 4. (可选) 插入一条系统消息到聊天记录中
+        String systemMessageContent = String.format("抱歉，当前没有客服在线。我们已经为您创建了工单 #%d，客服上线后会尽快处理您的问题。", ticket.getId());
+        addSystemMessageToChat(tenantId, session.getId(), systemMessageContent);
+
+        // 5. 返回兜底响应
+        return HandoffTransferResponse.builder()
+                .handoffRequestId(request.getId())
+                .ticketId(ticket.getId())
+                .fallback(true) // 告知前端已进入兜底
+                .fallbackMessage(systemMessageContent)
+                .build();
+    }
+
+    /**
+     * 新增：添加系统消息到聊天记录
+     */
+    private void addSystemMessageToChat(Long tenantId, Long sessionId, String content) {
+        ChatMessage systemMessage = new ChatMessage();
+        systemMessage.setTenantId(tenantId);
+        systemMessage.setSessionId(sessionId);
+        systemMessage.setSenderType("SYSTEM"); // 需要一个 SYSTEM 类型
+        systemMessage.setContent(content);
+        // 如果你的 createTime 是自动填充的，这里就不需要手动设置
+        chatMessageMapper.insert(systemMessage);
+    }
+
+    /**
      * 计算预计等待时间（秒）
      */
     private int calculateEstimatedWaitTime(Long tenantId, int queuePosition) {
@@ -193,16 +253,37 @@ public class HandoffService {
             if (agentId != null) {
                 // 分配成功，更新请求状态
                 HandoffRequest request = handoffRequestMapper.selectById(handoffRequestId);
+                if (request == null) {
+                    log.error("[HandoffService] 转人工请求不存在：handoffRequestId={}", handoffRequestId);
+                    return;
+                }
+                
                 request.setAgentId(agentId);
                 request.setStatus(HandoffStatus.ASSIGNED.getCode());
                 request.setAssignedAt(LocalDateTime.now());
                 handoffRequestMapper.updateById(request);
+
+                // 【关键修复】同步更新会话的 agentId
+                ChatSession session = chatSessionMapper.selectById(request.getSessionId());
+                if (session != null) {
+                    session.setAgentId(agentId);
+                    chatSessionMapper.updateById(session);
+                    log.info("[HandoffService] 已更新会话的客服ID：sessionId={}, agentId={}", session.getId(), agentId);
+                } else {
+                    log.error("[HandoffService] 会话不存在：sessionId={}", request.getSessionId());
+                }
 
                 // 记录事件
                 recordEvent(handoffRequestId, HandoffEventType.ASSIGNED, agentId, OperatorType.SYSTEM, null);
 
                 // WebSocket推送通知给客服
                 sendHandoffRequestNotification(tenantId, agentId, request);
+                
+                log.info("[HandoffService] 客服分配完成：handoffRequestId={}, agentId={}, sessionId={}", 
+                    handoffRequestId, agentId, request.getSessionId());
+            } else {
+                log.warn("[HandoffService] 未找到可分配的客服：handoffRequestId={}, 请求将保持在队列中", handoffRequestId);
+                // TODO: 可以考虑在这里发送通知给用户，告知当前没有可用客服
             }
         } catch (Exception e) {
             log.error("[HandoffService] 异步分配客服失败：handoffRequestId={}", handoffRequestId, e);
@@ -221,6 +302,8 @@ public class HandoffService {
         payload.put("priority", request.getPriority());
         payload.put("reason", request.getReason());
         payload.put("queuePosition", request.getQueuePosition());
+        // 前端需要 userName，这里先简单返回客户#userId，后续可查 User 表
+        payload.put("userName", "客户#" + request.getUserId());
 
         WebSocketMessage message = WebSocketMessage.builder()
                 .type("HANDOFF_REQUEST")
@@ -283,8 +366,8 @@ public class HandoffService {
         // 8. 记录事件
         recordEvent(handoffRequestId, HandoffEventType.ACCEPTED, agentId, OperatorType.AGENT, null);
 
-        // 9. WebSocket通知客户
-        sendHandoffAcceptedNotification(tenantId, request.getUserId(), request.getSessionId(), agentId);
+        // 9. WebSocket通知客户（携带 handoffRequestId 和客服名称）
+        sendHandoffAcceptedNotification(tenantId, request.getUserId(), request.getSessionId(), agentId, handoffRequestId);
 
         return HandoffAcceptResponse.builder()
                 .handoffRequestId(handoffRequestId)
@@ -297,10 +380,13 @@ public class HandoffService {
     /**
      * 发送客服已接受通知给客户
      */
-    private void sendHandoffAcceptedNotification(Long tenantId, Long userId, Long sessionId, Long agentId) {
+    private void sendHandoffAcceptedNotification(Long tenantId, Long userId, Long sessionId, Long agentId, Long handoffRequestId) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("sessionId", sessionId);
         payload.put("agentId", agentId);
+        payload.put("handoffRequestId", handoffRequestId);
+        // 简化：使用客服编号作为名称占位，后续可以查询 User 表获取真实名称
+        payload.put("assignedAgentName", "客服#" + agentId);
 
         WebSocketMessage message = WebSocketMessage.builder()
                 .type("HANDOFF_ACCEPTED")
@@ -309,7 +395,7 @@ public class HandoffService {
                 .build();
 
         customerHandler.sendToCustomer(tenantId, userId, sessionId, message);
-        log.info("[HandoffService] 客服已接受通知已发送：userId={}, sessionId={}, agentId={}", userId, sessionId, agentId);
+        log.info("[HandoffService] 客服已接受通知已发送：userId={}, sessionId={}, agentId={}, handoffRequestId={}", userId, sessionId, agentId, handoffRequestId);
     }
 
     /**
@@ -477,6 +563,71 @@ public class HandoffService {
     }
 
     /**
+     * 用户结束转人工对话（已接入/进行中）
+     */
+    @Transactional
+    public void endByUser(Long tenantId, Long userId, Long handoffRequestId) {
+        // 1. 验证请求
+        HandoffRequest request = handoffRequestMapper.selectById(handoffRequestId);
+        if (request == null || !request.getTenantId().equals(tenantId)) {
+            throw new BizException(ErrorCodes.UNAUTHORIZED, "转人工请求不存在");
+        }
+
+        if (!userId.equals(request.getUserId())) {
+            throw new BizException(ErrorCodes.FORBIDDEN, "无权限结束此对话");
+        }
+
+        // 2. 仅允许在已接入/进行中结束
+        if (!HandoffStatus.ACCEPTED.getCode().equals(request.getStatus()) &&
+                !HandoffStatus.IN_PROGRESS.getCode().equals(request.getStatus())) {
+            throw new BizException(ErrorCodes.VALIDATION_ERROR, "当前状态不允许结束对话");
+        }
+
+        // 3. 更新请求状态
+        request.setStatus(HandoffStatus.COMPLETED.getCode());
+        request.setCompletedAt(LocalDateTime.now());
+        handoffRequestMapper.updateById(request);
+
+        // 4. 会话切回 AI
+        ChatSession session = chatSessionMapper.selectById(request.getSessionId());
+        if (session != null) {
+            session.setChatMode("AI");
+            // 用户主动结束时，解除客服绑定，防止客服继续发送消息到用户
+            session.setAgentId(null);
+            chatSessionMapper.updateById(session);
+        }
+
+        // 5. 工单处理：用户主动结束，更像“提前结束”，这里用 DONE（不引入新状态），若你希望区分可改为 CANCELLED
+        if (request.getTicketId() != null) {
+            Ticket ticket = ticketMapper.selectById(request.getTicketId());
+            if (ticket != null && TicketStatus.PROCESSING.getCode().equals(ticket.getStatus())) {
+                ticket.setStatus(TicketStatus.DONE.getCode());
+                ticketMapper.updateById(ticket);
+            }
+        }
+
+        // 6. 如果已绑定客服，释放客服会话数
+        if (request.getAgentId() != null) {
+            agentStatusService.decrementSessionCount(tenantId, request.getAgentId());
+        }
+
+        // 7. 记录事件（区分结束方）
+        Map<String, Object> eventData = new HashMap<>();
+        eventData.put("endedBy", "USER");
+        recordEvent(handoffRequestId, HandoffEventType.COMPLETED, userId, OperatorType.USER, eventData);
+
+        // 8. WebSocket 通知客户（复用 HANDOFF_COMPLETED，带 endedBy）
+        sendCompletionNotification(tenantId, request.getUserId(), request.getSessionId(), "USER");
+
+        // 9. WebSocket 通知客服（复用 HANDOFF_COMPLETED，带 endedBy）
+        if (request.getAgentId() != null) {
+            sendCompletionNotificationToAgent(tenantId, request.getAgentId(), request.getSessionId(), handoffRequestId, "USER");
+        }
+
+        log.info("[HandoffService] 用户已结束转人工对话: handoffRequestId={}, userId={}", handoffRequestId, userId);
+    }
+
+    /**
      * 客服完成转人工对话
      */
     @Transactional
@@ -504,6 +655,8 @@ public class HandoffService {
         ChatSession session = chatSessionMapper.selectById(request.getSessionId());
         if (session != null) {
             session.setChatMode("AI"); // Or keep it as AGENT but note the handoff is complete
+            // 完成后也解除客服绑定
+            session.setAgentId(null);
             chatSessionMapper.updateById(session);
         }
 
@@ -523,18 +676,21 @@ public class HandoffService {
         recordEvent(handoffRequestId, HandoffEventType.COMPLETED, agentId, OperatorType.AGENT, null);
 
         // 7. WebSocket通知客户对话已结束
-        sendCompletionNotification(tenantId, request.getUserId(), request.getSessionId());
+        sendCompletionNotification(tenantId, request.getUserId(), request.getSessionId(), "AGENT");
 
         log.info("[HandoffService] 转人工对话已完成: handoffRequestId={}, agentId={}", handoffRequestId, agentId);
     }
 
     /**
-     * 发送对话完成通知给客户
+     * 发送对话完成通知给客户（支持区分结束方）
      */
-    private void sendCompletionNotification(Long tenantId, Long userId, Long sessionId) {
+    private void sendCompletionNotification(Long tenantId, Long userId, Long sessionId, String endedBy) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("sessionId", sessionId);
-        payload.put("message", "本次人工服务已结束，感谢您的咨询。");
+        payload.put("endedBy", endedBy); // "USER" or "AGENT"
+        payload.put("message", endedBy.equals("USER")
+                ? "您已结束本次人工会话，已切换回 AI 助手。"
+                : "本次人工服务已结束，感谢您的咨询。");
 
         WebSocketMessage message = WebSocketMessage.builder()
                 .type("HANDOFF_COMPLETED")
@@ -543,5 +699,27 @@ public class HandoffService {
                 .build();
 
         customerHandler.sendToCustomer(tenantId, userId, sessionId, message);
+    }
+
+    /**
+     * 发送对话完成通知给客服（支持区分结束方）
+     */
+    private void sendCompletionNotificationToAgent(Long tenantId, Long agentId, Long sessionId, Long handoffRequestId, String endedBy) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("sessionId", sessionId);
+        payload.put("handoffRequestId", handoffRequestId);
+        payload.put("endedBy", endedBy); // "USER" or "AGENT"
+        payload.put("message", endedBy.equals("USER")
+                ? "用户已结束对话"
+                : "您已结束对话");
+
+        WebSocketMessage message = WebSocketMessage.builder()
+                .type("HANDOFF_COMPLETED")
+                .payload(payload)
+                .timestamp(LocalDateTime.now().toString())
+                .build();
+
+        agentHandler.sendToAgent(tenantId, agentId, message);
+        log.info("[HandoffService] 已发送完成通知给客服：agentId={}, sessionId={}, endedBy={}", agentId, sessionId, endedBy);
     }
 }

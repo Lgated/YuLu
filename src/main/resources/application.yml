@@ -47,7 +47,7 @@ spring:
 # MyBatis Plus 配置
 mybatis-plus:
   configuration:
-    map-underscore-to-camel-case: true
+    map-underscore-to-camel-case: true # 驼峰命名转
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:

@@ -170,3 +170,36 @@ export interface UpdateUserRequest {
   role?: string;
   status?: number;
 }
+
+
+/**
+ * 客户申请转人工的请求体
+ */
+export interface HandoffTransferRequest {
+  sessionId: number;
+  reason?: string;
+}
+
+/**
+ * 申请转人工的响应体
+ */
+export interface HandoffTransferResponse {
+  handoffRequestId: number;
+  ticketId: number;
+  queuePosition?: number;
+  estimatedWaitTime?: number;
+  fallback: boolean;
+  fallbackMessage?: string;
+}
+
+/**
+ * 查询转人工状态的响应体
+ */
+export interface HandoffStatusResponse {
+  handoffRequestId: number;
+  status: 'PENDING' | 'ASSIGNED' | 'ACCEPTED' | 'IN_PROGRESS' | 'COMPLETED' | 'CLOSED' | 'CANCELLED' | 'FALLBACK_TICKET';
+  queuePosition?: number;
+  estimatedWaitTime?: number;
+  assignedAgentId?: number;
+  assignedAgentName?: string;
+}

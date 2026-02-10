@@ -41,7 +41,11 @@ public enum HandoffEventType {
      */
     CLOSED("CLOSED", "关闭"),
 
-    CANCELLED("CANCELLED","取消");
+    CANCELLED("CANCELLED","取消"),
+    /**
+     * 已转为工单（兜底）
+     */
+    FALLBACK_TICKET("FALLBACK_TICKET", "已转为工单");
 
     private final String code;
     private final String desc;

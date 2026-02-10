@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Card, Table, Tag, Button, Space, message, Empty } from 'antd';
+import { Card } from 'antd';
 import { MessageOutlined } from '@ant-design/icons';
 import { useHeartbeat } from '../../hooks/useHeartbeat';
+import AgentHandoffPanel from '../../components/layout/AgentHandoffPanel';
 
 /**
  * 待接入会话页面（客服）
- * TODO: 等待后端实现转人工记录查询接口
+ * 已集成：`AgentHandoffPanel`，用于实时展示分配到当前客服的转人工请求
  */
 export default function AgentSessionsPage() {
   // 启动心跳定时器（客服保持在线状态）
@@ -15,10 +16,7 @@ export default function AgentSessionsPage() {
 
   return (
     <Card title="待接入会话">
-      <Empty
-        description="待接入会话功能开发中，等待后端接口实现"
-        image={Empty.PRESENTED_IMAGE_SIMPLE}
-      />
+      <AgentHandoffPanel />
     </Card>
   );
 }

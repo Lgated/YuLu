@@ -35,4 +35,14 @@ public class HandoffTransferResponse {
      */
     private Integer estimatedWaitTime;
 
+
+    /**
+     * 是否进入了兜底流程
+     */
+    private boolean fallback;
+
+    /**
+     * 给前端的提示信息
+     */
+    private String fallbackMessage;
 }

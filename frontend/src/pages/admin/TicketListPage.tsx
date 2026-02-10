@@ -209,6 +209,15 @@ export default function TicketListPage() {
     });
   };
 
+  const getStatusTag = (s: string) => {
+    const code = String(s || '').toUpperCase();
+    if (code === 'PENDING') return <Tag color="orange">PENDING</Tag>;
+    if (code === 'PROCESSING') return <Tag color="blue">PROCESSING</Tag>;
+    if (code === 'DONE') return <Tag color="green">DONE</Tag>;
+    if (code === 'CLOSED') return <Tag color="default">CLOSED</Tag>;
+    return <Tag>{s}</Tag>;
+  };
+
   const columns: ColumnsType<Ticket> = [
     { title: 'ID', dataIndex: 'id', width: 80 },
     { title: '标题', dataIndex: 'title' },
@@ -226,7 +235,7 @@ export default function TicketListPage() {
       title: '状态',
       dataIndex: 'status',
       width: 120,
-      render: (s: string) => <Tag>{s}</Tag>
+      render: (s: string) => getStatusTag(s)
     },
     { title: '创建时间', dataIndex: 'createTime', width: 180 },
     {
@@ -350,7 +359,7 @@ export default function TicketListPage() {
               <Descriptions.Item label="标题" span={2}>
                 {drawerTicket.title}
               </Descriptions.Item>
-              <Descriptions.Item label="状态">{drawerTicket.status}</Descriptions.Item>
+              <Descriptions.Item label="状态">{getStatusTag(drawerTicket.status)}</Descriptions.Item>
               <Descriptions.Item label="优先级">{drawerTicket.priority}</Descriptions.Item>
               <Descriptions.Item label="客户ID">{drawerTicket.userId}</Descriptions.Item>
               <Descriptions.Item label="分配人">{drawerTicket.assignee ?? '-'}</Descriptions.Item>
@@ -374,7 +383,7 @@ export default function TicketListPage() {
               <Button
                 type="primary"
                 onClick={() => transition(drawerTicket, 'DONE')}
-                disabled={drawerTicket.status === 'DONE' || drawerTicket.status === 'CLOSED'}
+                disabled={drawerTicket.status !== 'PROCESSING'}
               >
                 完成
               </Button>

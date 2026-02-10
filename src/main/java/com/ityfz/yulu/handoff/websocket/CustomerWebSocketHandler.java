@@ -3,6 +3,7 @@ package com.ityfz.yulu.handoff.websocket;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ityfz.yulu.handoff.dto.WebSocketMessage;
 import com.ityfz.yulu.handoff.websocket.service.WebSocketMessageService;
+import com.ityfz.yulu.common.tenant.TenantContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -66,8 +67,15 @@ public class CustomerWebSocketHandler extends TextWebSocketHandler {
             Long tenantId = (Long) session.getAttributes().get("tenantId");
             Long sessionId = (Long) session.getAttributes().get("sessionId");
 
-            // 处理消息
-            messageService.handleCustomerMessage(tenantId, userId, sessionId, wsMessage);
+            // 设置租户上下文
+            TenantContextHolder.setTenantId(tenantId);
+            try {
+                // 处理消息
+                messageService.handleCustomerMessage(tenantId, userId, sessionId, wsMessage);
+            } finally {
+                // 清理租户上下文
+                TenantContextHolder.clear();
+            }
 
         } catch (Exception e) {
             log.error("[WebSocket] 处理客户消息失败", e);

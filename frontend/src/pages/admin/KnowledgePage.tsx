@@ -10,16 +10,18 @@ import {
   Popconfirm,
   Modal,
   Form,
-  Input
+  Input,
+  Descriptions
 } from 'antd';
 import {
   UploadOutlined,
   DeleteOutlined,
-  ReloadOutlined
+  ReloadOutlined,
+  EyeOutlined
 } from '@ant-design/icons';
 import type { UploadFile, UploadProps } from 'antd';
 import { knowledgeApi } from '../../api/chat';
-import type { DocumentListItem, ApiResponse } from '../../api/types';
+import type { DocumentListItem, DocumentDetail, ApiResponse } from '../../api/types';
 
 const { TextArea } = Input;
 
@@ -31,6 +33,9 @@ export default function KnowledgePage() {
   const [indexingDocId, setIndexingDocId] = useState<number | null>(null);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [form] = Form.useForm();
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<DocumentDetail | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
 
   useEffect(() => {
     loadDocuments();
@@ -115,6 +120,28 @@ export default function KnowledgePage() {
     }
   };
 
+  const getStatusTag = (status: number) => {
+    if (status === 1) return <Tag color="green">已索引</Tag>;
+    if (status === 0) return <Tag color="orange">未索引</Tag>;
+    return <Tag>未知</Tag>;
+  };
+
+  const handleViewDetail = async (documentId: number) => {
+    setDetailLoading(true);
+    setDetailModalVisible(true);
+    try {
+      const res = await knowledgeApi.getDocumentDetail(documentId) as any as ApiResponse<DocumentDetail>;
+      if (res.success || res.code === '200') {
+        setSelectedDocument(res.data);
+      }
+    } catch (e: any) {
+      message.error(e?.response?.data?.message || '加载文档详情失败');
+      setDetailModalVisible(false);
+    } finally {
+      setDetailLoading(false);
+    }
+  };
+
   const handleDelete = async (documentId: number) => {
     try {
       const res = await knowledgeApi.deleteDocument(documentId) as any as ApiResponse<void>;
@@ -175,10 +202,7 @@ export default function KnowledgePage() {
       dataIndex: 'status',
       key: 'status',
       render: (status: number) => {
-        if (status === 1) {
-          return <Tag color="green">已索引</Tag>;
-        }
-        return <Tag color="orange">未索引</Tag>;
+        return getStatusTag(status);
       }
     },
     {
@@ -195,6 +219,13 @@ export default function KnowledgePage() {
       key: 'action',
       render: (_: any, record: DocumentListItem) => (
         <Space>
+          <Button
+            type="link"
+            icon={<EyeOutlined />}
+            onClick={() => handleViewDetail(record.id)}
+          >
+            查看
+          </Button>
           {record.status === 0 && (
             <Button
               type="link"
@@ -314,6 +345,55 @@ export default function KnowledgePage() {
             </Space>
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* 文档详情弹窗 */}
+      <Modal
+        title="文档详情"
+        open={detailModalVisible}
+        onCancel={() => {
+          setDetailModalVisible(false);
+          setSelectedDocument(null);
+        }}
+        footer={[
+          <Button key="close" onClick={() => {
+            setDetailModalVisible(false);
+            setSelectedDocument(null);
+          }}>
+            关闭
+          </Button>
+        ]}
+        width={800}
+      >
+        {detailLoading ? (
+          <div style={{ textAlign: 'center', padding: 40 }}>
+            加载中...
+          </div>
+        ) : selectedDocument ? (
+          <Descriptions column={1} bordered>
+            <Descriptions.Item label="文档ID">{selectedDocument.id}</Descriptions.Item>
+            <Descriptions.Item label="文档标题">{selectedDocument.title}</Descriptions.Item>
+            <Descriptions.Item label="来源">{selectedDocument.source || '-'}</Descriptions.Item>
+            <Descriptions.Item label="文件类型">{selectedDocument.fileType || '-'}</Descriptions.Item>
+            <Descriptions.Item label="状态">{getStatusTag(selectedDocument.status)}</Descriptions.Item>
+            <Descriptions.Item label="创建时间">{selectedDocument.createTime}</Descriptions.Item>
+            {selectedDocument.indexedAt && (
+              <Descriptions.Item label="索引时间">{selectedDocument.indexedAt}</Descriptions.Item>
+            )}
+            {selectedDocument.contentPreview && (
+              <Descriptions.Item label="文档内容预览">
+                <div style={{
+                  maxHeight: 300,
+                  overflow: 'auto',
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word'
+                }}>
+                  {selectedDocument.contentPreview}
+                </div>
+              </Descriptions.Item>
+            )}
+          </Descriptions>
+        ) : null}
       </Modal>
     </div>
   );

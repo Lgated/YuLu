@@ -18,13 +18,14 @@ export default function AgentProfilePage() {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
-  // 初始化：获取当前状态（如果有接口的话，这里先默认OFFLINE）
+  // 初始化：首次挂载时设为 OFFLINE（默认离线），用户需手动上线
   useEffect(() => {
-    // TODO: 如果有获取当前状态的接口，可以在这里调用
-    // 暂时默认设置为 OFFLINE
-    setCurrentStatus('OFFLINE');
-    form.setFieldsValue({ status: 'OFFLINE' });
-  }, [form]);
+    // 从 localStorage 读取上次状态（如果有的话）
+    const savedStatus = localStorage.getItem('agent_online_status') as OnlineStatus | null;
+    const initialStatus = savedStatus || 'OFFLINE';
+    setCurrentStatus(initialStatus);
+    form.setFieldsValue({ status: initialStatus });
+  }, []); // 空依赖数组 - 只在组件首次挂载时执行一次
 
   // 更新在线状态（带确认对话框）
   const handleStatusChange = (targetStatus: OnlineStatus) => {
@@ -43,6 +44,8 @@ export default function AgentProfilePage() {
         try {
           await agentApi.updateOnlineStatus(targetStatus);
           setCurrentStatus(targetStatus);
+          // 保存状态到 localStorage，避免切换 tab 后状态丢失
+          localStorage.setItem('agent_online_status', targetStatus);
           form.setFieldsValue({ status: targetStatus });
           message.success(`状态已更新为：${statusText}`);
         } catch (e: any) {

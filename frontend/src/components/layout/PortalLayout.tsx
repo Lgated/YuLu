@@ -28,7 +28,12 @@ export function PortalLayout({ children, logoText, headerTitle, menuItems }: Por
 
   const selectedKey = useMemo(() => {
     const p = location.pathname;
-    const matched = menuItems.find((it) => (it.match ? it.match(p) : p.startsWith(it.key)));
+    // 排序菜单项：更长的 key 优先匹配
+    const sortedItems = [...menuItems].sort((a, b) => b.key.length - a.key.length);
+    const matched = sortedItems.find((it) => {
+      if (it.match) return it.match(p);
+      return p === it.key || p.startsWith(it.key + '/') || p.startsWith(it.key + '?');
+    });
     return matched?.key || menuItems[0]?.key;
   }, [location.pathname, menuItems]);
 

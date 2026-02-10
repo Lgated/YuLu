@@ -1,12 +1,18 @@
 package com.ityfz.yulu.handoff.controller;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ityfz.yulu.common.annotation.RequireRole;
+import com.ityfz.yulu.common.enums.ErrorCodes;
+import com.ityfz.yulu.common.exception.BizException;
 import com.ityfz.yulu.common.model.ApiResponse;
 import com.ityfz.yulu.common.security.SecurityUtil;
 import com.ityfz.yulu.handoff.dto.HandoffAcceptRequest;
 import com.ityfz.yulu.handoff.dto.HandoffAcceptResponse;
 import com.ityfz.yulu.handoff.dto.HandoffRejectRequest;
 import com.ityfz.yulu.handoff.dto.HandoffRequestItemDTO;
+import com.ityfz.yulu.handoff.entity.HandoffRequest;
+import com.ityfz.yulu.handoff.enums.HandoffStatus;
+import com.ityfz.yulu.handoff.mapper.HandoffRequestMapper;
 import com.ityfz.yulu.handoff.websocket.service.HandoffService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,6 +32,7 @@ import java.util.List;
 public class AgentHandoffController {
 
     private final HandoffService handoffService;
+    private final HandoffRequestMapper handoffRequestMapper;
 
     @GetMapping("/pending")
     @Operation(summary = "获取待处理的转人工请求", description = "获取已分配给当前客服但尚未接受的请求列表")
@@ -61,6 +68,42 @@ public class AgentHandoffController {
         Long agentId = SecurityUtil.currentUserId();
         handoffService.complete(tenantId, agentId, handoffRequestId);
         return ApiResponse.success("对话已完成");
+    }
+
+    @GetMapping("/by-session/{sessionId}")
+    @Operation(summary = "根据会话ID获取转人工请求", description = "获取指定会话的转人工请求信息")
+    public ApiResponse<HandoffRequestItemDTO> getBySessionId(@PathVariable Long sessionId) {
+        Long tenantId = SecurityUtil.currentTenantId();
+        Long agentId = SecurityUtil.currentUserId();
+        
+        // 查询该会话的转人工请求
+        HandoffRequest request = handoffRequestMapper.selectOne(Wrappers.<HandoffRequest>lambdaQuery()
+            .eq(HandoffRequest::getTenantId, tenantId)
+            .eq(HandoffRequest::getSessionId, sessionId)
+            .eq(HandoffRequest::getAgentId, agentId)
+            .in(HandoffRequest::getStatus, 
+                HandoffStatus.ACCEPTED.getCode(), 
+                HandoffStatus.IN_PROGRESS.getCode())
+            .orderByDesc(HandoffRequest::getCreateTime)
+            .last("LIMIT 1"));
+        
+        if (request == null) {
+            throw new BizException(ErrorCodes.NOT_FOUND, "未找到该会话的转人工请求");
+        }
+        
+        // 构建返回对象
+        HandoffRequestItemDTO dto = HandoffRequestItemDTO.builder()
+            .handoffRequestId(request.getId())
+            .sessionId(request.getSessionId())
+            .userId(request.getUserId())
+            .userName("客户#" + request.getUserId())
+            .ticketId(request.getTicketId())
+            .priority(request.getPriority())
+            .reason(request.getReason())
+            .createdAt(request.getCreateTime())
+            .build();
+        
+        return ApiResponse.success("查询成功", dto);
     }
 
 }

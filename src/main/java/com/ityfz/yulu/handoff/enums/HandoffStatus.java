@@ -44,7 +44,12 @@ public enum HandoffStatus {
     /**
      * 客户取消
      */
-    CANCELLED("CANCELLED","已取消" );
+    CANCELLED("CANCELLED","已取消" ),
+
+    /**
+     * 已转为工单（兜底）
+     */
+    FALLBACK_TICKET("FALLBACK_TICKET", "已转为工单");
 
     private final String code;
     private final String desc;
@@ -85,9 +90,24 @@ public enum HandoffStatus {
     }
 
     /**
-     * 判断是否为已完成状态（包括已完成和已关闭）
+     * 判断是否为已完成状态（包括所有终态状态）
+     * 终态状态包括：
+     * - COMPLETED: 正常完成
+     * - CLOSED: 正常关闭
+     * - CANCELLED: 用户取消
+     * - REJECTED: 客服拒绝
+     * - FALLBACK_TICKET: 已转为工单
      */
     public static boolean isCompleted(String code) {
-        return COMPLETED.getCode().equals(code) || CLOSED.getCode().equals(code);
+        if (code == null) {
+            return false;
+        }
+
+        // 只有这些状态是"进行中"的状态，其他都是终态
+        return !PENDING.getCode().equals(code)
+                && !ASSIGNED.getCode().equals(code)
+                && !ACCEPTED.getCode().equals(code)
+                && !IN_PROGRESS.getCode().equals(code);
     }
+
 }

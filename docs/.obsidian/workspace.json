@@ -13,30 +13,15 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "project-overview.md",
+                "file": "转人工功能-完整技术文档与面试指南.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "project-overview"
-            }
-          },
-          {
-            "id": "d3a783cd54340f95",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "开题报告-文献综述与研究现状.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "开题报告-文献综述与研究现状"
+              "title": "转人工功能-完整技术文档与面试指南"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -109,17 +94,17 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "开题报告-文献综述与研究现状.md",
+                "file": "转人工功能-完整技术文档与面试指南.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
                 "showSearch": false,
                 "searchQuery": "",
-                "backlinkCollapsed": false,
+                "backlinkCollapsed": true,
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for 开题报告-文献综述与研究现状"
+              "title": "Backlinks for 转人工功能-完整技术文档与面试指南"
             }
           },
           {
@@ -197,47 +182,48 @@
       "bases:Create new base": false
     }
   },
-  "active": "d3a783cd54340f95",
+  "active": "0624134ee67ea6a5",
   "lastOpenFiles": [
-    "优化点/dbConvertor.md",
-    "企业微信截图_17693963697859.png",
-    "Pasted image 20260126104432.png",
+    "转人工功能技术文档-第2部分-核心流程.md",
+    "转人工功能-完整技术文档与面试指南.md",
+    "转人工功能-完整知识总结.md",
+    "转人工功能-完整技术总结.md",
+    "handoff/转人工功能总结.md",
+    "转人工知识总结.md",
+    "handoff/转人工功能知识总结.md",
+    "handoff/转人工问题-最终解决方案.md",
+    "handoff/转人工问题诊断流程图.md",
+    "handoff-tech-doc-part2-process.md",
+    "handoff/转人工功能技术文档-第1部分-架构设计.md",
+    "handoff/转人工问题终极诊断和修复方案.md",
+    "handoff/转人工无客服在线处理机制方案.md",
+    "handoff/QUICK-FIX-GUIDE.md",
+    "handoff/转人工功能详细实现代码-第二部分.md",
+    "handoff/转人工功能详细实现代码-第一部分.md",
+    "handoff/取消排队后无法再次转人工问题分析.md",
+    "handoff_summary.md",
+    "handoff-knowledge-summary.md",
+    "Redis数据结构错误修复方案.md",
+    "handoff/数据库验证查询.sql",
+    "handoff/转人工功能快速验证SQL.sql",
+    "handoff/快速修复命令-复制粘贴执行.sh",
+    "handoff/快速修复命令-Windows.bat",
+    "handoff/问题排查清单.md",
+    "handoff/Redis数据结构错误修复方案.md",
+    "handoff/快速修复脚本.md",
+    "handoff/完整修复步骤-立即执行.md",
+    "handoff/客服端结束会话缺少handoffRequestId问题修复.md",
+    "转人工问题终极诊断和修复方案.md",
+    "handoff",
+    "数据库验证查询.sql",
+    "快速修复命令-Windows.bat",
+    "快速修复命令-复制粘贴执行.sh",
+    "转人工功能快速验证SQL.sql",
+    "转人工功能详细实现代码-第一部分.md~",
     "Pasted image 20260126103945.png",
-    "Pasted image 20260126103636.png",
     "Pasted image 20260126102510.png",
-    "开题报告-文献综述与研究现状.md",
-    "优化点",
-    "进度安排.md",
-    "论文提纲-完整版.md",
-    "租户接入与账号体系设计方案.md",
-    "多租户工单系统设计方案.md",
-    "实现目标.md",
-    "project-architecture-single-tenant-ai-chat.md",
-    "next-steps-roadmap.md",
-    "project-overview.md",
-    "多租户智能客服中台-产品与技术架构设计.md",
-    "Swagger接口文档接入指南.md",
-    "客服身份系统前端实现检查报告.md",
-    "客服知识库查询页面无数据问题分析.md",
-    "客服身份系统与界面实现方案.md",
-    "客服状态管理-企业级数据库设计方案.md",
-    "项目功能完成度分析与详细规划.md",
-    "知识库索引与检索服务-完整实现指南.md",
-    "账号管理功能实现方案.md",
-    "启动错误修复方案-AgentConfigService缺失.md",
-    "文档管理与Tika接入实现方案.md",
-    "上下文构造逻辑详解与Redis交互机制.md",
-    "会话管理功能后端实现.md",
-    "客服对话+RAG集成方案.md",
-    "登出功能实现方案-企业级最佳实践.md",
-    "test-knowledge/测试文档4-星云科技内部开发规范.txt",
-    "test-knowledge/测试文档3-星云科技客户服务政策.txt",
-    "test-knowledge/测试文档2-星云AI助手产品说明.txt",
-    "test-knowledge/测试文档1-星云科技员工手册.txt",
-    "test-knowledge",
-    "sql/xxl-job-init.sql",
-    "sql/init.sql",
-    "sql",
-    "project-overview.md~"
+    "Pasted image 20260126103636.png",
+    "Pasted image 20260126104432.png",
+    "企业微信截图_17693963697859.png"
   ]
 }

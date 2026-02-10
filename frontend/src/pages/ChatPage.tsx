@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import { Card, List, Input, Button, message as antdMessage, Tag, Popconfirm, Space, Modal } from 'antd';
-import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { Card, List, Input, Button, message, Tag, Popconfirm, Space, Modal } from 'antd';
+import { PlusOutlined, DeleteOutlined, EditOutlined, UserSwitchOutlined } from '@ant-design/icons';
 import { chatApi } from '../api/chat';
-import type { ChatMessage, ChatSession, ChatAskResponse, RagRef } from '../api/types';
+import type { ChatMessage, ChatSession, RagRef } from '../api/types';
 import { getCurrentSessionId, setCurrentSessionId as saveSessionId } from '../utils/storage';
+import { WebSocketClient } from '../utils/websocket';
+import HandoffModal from '../components/HandoffModal';
+import HandoffStatus from '../components/HandoffStatus';
+import { handoffApi } from '../api/handoff';
+import type { HandoffStatusResponse, HandoffTransferResponse } from '../api/types';
 
 const { TextArea } = Input;
 
@@ -11,7 +16,7 @@ export default function ChatPage() {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [question, setQuestion] = useState('');
+  const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
   const [creatingSession, setCreatingSession] = useState(false);
   const [titleModalOpen, setTitleModalOpen] = useState(false);
@@ -21,18 +26,113 @@ export default function ChatPage() {
   const [renameTitle, setRenameTitle] = useState('');
   const chatWindowRef = useRef<HTMLDivElement | null>(null);
 
+  // 转人工相关的 state
+  const [handoffModalOpen, setHandoffModalOpen] = useState(false);
+  const [handoffStatus, setHandoffStatus] = useState<HandoffStatusResponse | null>(null);
+  const [handoffPanelOpen, setHandoffPanelOpen] = useState(false);
+  const wsClientRef = useRef<WebSocketClient | null>(null);
+
+  // 初始化 WebSocket 连接
+  const setupWebSocket = (sessionId: number) => {
+    if (wsClientRef.current) {
+      wsClientRef.current.disconnect();
+    }
+    
+    const client = new WebSocketClient('/ws/customer', () => sessionId);
+    wsClientRef.current = client;
+
+    // 监听新消息 (来自客服)
+    client.on('TEXT', (payload) => {
+      if (payload.sessionId === currentSessionId) {
+        setMessages(prev => [...prev, {
+          id: payload.messageId || Date.now(),
+          senderType: 'AGENT',
+          content: payload.content,
+          createTime: new Date().toISOString(),
+        } as ChatMessage]);
+      }
+    });
+
+    // 监听排队状态更新
+    client.on('QUEUE_UPDATE', (payload) => {
+      if (handoffStatus && payload.handoffRequestId === handoffStatus.handoffRequestId) {
+        setHandoffStatus(prev => prev ? { ...prev, ...payload } : null);
+      }
+    });
+
+    // 监听客服接受
+    client.on('HANDOFF_ACCEPTED', (payload) => {
+      // 支持后端返回 handoffRequestId 或 sessionId，两者任意匹配即可触发
+      const payloadHandoffId = payload.handoffRequestId ? Number(payload.handoffRequestId) : null;
+      const payloadSessionId = payload.sessionId ? Number(payload.sessionId) : null;
+
+      const sessionMatches = payloadSessionId && currentSessionId && payloadSessionId === Number(currentSessionId);
+      const handoffMatches = handoffStatus && payloadHandoffId && payloadHandoffId === Number(handoffStatus.handoffRequestId);
+
+      if (sessionMatches || handoffMatches) {
+        const agentName = payload.assignedAgentName || `客服#${payload.agentId || ''}`;
+        message.success(`客服 ${agentName} 已接入`);
+        // 如果本地没有 handoffStatus（比如刷新后），也要初始化它
+        setHandoffStatus(prev => {
+          if (prev) {
+            return { ...prev, status: 'ACCEPTED', assignedAgentName: agentName } as HandoffStatusResponse;
+          }
+          return {
+            handoffRequestId: payloadHandoffId || undefined,
+            status: 'ACCEPTED',
+            assignedAgentName: agentName,
+          } as HandoffStatusResponse;
+        });
+        insertSystemMessage(`客服 ${agentName} 已加入对话。`);
+      }
+    });
+    
+    // 监听对话结束（客服完成/用户结束都会走这个消息，后端会带 endedBy 字段）
+    client.on('HANDOFF_COMPLETED', (payload) => {
+      if (currentSessionId === payload.sessionId) {
+        setHandoffStatus(null); // 清理状态
+        if (payload.endedBy === 'USER') {
+          insertSystemMessage('您已结束与客服的对话，已切换回 AI 助手。');
+        } else {
+          insertSystemMessage('客服已结束本次人工会话，已切换回 AI 助手。');
+        }
+      }
+    });
+
+    client.connect();
+  };
+
   useEffect(() => {
-    // 每次进入页面都先加载会话列表，再根据 localStorage 的 sessionId 恢复历史
+    // 页面加载时加载会话
     loadSessions(true);
   }, []);
 
-  // 消息变化时自动滚动到底部
   useEffect(() => {
-    const el = chatWindowRef.current;
-    if (el) {
-      el.scrollTop = el.scrollHeight;
+    // 当 currentSessionId 变化时，加载消息并设置 WebSocket
+    if (currentSessionId) {
+      loadMessages(currentSessionId);
+      setupWebSocket(currentSessionId);
     }
+
+    return () => {
+      // 组件卸载或会话切换时断开连接
+      wsClientRef.current?.disconnect();
+    };
+  }, [currentSessionId]);
+
+  useEffect(() => {
+    // 消息列表变化时滚动到底部
+    chatWindowRef.current?.scrollTo({ top: chatWindowRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
+
+  const insertSystemMessage = (content: string) => {
+    setMessages(prev => [...prev, {
+        id: Date.now(),
+        senderType: 'SYSTEM',
+        content,
+        createTime: new Date().toISOString(),
+    } as any]);
+  };
 
   const loadSessions = async (autoSelect: boolean) => {
     try {
@@ -40,30 +140,17 @@ export default function ChatPage() {
       if (res.success || res.code === '200') {
         const list = res.data || [];
         setSessions(list);
-
-        if (!autoSelect) return;
-
-        const savedId = getCurrentSessionId();
-        // 优先恢复上次会话；若不存在则选第一个
-        const targetId =
-          savedId && list.some((s) => s.id === savedId)
-            ? savedId
-            : list.length > 0
-            ? list[0].id
-            : null;
-
-        if (targetId) {
-          setCurrentSessionId(targetId);
-          saveSessionId(targetId);
-          await loadMessages(targetId);
-        } else {
-          // 没有任何会话：清空消息
-          setCurrentSessionId(null);
-          setMessages([]);
+        if (autoSelect) {
+          const savedId = getCurrentSessionId();
+          const targetId = list.some(s => s.id === savedId) ? savedId : list[0]?.id || null;
+          if (targetId) {
+            setCurrentSessionId(targetId);
+            saveSessionId(targetId);
+          }
         }
       }
     } catch (e: any) {
-      antdMessage.error(e?.response?.data?.message || '加载会话失败');
+      message.error(e?.response?.data?.message || '加载会话失败');
     }
   };
 
@@ -72,39 +159,53 @@ export default function ChatPage() {
       const res = await chatApi.messages(sessionId);
       if (res.success || res.code === '200') {
         setMessages(res.data || []);
-        // 确保会话列表中至少包含当前会话（避免从其他 Tab 返回时列表为空）
-        setSessions((prev) => {
-          if (prev.find((s) => s.id === sessionId)) {
-            return prev;
-          }
-          return [
-            {
-              id: sessionId,
-              tenantId: 0,
-              userId: 0,
-              sessionTitle: `默认会话`,
-              status: 1,
-              createTime: '',
-              updateTime: ''
-            },
-            ...prev
-          ];
-        });
       }
     } catch (e: any) {
-      antdMessage.error(e?.response?.data?.message || '加载消息失败');
+      message.error(e?.response?.data?.message || '加载消息失败');
     }
   };
 
-  // 创建新会话
+  const handleSend = async () => {
+    if (!inputValue.trim() || !currentSessionId) return;
+
+    const userMessage: ChatMessage = {
+      id: Date.now(),
+      sessionId: currentSessionId,
+      senderType: 'USER',
+      content: inputValue,
+      createTime: new Date().toISOString(),
+    } as any;
+    setMessages(prev => [...prev, userMessage]);
+    const currentInput = inputValue;
+    setInputValue('');
+    
+    if (handoffStatus && (handoffStatus.status === 'ACCEPTED' || handoffStatus.status === 'IN_PROGRESS')) {
+      // 人工模式：通过 WebSocket 发送
+      wsClientRef.current?.send('TEXT', { sessionId: currentSessionId, content: currentInput });
+    } else {
+      // AI 模式：通过 HTTP 发送
+      setLoading(true);
+      try {
+        const res = await chatApi.ask({ sessionId: currentSessionId, question: currentInput });
+        if (res.success || res.code === '200') {
+          setMessages(prev => [...prev, res.data.aiMessage]);
+        }
+      } catch (e: any) {
+        message.error(e?.response?.data?.message || '消息发送失败');
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  // ... (保留其他方法: doCreateSession, handleDeleteSession, etc.)
   const doCreateSession = async (title?: string) => {
     setCreatingSession(true);
     try {
       const res = await chatApi.createSession(title);
       if (res.success || res.code === '200') {
-        antdMessage.success('会话创建成功');
+        message.success('会话创建成功');
         await loadSessions(false);
-        // 切换到新会话
         if (res.data) {
           setCurrentSessionId(res.data.id);
           saveSessionId(res.data.id);
@@ -112,14 +213,13 @@ export default function ChatPage() {
         }
       }
     } catch (e: any) {
-      antdMessage.error(e?.response?.data?.message || '创建会话失败');
+      message.error(e?.response?.data?.message || '创建会话失败');
     } finally {
       setCreatingSession(false);
     }
   };
 
   const handleCreateSession = () => {
-    // 弹出“可选标题”提示
     setNewSessionTitle('');
     setTitleModalOpen(true);
   };
@@ -130,70 +230,25 @@ export default function ChatPage() {
     await doCreateSession(title ? title : undefined);
   };
 
-  // 删除会话
   const handleDeleteSession = async (sessionId: number, e?: React.MouseEvent) => {
     e?.stopPropagation();
     try {
       const res = await chatApi.deleteSession(sessionId);
       if (res.success || res.code === '200') {
-        antdMessage.success('会话删除成功');
-        // 如果删除的是当前会话，切换到其他会话
+        message.success('会话删除成功');
         if (sessionId === currentSessionId) {
           const remaining = sessions.filter((s) => s.id !== sessionId);
-          if (remaining.length > 0) {
-            setCurrentSessionId(remaining[0].id);
-            saveSessionId(remaining[0].id);
-            await loadMessages(remaining[0].id);
-          } else {
-            setCurrentSessionId(null);
-            setMessages([]);
-          }
+          const nextSession = remaining.length > 0 ? remaining[0] : null;
+          setCurrentSessionId(nextSession?.id || null);
+          if (nextSession) saveSessionId(nextSession.id);
         }
         await loadSessions(false);
       }
     } catch (e: any) {
-      antdMessage.error(e?.response?.data?.message || '删除会话失败');
+      message.error(e?.response?.data?.message || '删除会话失败');
     }
   };
 
-  const handleSend = async () => {
-    if (!question.trim()) return;
-    setLoading(true);
-    try {
-      const payload = { sessionId: currentSessionId ?? undefined, question };
-      const res = await chatApi.ask(payload);
-      // 后端 ApiResponse：success=true 且 code='200' 表示成功
-      if (res.success || res.code === '200') {
-        const data: ChatAskResponse = res.data;
-        const aiMsg = data.aiMessage;
-        const userMsg: ChatMessage = {
-          id: Date.now(),
-          tenantId: aiMsg.tenantId,
-          sessionId: aiMsg.sessionId,
-          senderType: 'USER',
-          content: question,
-          emotion: 'NORMAL',
-          createTime: new Date().toISOString()
-        };
-        setCurrentSessionId(aiMsg.sessionId);
-        saveSessionId(aiMsg.sessionId);
-        // 将用户消息和AI消息都添加到消息列表，并保存引用信息
-        setMessages((prev) => [
-          ...prev,
-          { ...userMsg, refs: undefined }, // 用户消息没有引用
-          { ...aiMsg, refs: data.refs } // AI消息包含引用
-        ]);
-        setQuestion('');
-        await loadSessions(false); // 刷新会话列表
-      }
-    } catch (e: any) {
-      antdMessage.error(e?.response?.data?.message || '发送失败');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 打开重命名弹窗
   const openRenameModal = (session: ChatSession, e?: React.MouseEvent) => {
     e?.stopPropagation();
     setRenameSession(session);
@@ -201,19 +256,18 @@ export default function ChatPage() {
     setRenameModalOpen(true);
   };
 
-  // 提交重命名
   const confirmRename = async () => {
     if (!renameSession) return;
     const title = renameTitle.trim();
     if (!title) {
-      antdMessage.warning('会话名称不能为空');
+      message.warning('会话名称不能为空');
       return;
     }
     try {
       const res = await chatApi.editSession(renameSession.id, title);
       if (res.success || res.code === '200') {
         const updated = res.data;
-        antdMessage.success('会话名称已更新');
+        message.success('会话名称已更新');
         setSessions((prev) =>
           prev.map((s) => (s.id === updated.id ? { ...s, sessionTitle: updated.sessionTitle } : s))
         );
@@ -221,117 +275,42 @@ export default function ChatPage() {
         setRenameSession(null);
       }
     } catch (e: any) {
-      antdMessage.error(e?.response?.data?.message || '更新会话名称失败');
+      message.error(e?.response?.data?.message || '更新会话名称失败');
     }
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        gap: 16,
-        height: 'calc(100vh - 96px)',
-        overflow: 'hidden'
-      }}
-    >
+    <div style={{ display: 'flex', gap: 16, height: 'calc(100vh - 96px)', overflow: 'hidden' }}>
       <Card
         title={
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span>会话列表</span>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              size="small"
-              onClick={handleCreateSession}
-              loading={creatingSession}
-            >
+            <Button type="primary" icon={<PlusOutlined />} size="small" onClick={handleCreateSession} loading={creatingSession}>
               新建
             </Button>
           </div>
         }
         style={{ width: 300, overflowY: 'auto', height: '100%' }}
       >
-        {/* 新建会话弹窗 */}
-        <Modal
-          title="新建会话"
-          open={titleModalOpen}
-          okText="确定"
-          cancelText="取消"
-          onCancel={() => setTitleModalOpen(false)}
-          onOk={confirmCreateSession}
-          confirmLoading={creatingSession}
-          destroyOnClose
-        >
-          <div style={{ marginBottom: 8, color: '#999', fontSize: 12 }}>
-            可选：给本次会话起个标题（不填则使用默认标题）。
-          </div>
-          <Input
-            placeholder="例如：年假政策咨询 / 发票开具问题"
-            value={newSessionTitle}
-            onChange={(e) => setNewSessionTitle(e.target.value)}
-            maxLength={30}
-            allowClear
-            onPressEnter={confirmCreateSession}
-          />
+        <Modal title="新建会话" open={titleModalOpen} okText="确定" cancelText="取消" onCancel={() => setTitleModalOpen(false)} onOk={confirmCreateSession} confirmLoading={creatingSession} destroyOnClose>
+          <Input placeholder="例如：年假政策咨询" value={newSessionTitle} onChange={(e) => setNewSessionTitle(e.target.value)} maxLength={30} allowClear onPressEnter={confirmCreateSession} />
         </Modal>
-        {/* 重命名会话弹窗 */}
-        <Modal
-          title="重命名会话"
-          open={renameModalOpen}
-          okText="确定"
-          cancelText="取消"
-          onCancel={() => {
-            setRenameModalOpen(false);
-            setRenameSession(null);
-          }}
-          onOk={confirmRename}
-          destroyOnClose
-        >
-          <Input
-            placeholder="请输入新的会话名称"
-            value={renameTitle}
-            onChange={(e) => setRenameTitle(e.target.value)}
-            maxLength={30}
-            allowClear
-            onPressEnter={confirmRename}
-          />
+        <Modal title="重命名会话" open={renameModalOpen} okText="确定" cancelText="取消" onCancel={() => { setRenameModalOpen(false); setRenameSession(null); }} onOk={confirmRename} destroyOnClose>
+          <Input placeholder="请输入新的会话名称" value={renameTitle} onChange={(e) => setRenameTitle(e.target.value)} maxLength={30} allowClear onPressEnter={confirmRename} />
         </Modal>
         <List
           dataSource={sessions}
           renderItem={(item) => (
             <List.Item
-              style={{
-                cursor: 'pointer',
-                background: item.id === currentSessionId ? '#e6f4ff' : undefined,
-                padding: '8px 12px',
-                borderRadius: 4
-              }}
+              style={{ cursor: 'pointer', background: item.id === currentSessionId ? '#e6f4ff' : undefined, padding: '8px 12px', borderRadius: 4 }}
               onClick={() => {
                 setCurrentSessionId(item.id);
                 saveSessionId(item.id);
-                loadMessages(item.id);
               }}
               actions={[
-                <Button
-                  key="edit"
-                  type="text"
-                  size="small"
-                  icon={<EditOutlined />}
-                  onClick={(e) => openRenameModal(item, e)}
-                />,
-                <Popconfirm
-                  title="确定删除此会话吗？"
-                  onConfirm={(e) => handleDeleteSession(item.id, e)}
-                  onClick={(e) => e.stopPropagation()}
-                  key="delete"
-                >
-                  <Button
-                    type="text"
-                    danger
-                    size="small"
-                    icon={<DeleteOutlined />}
-                    onClick={(e) => e.stopPropagation()}
-                  />
+                <Button key="edit" type="text" size="small" icon={<EditOutlined />} onClick={(e) => openRenameModal(item, e)} />,
+                <Popconfirm title="确定删除此会话吗？" onConfirm={(e) => handleDeleteSession(item.id, e)} onClick={(e) => e?.stopPropagation()} key="delete">
+                  <Button type="text" danger size="small" icon={<DeleteOutlined />} onClick={(e) => e.stopPropagation()} />
                 </Popconfirm>
               ]}
             >
@@ -340,48 +319,111 @@ export default function ChatPage() {
           )}
         />
       </Card>
+
       <Card
-        title="智能对话"
+        title={
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+            <span>{currentSessionId ? sessions.find(s => s.id === currentSessionId)?.sessionTitle || `会话 #${currentSessionId}` : '智能对话'}</span>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {/* 转人工状态按钮 */}
+              <Button
+                type={handoffStatus ? 'default' : 'primary'}
+                icon={<UserSwitchOutlined />}
+                size="small"
+                onClick={() => {
+                  if (!currentSessionId) {
+                    message.warning('请先在左侧选择一个会话');
+                    return;
+                  }
+                  if (handoffStatus) {
+                    setHandoffPanelOpen(true);
+                  } else {
+                    setHandoffModalOpen(true);
+                  }
+                }}
+              >
+                {handoffStatus ? (handoffStatus.queuePosition ? `排队第 ${handoffStatus.queuePosition} 位` : '查看状态') : '转人工'}
+              </Button>
+
+              {/* 结束对话按钮 */}
+              {handoffStatus && (handoffStatus.status === 'ACCEPTED' || handoffStatus.status === 'IN_PROGRESS') && (
+                <Button
+                  danger
+                  size="small"
+                  onClick={() => {
+                    if (!handoffStatus.handoffRequestId) {
+                      message.error('对话信息丢失');
+                      return;
+                    }
+                    Modal.confirm({
+                      title: '确认结束对话？',
+                      content: '结束后将切换回 AI 助手，且无法继续与客服对话。',
+                      okText: '确认结束',
+                      cancelText: '取消',
+                      okButtonProps: { danger: true },
+                      onOk: async () => {
+                        try {
+                          await handoffApi.endByUser(handoffStatus.handoffRequestId as number);
+                          message.success('对话已结束');
+                          setHandoffStatus(null);
+                        } catch (e: any) {
+                          message.error(e?.response?.data?.message || '结束对话失败');
+                        }
+                      },
+                    });
+                  }}
+                >
+                  结束对话
+                </Button>
+              )}
+            </div>
+          </div>
+        }
         style={{ flex: 1, height: '100%' }}
-        bodyStyle={{
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%',
-          padding: 16,
-          paddingTop: 8
-        }}
+        bodyStyle={{ display: 'flex', flexDirection: 'column', height: '100%', padding: 16, paddingTop: 8 }}
       >
-        <div className="chat-window" ref={chatWindowRef} style={{ flex: 1, overflowY: 'auto', marginBottom: 16 }}>
+        <div ref={chatWindowRef} style={{ flex: 1, overflowY: 'auto', padding: '0 8px' }}>
+          {handoffStatus && (
+            <div style={{ marginBottom: 16, position: 'sticky', top: 0, zIndex: 10 }}>
+              <HandoffStatus 
+                statusInfo={handoffStatus} 
+                onCancel={async () => {
+                  if (handoffStatus.handoffRequestId) {
+                    try {
+                      await handoffApi.cancel(handoffStatus.handoffRequestId);
+                      message.success('已取消转人工请求');
+                      setHandoffStatus(null);
+                      insertSystemMessage('已取消排队，切换回 AI 对话。');
+                    } catch (e) {
+                      message.error('取消失败');
+                    }
+                  }
+                }}
+              />
+            </div>
+          )}
           <List
             dataSource={messages}
             renderItem={(msg) => {
               const isUser = msg.senderType === 'USER';
-              const refs: RagRef[] = msg.refs || [];
-              
+              const senderName = msg.senderType === 'AGENT' ? '客服' : msg.senderType === 'AI' ? 'AI' : '我';
+              const bubbleClass = isUser ? 'user' : 'ai';
+
+              if (msg.senderType === 'SYSTEM') {
+                return <div style={{ textAlign: 'center', color: '#999', fontSize: 12, margin: '8px 0' }}>{msg.content}</div>;
+              }
+
               return (
-                <div className={`chat-message ${isUser ? 'user' : 'ai'}`} style={{ marginBottom: 16 }}>
-                  <div className={`chat-bubble ${isUser ? 'user' : 'ai'}`}>
-                    <div style={{ marginBottom: 4, fontSize: 12, opacity: 0.7 }}>
-                      {isUser ? '用户' : 'AI'}
-                      {!isUser && msg.emotion && msg.emotion !== 'NORMAL' && (
-                        <Tag color="red" style={{ marginLeft: 8 }}>
-                          {msg.emotion}
-                        </Tag>
-                      )}
-                    </div>
+                <div className={`chat-message ${bubbleClass}`} style={{ marginBottom: 16 }}>
+                  <div className={`chat-bubble ${bubbleClass}`}>
+                    <div style={{ marginBottom: 4, fontSize: 12, opacity: 0.7 }}>{senderName}</div>
                     <div>{msg.content}</div>
-                    
-                    {/* 显示引用文档 */}
-                    {!isUser && refs && refs.length > 0 && (
+                    {msg.refs && msg.refs.length > 0 && (
                       <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid #f0f0f0' }}>
-                        <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>
-                          参考文档：
-                        </div>
+                        <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>参考文档：</div>
                         <Space size={[8, 8]} wrap>
-                          {refs.map((ref, index) => (
-                            <Tag key={index} color="blue" style={{ margin: 0 }}>
-                              {ref.title}
-                            </Tag>
+                          {msg.refs.map((ref, index) => (
+                            <Tag key={index} color="blue">{ref.title}</Tag>
                           ))}
                         </Space>
                       </div>
@@ -395,25 +437,124 @@ export default function ChatPage() {
         <div style={{ marginTop: 8 }}>
           <TextArea
             rows={3}
-            placeholder="请输入要咨询的问题..."
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            onPressEnter={(e) => {
-              if (!e.shiftKey) {
-                e.preventDefault();
-                handleSend();
-              }
-            }}
+            placeholder={handoffStatus && (handoffStatus.status === 'ACCEPTED' || handoffStatus.status === 'IN_PROGRESS') ? "正在与客服对话..." : "请输入要咨询的问题..."}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onPressEnter={(e) => { if (!e.shiftKey) { e.preventDefault(); handleSend(); } }}
+            disabled={loading}
           />
-          <div style={{ textAlign: 'right', marginTop: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <Button 
+                onClick={() => {
+                  if (!currentSessionId) {
+                    message.warning('请先选择会话');
+                    return;
+                  }
+                  if (handoffStatus && (handoffStatus.status === 'ACCEPTED' || handoffStatus.status === 'IN_PROGRESS')) {
+                    setHandoffPanelOpen(true); // 客服中时显示状态面板
+                  } else if (handoffStatus) {
+                    setHandoffPanelOpen(true); // 排队中时显示状态面板
+                  } else {
+                    setHandoffModalOpen(true); // 未转人工时打开转人工对话框
+                  }
+                }}
+                disabled={!currentSessionId}
+                type={handoffStatus ? 'default' : 'primary'}
+              >
+                {handoffStatus ? (
+                  <>
+                    {handoffStatus.status === 'ACCEPTED' || handoffStatus.status === 'IN_PROGRESS' ? '客服中...' : '排队中...'}
+                  </>
+                ) : (
+                  '转人工服务'
+                )}
+              </Button>
+
+              {handoffStatus && (handoffStatus.status !== 'ACCEPTED' && handoffStatus.status !== 'IN_PROGRESS') && (
+                <Button 
+                  danger
+                  onClick={async () => {
+                    if (handoffStatus.handoffRequestId) {
+                      try {
+                        await handoffApi.cancel(handoffStatus.handoffRequestId);
+                        message.success('已取消转人工请求');
+                        setHandoffStatus(null);
+                        insertSystemMessage('已取消排队，切换回 AI 对话。');
+                      } catch (e) {
+                        message.error('取消失败');
+                      }
+                    }
+                  }}
+                >
+                  取消排队
+                </Button>
+              )}
+            </div>
             <Button type="primary" onClick={handleSend} loading={loading}>
               发送
             </Button>
           </div>
         </div>
       </Card>
+
+      <HandoffModal
+        open={handoffModalOpen}
+        sessionId={currentSessionId}
+        onClose={() => setHandoffModalOpen(false)}
+        onSuccess={(response) => {
+          setHandoffModalOpen(false);
+          if (response.fallback) {
+            Modal.success({
+              title: '已为您创建工单',
+              content: response.fallbackMessage || `当前无客服在线，已为您创建工- #${response.ticketId}。`,
+            });
+            insertSystemMessage(response.fallbackMessage || '当前无客服在线，已为您创建工单。');
+          } else {
+            message.info('已为您转接人工客服，请稍候...');
+            setHandoffStatus({
+              handoffRequestId: response.handoffRequestId,
+              status: 'PENDING',
+              queuePosition: response.queuePosition,
+              estimatedWaitTime: response.estimatedWaitTime,
+            });
+            insertSystemMessage('正在为您转接人工客服...');
+          }
+        }}
+      />
+
+      {/* 浮动转人工按钮已集成到顶部 Card title 中 */}
+
+      {/* 转人工状态对话框（供用户查看/取消） */}
+      <Modal
+        title="转人工状态"
+        open={handoffPanelOpen}
+        footer={null}
+        onCancel={() => setHandoffPanelOpen(false)}
+        destroyOnClose
+      >
+        {handoffStatus ? (
+          <HandoffStatus
+            statusInfo={handoffStatus}
+            onCancel={async () => {
+              if (handoffStatus.handoffRequestId) {
+                try {
+                  await handoffApi.cancel(handoffStatus.handoffRequestId);
+                  message.success('已取消转人工请求');
+                  setHandoffStatus(null);
+                  setHandoffPanelOpen(false);
+                  insertSystemMessage('已取消排队，切换回 AI 对话。');
+                } catch (e) {
+                  message.error('取消失败');
+                }
+              }
+            }}
+          />
+        ) : (
+          <div>当前没有转人工请求。</div>
+        )}
+      </Modal>
+
     </div>
   );
 }
-
-

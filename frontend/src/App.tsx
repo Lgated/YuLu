@@ -1,3 +1,4 @@
+import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -14,9 +15,13 @@ import CustomerFaqPage from './pages/customer/CustomerFaqPage';
 import KnowledgePage from './pages/admin/KnowledgePage';
 import UserManagementPage from './pages/admin/UserManagementPage';
 import AgentTicketPage from './pages/agent/AgentTicketPage';
-import AgentSessionsPage from './pages/agent/AgentSessionsPage';
+
 import AgentProfilePage from './pages/agent/AgentProfilePage';
 import AgentKnowledgePage from './pages/agent/AgentKnowledgePage';
+import AgentWorkspacePage from './pages/agent/AgentWorkspacePage';
+import AgentSessionsPage from './pages/agent/AgentSessionsPage';
+// 1. 导入新页面 AgentWorkbenchPage
+import AgentWorkbenchPage from './pages/agent/AgentWorkbenchPage';
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const location = useLocation();
@@ -38,7 +43,8 @@ function HomeRedirect() {
   } else if (role === 'ADMIN') {
     return <Navigate to="/admin/dashboard" replace />;
   } else if (role === 'AGENT') {
-    return <Navigate to="/agent/tickets" replace />;
+    // 2. 修改默认跳转路径为 workbench
+    return <Navigate to="/agent/workbench" replace />;
   }
 
   return <Navigate to="/login" replace />;
@@ -50,6 +56,11 @@ export default function App() {
       <Route path="/" element={<HomeRedirect />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      
+      {/* 注意：你原本有一个单独的 /agent 路由，如果使用了 AgentLayout 包含 Outlet 的嵌套路由结构，这行可能有用；
+          但在你下方的代码模式中（Layout 包裹 Page），这行可能是多余的，但我先保留它以免破坏原有逻辑 */}
+      <Route path="/agent" element={<AgentLayout />} />
+
       {/* C端（客户） */}
       <Route
         path="/customer/chat"
@@ -72,7 +83,7 @@ export default function App() {
         }
       />
 
-      {/* B端（租户） */}
+      {/* B端（租户/管理员） */}
       <Route
         path="/admin/dashboard"
         element={
@@ -133,6 +144,7 @@ export default function App() {
           </RequireAuth>
         }
       />
+
        {/* B端（客服） */}
       <Route
         path="/agent/tickets"
@@ -144,6 +156,7 @@ export default function App() {
           </RequireAuth>
         }
       />
+
       <Route
         path="/agent/sessions"
         element={
@@ -154,6 +167,19 @@ export default function App() {
           </RequireAuth>
         }
       />
+      
+      {/* 客服工作台 */}
+      <Route
+        path="/agent/workbench"
+        element={
+          <RequireAuth>
+            <AgentLayout>
+              <AgentWorkbenchPage />
+            </AgentLayout>
+          </RequireAuth>
+        }
+      />
+
       <Route
         path="/agent/profile"
         element={
@@ -174,10 +200,23 @@ export default function App() {
           </RequireAuth>
         }
       />
+      
+      {/* 如果 Workspace 和 Workbench 是同一个功能，可以考虑删除下面这个路由。
+          暂时保留以防是两个不同的页面 */}
+      <Route
+        path="/agent/workspace"
+        element={
+          <RequireAuth>
+            <AgentLayout>
+              <React.Suspense fallback={<div>加载中...</div>}>
+                <AgentWorkspacePage />
+              </React.Suspense>
+            </AgentLayout>
+          </RequireAuth>
+        }
+      />
+      
       <Route path="*" element={<HomeRedirect />} />
     </Routes>
   );
 }
-
-
-
