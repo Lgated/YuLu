@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -42,6 +43,33 @@ public class NotificationServiceImpl implements NotificationService {
         msg.setUpdateTime(now);
         notifyMessageMapper.insert(msg);
         log.info("[Notify] inserted assignment notify, ticketId={}, toUser={}", ticketId, assigneeUserId);
+    }
+
+    @Override
+    @Transactional
+    public void notifyBroadcast(Long tenantId, List<Long> userIds, String title, String content) {
+        if (tenantId == null || CollectionUtils.isEmpty(userIds)) {
+            return;
+        }
+        LocalDateTime now = LocalDateTime.now();
+        List<NotifyMessage> messages = new ArrayList<>();
+        for (Long userId : userIds) {
+            if (userId == null) continue;
+            NotifyMessage msg = new NotifyMessage();
+            msg.setTenantId(tenantId);
+            msg.setUserId(userId);
+            msg.setType("ADMIN_BROADCAST");
+            msg.setTitle(title);
+            msg.setContent(content);
+            msg.setReadFlag(0);
+            msg.setCreateTime(now);
+            msg.setUpdateTime(now);
+            messages.add(msg);
+        }
+        for (NotifyMessage msg : messages) {
+            notifyMessageMapper.insert(msg);
+        }
+        log.info("[Notify] inserted broadcast notify, tenantId={}, count={}", tenantId, messages.size());
     }
 
     // 通知列表

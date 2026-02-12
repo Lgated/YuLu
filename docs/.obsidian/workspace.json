@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "转人工功能-完整技术文档与面试指南.md",
+                "file": "项目功能完成度分析与详细规划.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "转人工功能-完整技术文档与面试指南"
+              "title": "项目功能完成度分析与详细规划"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "转人工功能-完整技术文档与面试指南.md",
+                "file": "项目功能完成度分析与详细规划.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for 转人工功能-完整技术文档与面试指南"
+              "title": "Backlinks for 项目功能完成度分析与详细规划"
             }
           },
           {
@@ -184,8 +184,16 @@
   },
   "active": "0624134ee67ea6a5",
   "lastOpenFiles": [
-    "转人工功能技术文档-第2部分-核心流程.md",
+    "handoff/管理员端转人工管理全套实现方案.md",
+    "handoff/管理员端转人工管理功能设计.md",
+    "handoff/客服端结束会话缺少handoffRequestId问题修复.md",
+    "管理员端转人工管理全套实现方案.md",
+    "会话管理功能后端实现.md",
+    "项目功能完成度分析与详细规划.md",
+    "问题排查清单.md",
+    "实现目标.md",
     "转人工功能-完整技术文档与面试指南.md",
+    "转人工功能技术文档-第2部分-核心流程.md",
     "转人工功能-完整知识总结.md",
     "转人工功能-完整技术总结.md",
     "handoff/转人工功能总结.md",
@@ -202,18 +210,10 @@
     "handoff/转人工功能详细实现代码-第一部分.md",
     "handoff/取消排队后无法再次转人工问题分析.md",
     "handoff_summary.md",
-    "handoff-knowledge-summary.md",
-    "Redis数据结构错误修复方案.md",
     "handoff/数据库验证查询.sql",
     "handoff/转人工功能快速验证SQL.sql",
     "handoff/快速修复命令-复制粘贴执行.sh",
     "handoff/快速修复命令-Windows.bat",
-    "handoff/问题排查清单.md",
-    "handoff/Redis数据结构错误修复方案.md",
-    "handoff/快速修复脚本.md",
-    "handoff/完整修复步骤-立即执行.md",
-    "handoff/客服端结束会话缺少handoffRequestId问题修复.md",
-    "转人工问题终极诊断和修复方案.md",
     "handoff",
     "数据库验证查询.sql",
     "快速修复命令-Windows.bat",

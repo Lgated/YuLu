@@ -6,18 +6,17 @@ import type { ApiResponse, NotifyMessage } from './types';
  */
 export const notifyApi = {
   list(params: { page?: number; size?: number; onlyUnread?: boolean }) {
-    return http.get<ApiResponse<{ records: NotifyMessage[]; total: number }>>('/admin/notify/list', {
+    return http.get<ApiResponse<{ records: NotifyMessage[]; total: number }>>('/notify/list', {
       params
     });
   },
 
   // 标记通知为已读
   markRead(notifyIds: number[]) {
-    return http.post<ApiResponse<void>>('/admin/notify/read', {
+    return http.post<ApiResponse<void>>('/notify/read', {
       notifyIds
     });
   }
 };
-
 
 

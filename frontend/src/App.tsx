@@ -15,6 +15,7 @@ import CustomerFaqPage from './pages/customer/CustomerFaqPage';
 import KnowledgePage from './pages/admin/KnowledgePage';
 import UserManagementPage from './pages/admin/UserManagementPage';
 import AgentTicketPage from './pages/agent/AgentTicketPage';
+import AdminHandoffPage from './pages/admin/AdminHandoffPage';
 
 import AgentProfilePage from './pages/agent/AgentProfilePage';
 import AgentKnowledgePage from './pages/agent/AgentKnowledgePage';
@@ -125,6 +126,16 @@ export default function App() {
         }
       />
       <Route
+        path="/admin/handoff"
+        element={
+          <RequireAuth>
+            <AdminLayout>
+              <AdminHandoffPage />
+            </AdminLayout>
+          </RequireAuth>
+        }
+      />
+      <Route
         path="/admin/notify"
         element={
           <RequireAuth>
@@ -196,6 +207,16 @@ export default function App() {
           <RequireAuth>
             <AgentLayout>
               <AgentKnowledgePage />
+            </AgentLayout>
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/agent/notify"
+        element={
+          <RequireAuth>
+            <AgentLayout>
+              <NotifyCenterPage />
             </AgentLayout>
           </RequireAuth>
         }

@@ -145,4 +145,18 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
+    // 添加广播方法，发送消息给租户下所有在线客服
+    public void broadcastToTenant(Long tenantId, WebSocketMessage message) {
+        String prefix = "agent:" + tenantId + ":";
+        agentSessions.forEach((key, session) -> {
+            if (key.startsWith(prefix) && session != null && session.isOpen()) {
+                try {
+                    String json = objectMapper.writeValueAsString(message);
+                    session.sendMessage(new TextMessage(json));
+                } catch (Exception e) {
+                    log.error("[WebSocket] 广播失败: key={}", key, e);
+                }
+            }
+        });
+    }
 }

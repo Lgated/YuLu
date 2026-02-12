@@ -13,6 +13,9 @@ public interface NotificationService {
     void notifyAssignment(Long tenantId, Long assigneeUserId,
                           Long ticketId, String title, String priority);
 
+    //管理员广播通知
+    void notifyBroadcast(Long tenantId, List<Long> userIds, String title, String content);
+
     //通知列表
     IPage<NotifyMessage> list(Long tenantId, Long userId, NotifyListRequest req);
 

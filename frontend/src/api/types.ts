@@ -203,3 +203,29 @@ export interface HandoffStatusResponse {
   assignedAgentId?: number;
   assignedAgentName?: string;
 }
+
+export interface HandoffRecord {
+  handoffRequestId: number;
+  sessionId?: number;
+  userId: number;
+  userName?: string;
+  agentId?: number;
+  agentName?: string;
+  ticketId?: number;
+  status: string;
+  priority?: string;
+  createdAt?: string;
+  acceptedAt?: string;
+  completedAt?: string;
+  waitDurationSeconds?: number;
+  chatDurationSeconds?: number;
+}
+
+export interface AgentMonitor {
+  agentId: number;
+  agentName?: string;
+  status: string;
+  currentSessions?: number;
+  maxSessions?: number;
+  lastActiveTime?: string;
+}

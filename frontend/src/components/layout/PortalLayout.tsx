@@ -87,7 +87,7 @@ export function PortalLayout({ children, logoText, headerTitle, menuItems }: Por
           }))}
         />
       </Sider>
-      <Layout>
+      <Layout style={{ minHeight: 0 }}>
         <Header
           style={{
             background: '#fff',
@@ -110,10 +110,9 @@ export function PortalLayout({ children, logoText, headerTitle, menuItems }: Por
             </Dropdown>
           </div>
         </Header>
-        <Content style={{ padding: 16, overflow: 'hidden' }}>{children}</Content>
+        <Content style={{ padding: 16, overflow: 'auto' }}>{children}</Content>
       </Layout>
     </Layout>
   );
 }
-
 

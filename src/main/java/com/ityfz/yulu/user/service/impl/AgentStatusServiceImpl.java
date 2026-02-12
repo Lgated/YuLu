@@ -112,7 +112,7 @@ public class AgentStatusServiceImpl implements AgentStatusService {
 
     @Override
     public String getStatus(Long tenantId, Long userId) {
-        String statusKey = buildStatusKey(tenantId, userId);
+        String statusKey = buildStatusKey (tenantId, userId);
         Object status = redisTemplate.opsForHash().get(statusKey, "status");
         return status != null ? status.toString() : "OFFLINE";
     }
