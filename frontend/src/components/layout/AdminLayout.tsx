@@ -61,6 +61,11 @@ export function AdminLayout({ children }: { children: ReactNode }) {
           label: '知识库'
         },
         {
+          key: '/admin/faq',
+          icon: <BookOutlined />,
+          label: 'FAQ管理'
+        },
+        {
           key: '/admin/handoff',
           icon: <ProfileOutlined />,
           label: '转人工管理'

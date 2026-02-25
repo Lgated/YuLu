@@ -229,3 +229,22 @@ export interface AgentMonitor {
   maxSessions?: number;
   lastActiveTime?: string;
 }
+
+export interface FaqCategory {
+  id: number;
+  name: string;
+  sort?: number;
+}
+
+export interface FaqItem {
+  id: number;
+  categoryId: number;
+  question: string;
+  answer: string;
+  keywords?: string;
+  status?: number;
+  sort?: number;
+  viewCount?: number;
+  helpfulCount?: number;
+  unhelpfulCount?: number;
+}

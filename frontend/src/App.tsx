@@ -16,6 +16,7 @@ import KnowledgePage from './pages/admin/KnowledgePage';
 import UserManagementPage from './pages/admin/UserManagementPage';
 import AgentTicketPage from './pages/agent/AgentTicketPage';
 import AdminHandoffPage from './pages/admin/AdminHandoffPage';
+import AdminFaqPage from './pages/admin/AdminFaqPage';
 
 import AgentProfilePage from './pages/agent/AgentProfilePage';
 import AgentKnowledgePage from './pages/agent/AgentKnowledgePage';
@@ -121,6 +122,16 @@ export default function App() {
           <RequireAuth>
             <AdminLayout>
               <KnowledgePage />
+            </AdminLayout>
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/admin/faq"
+        element={
+          <RequireAuth>
+            <AdminLayout>
+              <AdminFaqPage />
             </AdminLayout>
           </RequireAuth>
         }

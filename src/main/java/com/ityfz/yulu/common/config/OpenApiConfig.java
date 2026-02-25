@@ -13,12 +13,12 @@ import org.springframework.context.annotation.Configuration;
 /**
  * OpenAPI / Swagger 配置（springdoc-openapi）
  *
- * 访问：
+ * 访问地址：
  * - Swagger UI: /swagger-ui.html
  * - OpenAPI JSON: /v3/api-docs
  *
- * 分组策略：
- * - admin-auth/admin-dashboard/admin-ticket/admin-session/admin-user/admin-user-management
+ * 分组说明：
+ * - admin-auth/admin-dashboard/admin-ticket/admin-session/admin-user/admin-user-management/admin-faq
  * - customer-auth/customer-chat/customer-faq
  * - knowledge-document/knowledge-search/knowledge-index/knowledge-rag
  * - notify
@@ -33,7 +33,7 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("YuLu 多租户智能客服中台 - API 文档")
-                        .description("包含：租户端（ADMIN）、客服端（AGENT）、客户端（USER）接口；支持多租户隔离、RAG 知识库、工单与通知。")
+                        .description("包含租户端（ADMIN）、客服端（AGENT）、客户端（USER）接口；支持多租户隔离、RAG 知识库、工单与通知。")
                         .version("v1")
                         .contact(new Contact().name("YuLu").url("https://localhost")))
                 .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
@@ -92,6 +92,14 @@ public class OpenApiConfig {
         return GroupedOpenApi.builder()
                 .group("admin-user-management")
                 .pathsToMatch("/api/admin/user-management/**")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi adminFaqGroup() {
+        return GroupedOpenApi.builder()
+                .group("admin-faq")
+                .pathsToMatch("/api/admin/faq/**")
                 .build();
     }
 
@@ -162,5 +170,3 @@ public class OpenApiConfig {
                 .build();
     }
 }
-
-
