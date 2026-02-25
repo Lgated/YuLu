@@ -2,7 +2,7 @@ import { Layout, Menu, Dropdown, Avatar, Badge } from 'antd';
 import { BellOutlined, LogoutOutlined } from '@ant-design/icons';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import type { ReactNode } from 'react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { clearToken, getUsername, getRole } from '../../utils/storage';
 
 const { Header, Sider, Content } = Layout;
@@ -25,6 +25,31 @@ export function PortalLayout({ children, logoText, headerTitle, menuItems }: Por
   const location = useLocation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+  const [notifyCount, setNotifyCount] = useState(0);
+  const role = getRole();
+  const badgeKey = role === 'ADMIN' ? 'admin_notify_unread_count' : 'agent_notify_unread_count';
+
+  useEffect(() => {
+    if (role !== 'AGENT' && role !== 'ADMIN') return;
+    const initial = Number(localStorage.getItem(badgeKey) || '0');
+    setNotifyCount(Number.isNaN(initial) ? 0 : initial);
+    const onBadge = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { count?: number } | undefined;
+      if (detail?.count !== undefined) {
+        setNotifyCount(detail.count);
+      } else {
+        const current = Number(localStorage.getItem(badgeKey) || '0');
+        setNotifyCount(Number.isNaN(current) ? 0 : current);
+      }
+    };
+    const onClear = () => setNotifyCount(0);
+    window.addEventListener('notify:badge', onBadge);
+    window.addEventListener('notify:clear', onClear);
+    return () => {
+      window.removeEventListener('notify:badge', onBadge);
+      window.removeEventListener('notify:clear', onClear);
+    };
+  }, [role, badgeKey]);
 
   const selectedKey = useMemo(() => {
     const p = location.pathname;
@@ -63,6 +88,19 @@ export function PortalLayout({ children, logoText, headerTitle, menuItems }: Por
   ];
 
   const username = getUsername() || '当前用户';
+  const handleBellClick = () => {
+    if (role === 'AGENT') {
+      localStorage.removeItem('agent_notify_unread_count');
+      window.dispatchEvent(new Event('notify:clear'));
+      navigate('/agent/notify');
+      return;
+    }
+    if (role === 'ADMIN') {
+      localStorage.removeItem('admin_notify_unread_count');
+      window.dispatchEvent(new Event('notify:clear'));
+      navigate('/admin/notify');
+    }
+  };
 
   return (
     <Layout style={{ height: '100vh' }}>
@@ -99,8 +137,8 @@ export function PortalLayout({ children, logoText, headerTitle, menuItems }: Por
         >
           <div style={{ fontSize: 18, fontWeight: 500 }}>{headerTitle}</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <Badge dot>
-              <BellOutlined style={{ fontSize: 18, cursor: 'pointer' }} />
+            <Badge count={role === 'AGENT' || role === 'ADMIN' ? notifyCount : 0} size="small" overflowCount={99}>
+              <BellOutlined style={{ fontSize: 18, cursor: 'pointer' }} onClick={handleBellClick} />
             </Badge>
             <Dropdown menu={{ items: userMenuItems }} trigger={['click']}>
               <div style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -115,4 +153,3 @@ export function PortalLayout({ children, logoText, headerTitle, menuItems }: Por
     </Layout>
   );
 }
-

@@ -16,7 +16,12 @@ export const notifyApi = {
     return http.post<ApiResponse<void>>('/notify/read', {
       notifyIds
     });
+  },
+
+  // 标记全部已读
+  markAllRead() {
+    return http.post<ApiResponse<void>>('/notify/read', {
+      all: true
+    });
   }
 };
-
-

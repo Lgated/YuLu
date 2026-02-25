@@ -1,8 +1,40 @@
 ﻿import { MessageOutlined, ProfileOutlined, BellOutlined, DashboardOutlined, BookOutlined, UserOutlined } from '@ant-design/icons';
 import type { ReactNode } from 'react';
+import { useEffect } from 'react';
 import { PortalLayout } from './PortalLayout';
+import { WebSocketClient } from '../../utils/websocket';
+
+const ADMIN_NOTIFY_BADGE_KEY = 'admin_notify_unread_count';
+let adminWsClient: WebSocketClient | null = null;
+let adminWsRefCount = 0;
 
 export function AdminLayout({ children }: { children: ReactNode }) {
+  useEffect(() => {
+    adminWsRefCount += 1;
+    if (!adminWsClient) {
+      adminWsClient = new WebSocketClient('/ws/agent');
+    }
+    const client = adminWsClient;
+    const handler = () => {
+      const current = Number(localStorage.getItem(ADMIN_NOTIFY_BADGE_KEY) || '0');
+      const next = current + 1;
+      localStorage.setItem(ADMIN_NOTIFY_BADGE_KEY, String(next));
+      window.dispatchEvent(new CustomEvent('notify:badge', { detail: { count: next } }));
+      window.dispatchEvent(new Event('notify:update'));
+    };
+
+    client.on('ADMIN_NOTIFICATION', handler);
+    return () => {
+      client.off('ADMIN_NOTIFICATION', handler);
+      adminWsRefCount -= 1;
+      if (adminWsRefCount <= 0) {
+        adminWsClient?.disconnect();
+        adminWsClient = null;
+        adminWsRefCount = 0;
+      }
+    };
+  }, []);
+
   return (
     <PortalLayout
       logoText="YuLu 租户工作台"

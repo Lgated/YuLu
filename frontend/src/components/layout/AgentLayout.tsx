@@ -8,9 +8,10 @@ import {
 } from '@ant-design/icons';
 import type { ReactNode } from 'react';
 import { useEffect } from 'react';
-import { notification } from 'antd';
 import { PortalLayout } from './PortalLayout';
 import { WebSocketClient } from '../../utils/websocket';
+
+const NOTIFY_BADGE_KEY = 'agent_notify_unread_count';
 
 let agentWsClient: WebSocketClient | null = null;
 let agentWsRefCount = 0;
@@ -22,13 +23,11 @@ export function AgentLayout({ children }: { children: ReactNode }) {
       agentWsClient = new WebSocketClient('/ws/agent');
     }
     const client = agentWsClient;
-    const handler = (payload: any) => {
-      notification.open({
-        message: payload?.title || '新通知',
-        description: payload?.content || '',
-        placement: 'topRight',
-        duration: 3
-      });
+    const handler = () => {
+      const current = Number(localStorage.getItem(NOTIFY_BADGE_KEY) || '0');
+      const next = current + 1;
+      localStorage.setItem(NOTIFY_BADGE_KEY, String(next));
+      window.dispatchEvent(new CustomEvent('notify:badge', { detail: { count: next } }));
       window.dispatchEvent(new Event('notify:update'));
     };
 
