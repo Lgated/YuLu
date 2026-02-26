@@ -4,6 +4,7 @@ public final class ErrorCodes {
 
 
     public static final String DOCUMENT_PARSE_FAILED = "DOCUMENT_PARSE_FAILED";
+    public static final String PARAM_INVALID = "PARAM_INVALID";
 
     private ErrorCodes() {}
 

@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "FAQ功能完善-后端落地方案.md",
+                "file": "满意度评价V1-建表与后端实现方案.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "FAQ功能完善-后端落地方案"
+              "title": "满意度评价V1-建表与后端实现方案"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "FAQ功能完善-后端落地方案.md",
+                "file": "满意度评价V1-建表与后端实现方案.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for FAQ功能完善-后端落地方案"
+              "title": "Backlinks for 满意度评价V1-建表与后端实现方案"
             }
           },
           {
@@ -185,7 +185,15 @@
   "active": "0624134ee67ea6a5",
   "lastOpenFiles": [
     "项目功能完成度分析与详细规划.md",
-    "FAQ功能完善-后端落地方案.md",
+    "满意度评价V1-建表与后端实现方案.md",
+    "知识库索引与检索服务-完整实现指南.md",
+    "数据看板/数据看板-定时聚合Redis缓存接口改造方案.md",
+    "FAQ",
+    "数据看板",
+    "登录注册功能简化方案-最终版.md",
+    "数据看板/数据看板V1-实时KPI与7天趋势实现方案.md",
+    "FAQ/FAQ-V2-Redis热门榜热词防刷实现方案.md",
+    "FAQ/FAQ功能完善-后端落地方案.md",
     "通知中心功能实现总结.md",
     "handoff/管理员端转人工管理全套实现方案.md",
     "handoff/管理员端转人工管理功能设计.md",
@@ -204,12 +212,6 @@
     "handoff/转人工问题-最终解决方案.md",
     "handoff/转人工问题诊断流程图.md",
     "handoff-tech-doc-part2-process.md",
-    "handoff/转人工功能技术文档-第1部分-架构设计.md",
-    "handoff/转人工问题终极诊断和修复方案.md",
-    "handoff/转人工无客服在线处理机制方案.md",
-    "handoff/QUICK-FIX-GUIDE.md",
-    "handoff/转人工功能详细实现代码-第二部分.md",
-    "handoff/转人工功能详细实现代码-第一部分.md",
     "handoff/数据库验证查询.sql",
     "handoff/转人工功能快速验证SQL.sql",
     "handoff/快速修复命令-复制粘贴执行.sh",
@@ -218,8 +220,6 @@
     "数据库验证查询.sql",
     "快速修复命令-Windows.bat",
     "快速修复命令-复制粘贴执行.sh",
-    "转人工功能快速验证SQL.sql",
-    "转人工功能详细实现代码-第一部分.md~",
     "Pasted image 20260126103945.png",
     "Pasted image 20260126102510.png",
     "Pasted image 20260126103636.png",
