@@ -66,5 +66,26 @@ export const handoffApi = {
    */
   getBySessionId(sessionId: number) {
     return http.get<ApiResponse<any>>(`/agent/handoff/by-session/${sessionId}`);
+  },
+
+  /**
+   * 用户查询当前会话是否有待评价
+   */
+  getPendingRating(sessionId: number) {
+    return http.get<ApiResponse<any>>('/customer/handoff/rating/pending', {
+      params: { sessionId }
+    });
+  },
+
+  /**
+   * 用户提交满意度评价
+   */
+  submitRating(payload: {
+    handoffRequestId: number;
+    score: number;
+    tags?: string[];
+    comment?: string;
+  }) {
+    return http.post<ApiResponse<void>>('/customer/handoff/rating/submit', payload);
   }
 };

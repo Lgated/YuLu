@@ -16,6 +16,7 @@ import com.ityfz.yulu.handoff.enums.HandoffStatus;
 import com.ityfz.yulu.handoff.enums.OperatorType;
 import com.ityfz.yulu.handoff.mapper.HandoffEventMapper;
 import com.ityfz.yulu.handoff.mapper.HandoffRequestMapper;
+import com.ityfz.yulu.handoff.service.HandoffRatingService;
 import com.ityfz.yulu.handoff.websocket.AgentWebSocketHandler;
 import com.ityfz.yulu.handoff.websocket.CustomerWebSocketHandler;
 import com.ityfz.yulu.ticket.entity.Ticket;
@@ -56,6 +57,8 @@ public class HandoffService {
     private final HandoffQueueService queueService;
     private final CustomerWebSocketHandler customerHandler;
     private final ChatMessageMapper chatMessageMapper;
+    private final HandoffRatingService handoffRatingService;
+
 
 
     /**
@@ -588,6 +591,19 @@ public class HandoffService {
         request.setCompletedAt(LocalDateTime.now());
         handoffRequestMapper.updateById(request);
 
+        try {
+            handoffRatingService.markWaiting(
+                    tenantId,
+                    handoffRequestId,
+                    request.getSessionId(),
+                    userId,
+                    request.getAgentId()
+            );
+        } catch (Exception e) {
+            // 评价创建失败不影响主流程（结束会话、释放会话、发通知）
+            log.error("[HandoffService] markWaiting failed in endByUser, handoffRequestId={}", handoffRequestId, e);
+        }
+
         // 4. 会话切回 AI
         ChatSession session = chatSessionMapper.selectById(request.getSessionId());
         if (session != null) {
@@ -650,6 +666,19 @@ public class HandoffService {
         request.setStatus(HandoffStatus.COMPLETED.getCode());
         request.setCompletedAt(LocalDateTime.now());
         handoffRequestMapper.updateById(request);
+
+        try {
+            handoffRatingService.markWaiting(
+                    tenantId,
+                    handoffRequestId,
+                    request.getSessionId(),
+                    request.getUserId(),
+                    agentId
+            );
+        } catch (Exception e) {
+            // 评价创建失败不影响主流程（结束会话、释放会话、发通知）
+            log.error("[HandoffService] markWaiting failed in complete, handoffRequestId={}", handoffRequestId, e);
+        }
 
         // 3. 更新会话模式（可选，可以将会话模式改回AI）
         ChatSession session = chatSessionMapper.selectById(request.getSessionId());

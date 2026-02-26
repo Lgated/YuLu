@@ -1,5 +1,5 @@
 import http from './axios';
-import type { ApiResponse, AgentMonitor, HandoffRecord } from './types';
+import type { ApiResponse, AgentMonitor, HandoffRatingRecord, HandoffRatingStats, HandoffRecord } from './types';
 
 export const adminHandoffApi = {
   listRecords(params: {
@@ -37,5 +37,33 @@ export const adminHandoffApi = {
       title,
       content
     });
+  },
+
+  listRatings(params: {
+    agentId?: number;
+    score?: number;
+    status?: string;
+    startTime?: string;
+    endTime?: string;
+    pageNo?: number;
+    pageSize?: number;
+  }) {
+    return http.get<
+      ApiResponse<{
+        records: HandoffRatingRecord[];
+        total: number;
+        current?: number;
+        size?: number;
+        pages?: number;
+      }>
+    >('/admin/handoff/rating/list', { params });
+  },
+
+  getRatingStats() {
+    return http.get<ApiResponse<HandoffRatingStats>>('/admin/handoff/rating/stats');
+  },
+
+  processRating(ratingId: number, note?: string) {
+    return http.post<ApiResponse<void>>(`/admin/handoff/rating/${ratingId}/process`, { note });
   }
 };

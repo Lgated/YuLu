@@ -248,3 +248,42 @@ export interface FaqItem {
   helpfulCount?: number;
   unhelpfulCount?: number;
 }
+
+export interface HandoffRatingPending {
+  needRating: boolean;
+  handoffRequestId?: number;
+  sessionId?: number;
+  agentId?: number;
+}
+
+export interface HandoffRatingSubmit {
+  handoffRequestId: number;
+  score: number;
+  tags?: string[];
+  comment?: string;
+}
+
+export interface HandoffRatingRecord {
+  id: number;
+  handoffRequestId: number;
+  sessionId?: number;
+  userId: number;
+  agentId?: number;
+  score?: number;
+  tags?: string[];
+  comment?: string;
+  status: 'WAITING' | 'RATED' | 'PROCESSED' | 'EXPIRED' | string;
+  submitTime?: string;
+  processedBy?: number;
+  processedNote?: string;
+  processedTime?: string;
+}
+
+export interface HandoffRatingStats {
+  total: number;
+  avgScore: number;
+  positiveCount: number;
+  neutralCount: number;
+  negativeCount: number;
+  positiveRate: number;
+}
