@@ -5,6 +5,8 @@ import com.ityfz.yulu.admin.service.AdminDashboardService;
 import com.ityfz.yulu.admin.vo.DashboardKpiVO;
 import com.ityfz.yulu.admin.vo.DashboardOverviewVO;
 import com.ityfz.yulu.admin.vo.DashboardTrendPointVO;
+import com.ityfz.yulu.handoff.service.HandoffRatingService;
+import com.ityfz.yulu.handoff.vo.HandoffRatingStatsVO;
 import com.ityfz.yulu.user.service.AgentStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
 
     private final AdminDashboardMapper dashboardMapper;
     private final AgentStatusService agentStatusService;
+    private final HandoffRatingService handoffRatingService;
 
 
     @Override
@@ -85,6 +88,12 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
 
         List<Long> onlineAgents = agentStatusService.getOnlineAgents(tenantId);
         kpi.setOnlineAgentCount((long) (onlineAgents == null ? 0 : onlineAgents.size()));
+
+//        计算满意度相关KPI
+        HandoffRatingStatsVO ratingStats = handoffRatingService.stats(tenantId);
+        kpi.setRatingTotalCount(ratingStats.getTotal() == null ? 0L : ratingStats.getTotal());
+        kpi.setRatingAvgScore(ratingStats.getAvgScore() == null ? 0D : ratingStats.getAvgScore());
+        kpi.setRatingPositiveRate(ratingStats.getPositiveRate() == null ? 0D : ratingStats.getPositiveRate());
 
         kpi.setRefreshTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         return kpi;

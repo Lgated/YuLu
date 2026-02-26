@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ityfz.yulu.handoff.dto.HandoffRatingProcessDTO;
 import com.ityfz.yulu.handoff.dto.HandoffRatingQueryDTO;
 import com.ityfz.yulu.handoff.dto.HandoffRatingSubmitDTO;
-import com.ityfz.yulu.handoff.vo.HandoffRatingPendingVO;
-import com.ityfz.yulu.handoff.vo.HandoffRatingRecordVO;
-import com.ityfz.yulu.handoff.vo.HandoffRatingStatsVO;
+import com.ityfz.yulu.handoff.vo.*;
+
+import java.util.List;
 
 public interface HandoffRatingService {
 
@@ -28,4 +28,9 @@ public interface HandoffRatingService {
     /** 管理端处理反馈 */
     void process(Long tenantId, Long ratingId, Long adminId, HandoffRatingProcessDTO dto);
 
+    /** 评价趋势（最近N天平均分） */
+    List<HandoffRatingTrendPointVO> trend(Long tenantId, Integer days);
+
+    /** 低分TOP（最近N天评分不高于X的记录，按时间倒序） */
+    List<HandoffLowScoreVO> lowScoreTop(Long tenantId, Integer days, Integer limit, Integer maxScore);
 }

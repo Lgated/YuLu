@@ -13,17 +13,15 @@ import com.ityfz.yulu.handoff.dto.HandoffRatingSubmitDTO;
 import com.ityfz.yulu.handoff.entity.HandoffRating;
 import com.ityfz.yulu.handoff.mapper.HandoffRatingMapper;
 import com.ityfz.yulu.handoff.service.HandoffRatingService;
-import com.ityfz.yulu.handoff.vo.HandoffRatingPendingVO;
-import com.ityfz.yulu.handoff.vo.HandoffRatingRecordVO;
-import com.ityfz.yulu.handoff.vo.HandoffRatingStatsVO;
+import com.ityfz.yulu.handoff.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -175,6 +173,47 @@ public class HandoffRatingServiceImpl implements HandoffRatingService {
         rating.setProcessedTime(LocalDateTime.now());
         rating.setUpdateTime(LocalDateTime.now());
         ratingMapper.updateById(rating);
+    }
+
+    @Override
+    public List<HandoffRatingTrendPointVO> trend(Long tenantId, Integer days) {
+        int safeDays = (days == null || (days != 7 && days != 30 && days != 90)) ? 7 : days;
+        LocalDate startDate = LocalDate.now().minusDays(safeDays - 1L);
+
+        List<HandoffRatingTrendPointVO> rows = ratingMapper.queryRatingTrend(tenantId, startDate);
+        Map<String, HandoffRatingTrendPointVO> merged = new LinkedHashMap<>();
+
+        for (int i = 0; i < safeDays; i++) {
+            String d = startDate.plusDays(i).toString();
+            HandoffRatingTrendPointVO p = new HandoffRatingTrendPointVO();
+            p.setDate(d);
+            p.setRatedCount(0L);
+            p.setAvgScore(0D);
+            p.setPositiveRate(0D);
+            merged.put(d, p);
+        }
+
+        if (rows != null) {
+            for (HandoffRatingTrendPointVO row : rows) {
+                HandoffRatingTrendPointVO p = merged.get(row.getDate());
+                if (p != null) {
+                    p.setRatedCount(row.getRatedCount() == null ? 0L : row.getRatedCount());
+                    p.setAvgScore(row.getAvgScore() == null ? 0D : row.getAvgScore());
+                    p.setPositiveRate(row.getPositiveRate() == null ? 0D : row.getPositiveRate());
+                }
+            }
+        }
+        return new ArrayList<>(merged.values());
+    }
+
+    @Override
+    public List<HandoffLowScoreVO> lowScoreTop(Long tenantId, Integer days, Integer limit, Integer maxScore) {
+        int safeDays = (days == null || days <= 0) ? 7 : days;
+        int safeLimit = (limit == null || limit <= 0 || limit > 100) ? 10 : limit;
+        int safeMaxScore = (maxScore == null || maxScore < 1 || maxScore > 5) ? 2 : maxScore;
+
+        LocalDateTime startTime = LocalDate.now().minusDays(safeDays - 1L).atStartOfDay();
+        return ratingMapper.queryLowScoreTop(tenantId, startTime, safeMaxScore, safeLimit);
     }
 
     private String toJson(List<String> tags) {

@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Button, Card, Col, Empty, Row, Segmented, Space, Spin, Statistic, Typography } from 'antd';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
+import { Button, Card, Col, Empty, List, Row, Segmented, Space, Spin, Statistic, Tag, Typography } from 'antd';
 import ReactECharts from 'echarts-for-react';
-import { dashboardApi, type DashboardOverview } from '../../api/dashboard';
+import { dashboardApi, type DashboardOverview, type LowScoreItem, type RatingTrendPoint } from '../../api/dashboard';
 
 const REFRESH_MS = 30_000;
 const RANGE_OPTIONS = [
@@ -20,6 +20,8 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(false);
   const [manualRefreshing, setManualRefreshing] = useState(false);
   const [overview, setOverview] = useState<DashboardOverview | null>(null);
+  const [ratingTrend, setRatingTrend] = useState<RatingTrendPoint[]>([]);
+  const [lowScoreList, setLowScoreList] = useState<LowScoreItem[]>([]);
   const [lastRefreshTime, setLastRefreshTime] = useState<string>('-');
   const [rangeDays, setRangeDays] = useState<number>(7);
   const timerRef = useRef<number | null>(null);
@@ -32,9 +34,16 @@ export default function AdminDashboardPage() {
     }
 
     try {
-      const data = await dashboardApi.overview(days);
-      setOverview(data);
-      setLastRefreshTime(data?.kpi?.refreshTime || formatNow());
+      const [overviewData, trendData, lowScoreData] = await Promise.all([
+        dashboardApi.overview(days),
+        dashboardApi.ratingTrend(days).catch(() => []),
+        dashboardApi.lowScoreTop(days, 5, 2).catch(() => [])
+      ]);
+
+      setOverview(overviewData);
+      setRatingTrend(trendData);
+      setLowScoreList(lowScoreData);
+      setLastRefreshTime(overviewData?.kpi?.refreshTime || formatNow());
     } finally {
       setLoading(false);
       setManualRefreshing(false);
@@ -86,6 +95,41 @@ export default function AdminDashboardPage() {
     };
   }, [overview]);
 
+  const ratingTrendOption = useMemo(() => {
+    const xAxisData = ratingTrend.map((item) => item.date?.slice(5) || item.date);
+    const avgScoreData = ratingTrend.map((item) => item.avgScore || 0);
+    const positiveRateData = ratingTrend.map((item) => item.positiveRate || 0);
+
+    return {
+      tooltip: { trigger: 'axis' },
+      legend: { data: ['平均分', '好评率(%)'], bottom: 0 },
+      grid: { left: 20, right: 20, top: 48, bottom: 56, containLabel: true },
+      xAxis: { type: 'category', boundaryGap: false, data: xAxisData },
+      yAxis: [
+        { type: 'value', min: 0, max: 5, name: '平均分' },
+        { type: 'value', min: 0, max: 100, name: '好评率(%)' }
+      ],
+      series: [
+        {
+          name: '平均分',
+          type: 'line',
+          smooth: true,
+          yAxisIndex: 0,
+          data: avgScoreData,
+          lineStyle: { width: 3 }
+        },
+        {
+          name: '好评率(%)',
+          type: 'line',
+          smooth: true,
+          yAxisIndex: 1,
+          data: positiveRateData,
+          lineStyle: { width: 3 }
+        }
+      ]
+    };
+  }, [ratingTrend]);
+
   return (
     <Spin spinning={loading}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -112,8 +156,26 @@ export default function AdminDashboardPage() {
           </Col>
         </Row>
 
+        <Row gutter={16}>
+          <Col span={8}>
+            <Card>
+              <Statistic title="评分总数" value={overview?.kpi.ratingTotalCount ?? 0} />
+            </Card>
+          </Col>
+          <Col span={8}>
+            <Card>
+              <Statistic title="平均满意度" value={overview?.kpi.ratingAvgScore ?? 0} precision={2} suffix="/5" />
+            </Card>
+          </Col>
+          <Col span={8}>
+            <Card>
+              <Statistic title="好评率" value={overview?.kpi.ratingPositiveRate ?? 0} precision={2} suffix="%" />
+            </Card>
+          </Col>
+        </Row>
+
         <Card
-          title={`${rangeDays}天趋势`}
+          title={`${rangeDays}天业务趋势`}
           extra={
             <Space size={12}>
               <Segmented
@@ -129,14 +191,53 @@ export default function AdminDashboardPage() {
           }
         >
           {overview?.trend?.length ? (
-            <ReactECharts option={trendOption} style={{ height: 360 }} notMerge lazyUpdate />
+            <ReactECharts option={trendOption} style={{ height: 320 }} notMerge lazyUpdate />
           ) : (
-            <Empty description="暂无趋势数据" />
+            <Empty description="暂无业务趋势数据" />
           )}
         </Card>
+
+        <Row gutter={16}>
+          <Col span={16}>
+            <Card title={`${rangeDays}天满意度趋势`}>
+              {ratingTrend.length ? (
+                <ReactECharts option={ratingTrendOption} style={{ height: 320 }} notMerge lazyUpdate />
+              ) : (
+                <Empty description="暂无满意度趋势数据" />
+              )}
+            </Card>
+          </Col>
+          <Col span={8}>
+            <Card title={`低分评价Top5（近${rangeDays}天）`}>
+              {lowScoreList.length ? (
+                <List
+                  dataSource={lowScoreList}
+                  renderItem={(item) => (
+                    <List.Item>
+                      <List.Item.Meta
+                        title={
+                          <Space>
+                            <span>转人工#{item.handoffRequestId}</span>
+                            <Tag color="red">{item.score ?? '-'}分</Tag>
+                          </Space>
+                        }
+                        description={
+                          <div>
+                            <div>用户#{item.userId} / 客服#{item.agentId ?? '-'}</div>
+                            <div style={{ color: '#666' }}>{item.comment || '无评价内容'}</div>
+                          </div>
+                        }
+                      />
+                    </List.Item>
+                  )}
+                />
+              ) : (
+                <Empty description="暂无低分告警" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              )}
+            </Card>
+          </Col>
+        </Row>
       </div>
     </Spin>
   );
 }
-
-
