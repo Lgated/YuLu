@@ -13,6 +13,9 @@ public class DashboardKpiVO {
     private Long ratingTotalCount;
     private Double ratingAvgScore;
     private Double ratingPositiveRate;
+    // 意图kpi
+    private Long negativeEmotionCount;
+    private Double negativeEmotionRate;
 
     private String refreshTime;
 

@@ -54,6 +54,21 @@ public class HandoffRequestItemDTO {
     private String priority;
 
     /**
+     * 最新消息内容
+     */
+    private String latestEmotion;
+
+    /**
+     * 最新消息内容
+     */
+    private String latestIntent;
+
+    /**
+     * 风险等级
+     */
+    private String riskLevel; // HIGH / MEDIUM / LOW
+
+    /**
      * 转人工原因
      */
     private String reason;

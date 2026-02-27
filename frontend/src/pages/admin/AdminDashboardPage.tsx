@@ -1,7 +1,13 @@
 ﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Card, Col, Empty, List, Row, Segmented, Space, Spin, Statistic, Tag, Typography } from 'antd';
 import ReactECharts from 'echarts-for-react';
-import { dashboardApi, type DashboardOverview, type LowScoreItem, type RatingTrendPoint } from '../../api/dashboard';
+import {
+  dashboardApi,
+  type DashboardOverview,
+  type IntentDistributionItem,
+  type LowScoreItem,
+  type RatingTrendPoint
+} from '../../api/dashboard';
 
 const REFRESH_MS = 30_000;
 const RANGE_OPTIONS = [
@@ -15,6 +21,17 @@ function formatNow() {
   const p = (n: number) => String(n).padStart(2, '0');
   return `${now.getFullYear()}-${p(now.getMonth() + 1)}-${p(now.getDate())} ${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`;
 }
+
+const INTENT_LABEL_MAP: Record<string, string> = {
+  GENERAL: '通用咨询',
+  REFUND: '退款',
+  INVOICE: '发票',
+  COMPLAINT: '投诉',
+  LOGISTICS: '物流',
+  PAYMENT: '支付',
+  ACCOUNT: '账号',
+  PRODUCT: '商品'
+};
 
 export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(false);
@@ -42,7 +59,7 @@ export default function AdminDashboardPage() {
 
       setOverview(overviewData);
       setRatingTrend(trendData);
-      setLowScoreList(lowScoreData);
+      setLowScoreList(lowScoreData.length ? lowScoreData : (overviewData.lowScoreAlerts || []));
       setLastRefreshTime(overviewData?.kpi?.refreshTime || formatNow());
     } finally {
       setLoading(false);
@@ -130,6 +147,32 @@ export default function AdminDashboardPage() {
     };
   }, [ratingTrend]);
 
+  const intentOption = useMemo(() => {
+    const source: IntentDistributionItem[] = overview?.intentDistribution || [];
+    const chartData = source
+      .filter((item) => item.count > 0)
+      .map((item) => ({
+        name: INTENT_LABEL_MAP[item.intent] || item.intent,
+        value: item.count
+      }));
+
+    return {
+      tooltip: { trigger: 'item' },
+      legend: { bottom: 0, type: 'scroll' },
+      series: [
+        {
+          name: '意图分布',
+          type: 'pie',
+          radius: ['40%', '68%'],
+          center: ['50%', '44%'],
+          avoidLabelOverlap: true,
+          data: chartData,
+          label: { formatter: '{b}\n{d}%' }
+        }
+      ]
+    };
+  }, [overview?.intentDistribution]);
+
   return (
     <Spin spinning={loading}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -170,6 +213,28 @@ export default function AdminDashboardPage() {
           <Col span={8}>
             <Card>
               <Statistic title="好评率" value={overview?.kpi.ratingPositiveRate ?? 0} precision={2} suffix="%" />
+            </Card>
+          </Col>
+        </Row>
+
+        <Row gutter={16}>
+          <Col span={8}>
+            <Card>
+              <Statistic title="负向情绪消息数" value={overview?.kpi.negativeEmotionCount ?? 0} />
+            </Card>
+          </Col>
+          <Col span={8}>
+            <Card>
+              <Statistic title="负向情绪率" value={overview?.kpi.negativeEmotionRate ?? 0} precision={2} suffix="%" />
+            </Card>
+          </Col>
+          <Col span={8}>
+            <Card title={`意图分布（近${rangeDays}天）`}>
+              {overview?.intentDistribution?.length ? (
+                <ReactECharts option={intentOption} style={{ height: 220 }} notMerge lazyUpdate />
+              ) : (
+                <Empty description="暂无意图数据" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              )}
             </Card>
           </Col>
         </Row>

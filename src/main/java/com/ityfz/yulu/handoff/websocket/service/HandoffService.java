@@ -297,6 +297,20 @@ public class HandoffService {
      * 发送转人工请求通知给客服
      */
     private void sendHandoffRequestNotification(Long tenantId, Long agentId, HandoffRequest request) {
+        ChatMessage latestUserMsg = chatMessageMapper.selectOne(
+                Wrappers.<ChatMessage>lambdaQuery()
+                        .eq(ChatMessage::getTenantId, tenantId)
+                        .eq(ChatMessage::getSessionId, request.getSessionId())
+                        .eq(ChatMessage::getSenderType, "USER")
+                        .orderByDesc(ChatMessage::getCreateTime)
+                        .last("LIMIT 1")
+        );
+
+        String latestEmotion = (latestUserMsg == null || latestUserMsg.getEmotion() == null)
+                ? "NEUTRAL" : latestUserMsg.getEmotion().toUpperCase();
+        String latestIntent = (latestUserMsg == null || latestUserMsg.getIntent() == null)
+                ? "GENERAL" : latestUserMsg.getIntent().toUpperCase();
+
         Map<String, Object> payload = new HashMap<>();
         payload.put("handoffRequestId", request.getId());
         payload.put("sessionId", request.getSessionId());
@@ -307,6 +321,9 @@ public class HandoffService {
         payload.put("queuePosition", request.getQueuePosition());
         // 前端需要 userName，这里先简单返回客户#userId，后续可查 User 表
         payload.put("userName", "客户#" + request.getUserId());
+        payload.put("latestEmotion", latestEmotion);
+        payload.put("latestIntent", latestIntent);
+        payload.put("riskLevel", calcRisk(latestEmotion, latestIntent));
 
         WebSocketMessage message = WebSocketMessage.builder()
                 .type("HANDOFF_REQUEST")
@@ -448,6 +465,20 @@ public class HandoffService {
 
             // 获取工单标题
             String ticketTitle = "转人工-会话#" + request.getSessionId();
+
+            ChatMessage latestUserMsg = chatMessageMapper.selectOne(
+                    Wrappers.<ChatMessage>lambdaQuery()
+                            .eq(ChatMessage::getTenantId, tenantId)
+                            .eq(ChatMessage::getSessionId, request.getSessionId())
+                            .eq(ChatMessage::getSenderType, "USER")
+                            .orderByDesc(ChatMessage::getCreateTime)
+                            .last("LIMIT 1")
+            );
+            String latestEmotion = (latestUserMsg == null || latestUserMsg.getEmotion() == null)
+                    ? "NEUTRAL" : latestUserMsg.getEmotion();
+            String latestIntent = (latestUserMsg == null || latestUserMsg.getIntent() == null)
+                    ? "GENERAL" : latestUserMsg.getIntent();
+            String riskLevel = calcRisk(latestEmotion, latestIntent);
             if (request.getTicketId() != null) {
                 Ticket ticket = ticketMapper.selectById(request.getTicketId());
                 if (ticket != null) {
@@ -466,8 +497,21 @@ public class HandoffService {
                     .reason(request.getReason())
                     .queuePosition(request.getQueuePosition())
                     .createdAt(request.getCreateTime())
+                    .latestEmotion(latestEmotion)
+                    .latestIntent(latestIntent)
+                    .riskLevel(riskLevel)
                     .build();
         }).collect(Collectors.toList());
+    }
+
+    // TODO: 计算风险等级的逻辑可以根据实际需求调整，这里只是一个简单示例
+    private String calcRisk(String emotion, String intent) {
+        String e = emotion == null ? "" : emotion.toUpperCase();
+        String i = intent == null ? "" : intent.toUpperCase();
+
+        if (("ANGRY".equals(e) || "NEGATIVE".equals(e)) && "COMPLAIN".equals(i)) return "HIGH";
+        if ("ANGRY".equals(e) || "NEGATIVE".equals(e) || "COMPLAIN".equals(i)) return "MEDIUM";
+        return "LOW";
     }
 
     /**

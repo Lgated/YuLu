@@ -116,8 +116,26 @@ public class LangChain4jQwenClient implements LLMClient {
 
     @Override
     public String detectIntent(String text) {
-        // 第一期先不做：保持与你现有接口一致
-        return null;
+        if (text == null || text.isBlank()) return "GENERAL";
+        try {
+            List<ChatMessage> msgs = new ArrayList<>();
+            msgs.add(SystemMessage.from(
+                    "你是意图识别助手。仅返回JSON：{ \"intent\": \"REFUND|INVOICE|LOGISTICS|COMPLAIN|GENERAL\" }，不要输出其他文字。"
+            ));
+            msgs.add(UserMessage.from(text));
+
+            String json = model.chat(msgs).aiMessage().text();
+            if (!isValidJson(json)) {
+                return fallbackRuleIntent(text);
+            }
+
+            JsonNode node = objectMapper.readTree(json);
+            String intent = node.path("intent").asText("GENERAL").toUpperCase();
+            return normalizeIntent(intent);
+        } catch (Exception e) {
+            log.warn("[LLM] 意图识别失败，回退规则。text={}", text, e);
+            return fallbackRuleIntent(text);
+        }
     }
 
     //TODO:和  chat（） 共享一次调用结果
@@ -220,6 +238,7 @@ public class LangChain4jQwenClient implements LLMClient {
 
     /**
      * 判断字符串是否是有效的 JSON 格式
+     *
      * @param text 待判断的文本
      * @return true 如果是有效JSON，false 否则
      */
@@ -235,4 +254,25 @@ public class LangChain4jQwenClient implements LLMClient {
         }
     }
 
+    private String fallbackRuleIntent(String text) {
+        String t = text == null ? "" : text.toLowerCase();
+        if (t.contains("退货") || t.contains("退款")) return "REFUND";
+        if (t.contains("发票")) return "INVOICE";
+        if (t.contains("物流") || t.contains("快递") || t.contains("发货")) return "LOGISTICS";
+        if (t.contains("投诉") || t.contains("差评") || t.contains("生气")) return "COMPLAIN";
+        return "GENERAL";
+    }
+
+    private String normalizeIntent(String intent) {
+        switch (intent) {
+            case "REFUND":
+            case "INVOICE":
+            case "LOGISTICS":
+            case "COMPLAIN":
+            case "GENERAL":
+                return intent;
+            default:
+                return "GENERAL";
+        }
+    }
 }

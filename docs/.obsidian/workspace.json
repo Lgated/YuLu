@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "满意度评价V1-建表与后端实现方案.md",
+                "file": "P1-智能闭环与看板可用性-完整实施方案.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "满意度评价V1-建表与后端实现方案"
+              "title": "P1-智能闭环与看板可用性-完整实施方案"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "满意度评价V1-建表与后端实现方案.md",
+                "file": "P1-智能闭环与看板可用性-完整实施方案.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for 满意度评价V1-建表与后端实现方案"
+              "title": "Backlinks for P1-智能闭环与看板可用性-完整实施方案"
             }
           },
           {
@@ -184,6 +184,8 @@
   },
   "active": "0624134ee67ea6a5",
   "lastOpenFiles": [
+    "多租户AI智能客服中台-全局诊断与优化路线图.md",
+    "P1-智能闭环与看板可用性-完整实施方案.md",
     "项目功能完成度分析与详细规划.md",
     "满意度评价V1-建表与后端实现方案.md",
     "知识库索引与检索服务-完整实现指南.md",
@@ -210,8 +212,6 @@
     "转人工知识总结.md",
     "handoff/转人工功能知识总结.md",
     "handoff/转人工问题-最终解决方案.md",
-    "handoff/转人工问题诊断流程图.md",
-    "handoff-tech-doc-part2-process.md",
     "handoff/数据库验证查询.sql",
     "handoff/转人工功能快速验证SQL.sql",
     "handoff/快速修复命令-复制粘贴执行.sh",

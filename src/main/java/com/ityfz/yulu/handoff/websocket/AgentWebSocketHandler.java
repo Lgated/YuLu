@@ -111,7 +111,9 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
         if (session != null && session.isOpen()) {
             try {
                 String json = objectMapper.writeValueAsString(message);
-                session.sendMessage(new TextMessage(json));
+                synchronized (session) {
+                    session.sendMessage(new TextMessage(json));
+                }
                 log.debug("[WebSocket] 发送消息给客服：connectionKey={}, type={}", connectionKey, message.getType());
             } catch (Exception e) {
                 log.error("[WebSocket] 发送消息给客服失败：connectionKey={}", connectionKey, e);
@@ -139,7 +141,9 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
                     .timestamp(java.time.LocalDateTime.now().toString())
                     .build();
             String json = objectMapper.writeValueAsString(errorMessage);
-            session.sendMessage(new TextMessage(json));
+            synchronized (session) {
+                session.sendMessage(new TextMessage(json));
+            }
         } catch (Exception e) {
             log.error("[WebSocket] 发送错误消息失败", e);
         }
@@ -152,7 +156,9 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
             if (key.startsWith(prefix) && session != null && session.isOpen()) {
                 try {
                     String json = objectMapper.writeValueAsString(message);
-                    session.sendMessage(new TextMessage(json));
+                    synchronized (session) {
+                        session.sendMessage(new TextMessage(json));
+                    }
                 } catch (Exception e) {
                     log.error("[WebSocket] 广播失败: key={}", key, e);
                 }

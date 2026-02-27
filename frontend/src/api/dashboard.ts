@@ -9,6 +9,8 @@ export interface DashboardKpi {
   ratingTotalCount?: number;
   ratingAvgScore?: number;
   ratingPositiveRate?: number;
+  negativeEmotionCount?: number;
+  negativeEmotionRate?: number;
   refreshTime?: string;
 }
 
@@ -21,6 +23,13 @@ export interface DashboardTrendPoint {
 export interface DashboardOverview {
   kpi: DashboardKpi;
   trend: DashboardTrendPoint[];
+  intentDistribution?: IntentDistributionItem[];
+  lowScoreAlerts?: LowScoreItem[];
+}
+
+export interface IntentDistributionItem {
+  intent: string;
+  count: number;
 }
 
 export interface RatingTrendPoint {
@@ -58,14 +67,18 @@ const defaultKpi: DashboardKpi = {
   onlineAgentCount: 0,
   ratingTotalCount: 0,
   ratingAvgScore: 0,
-  ratingPositiveRate: 0
+  ratingPositiveRate: 0,
+  negativeEmotionCount: 0,
+  negativeEmotionRate: 0
 };
 
 function normalizeOverview(data: any): DashboardOverview {
   if (data?.kpi && Array.isArray(data?.trend)) {
     return {
       kpi: { ...defaultKpi, ...data.kpi },
-      trend: data.trend
+      trend: data.trend,
+      intentDistribution: normalizeIntentDistribution(data.intentDistribution),
+      lowScoreAlerts: normalizeLowScore(data.lowScoreAlerts)
     };
   }
 
@@ -79,10 +92,22 @@ function normalizeOverview(data: any): DashboardOverview {
       onlineAgentCount: 0,
       ratingTotalCount: 0,
       ratingAvgScore: Number(legacy.satisfactionRate || 0) / 20,
-      ratingPositiveRate: Number(legacy.satisfactionRate || 0)
+      ratingPositiveRate: Number(legacy.satisfactionRate || 0),
+      negativeEmotionCount: 0,
+      negativeEmotionRate: 0
     },
-    trend: []
+    trend: [],
+    intentDistribution: [],
+    lowScoreAlerts: []
   };
+}
+
+function normalizeIntentDistribution(data: any): IntentDistributionItem[] {
+  if (!Array.isArray(data)) return [];
+  return data.map((item) => ({
+    intent: item.intent || 'GENERAL',
+    count: Number(item.count || 0)
+  }));
 }
 
 function normalizeRatingTrend(data: any): RatingTrendPoint[] {

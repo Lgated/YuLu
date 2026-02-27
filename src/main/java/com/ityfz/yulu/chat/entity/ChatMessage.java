@@ -15,6 +15,7 @@ public class ChatMessage {
     private String senderType;// USER / AI / AGENT
     private String content;
     private String emotion;
+    private String intent;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 }

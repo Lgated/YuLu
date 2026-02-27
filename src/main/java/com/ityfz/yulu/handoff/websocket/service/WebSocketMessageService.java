@@ -108,6 +108,10 @@ public class WebSocketMessageService {
      * 处理客服发送的消息
      */
     public void handleAgentMessage(Long tenantId, Long agentId, WebSocketMessage wsMessage) {
+        if ("PING".equals(wsMessage.getType())) {
+            return;
+        }
+
         Map<String, Object> payload = wsMessage.getPayload();
         if (payload == null) {
             log.warn("[WebSocket] agent message missing payload, agentId={}", agentId);

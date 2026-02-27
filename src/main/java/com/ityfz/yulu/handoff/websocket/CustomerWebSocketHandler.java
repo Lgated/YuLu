@@ -111,7 +111,9 @@ public class CustomerWebSocketHandler extends TextWebSocketHandler {
             try {
                 // 把任意 Java 对象（message）序列化成 JSON 字符串。
                 String json = objectMapper.writeValueAsString(message);
-                session.sendMessage(new TextMessage(json));
+                synchronized (session) {
+                    session.sendMessage(new TextMessage(json));
+                }
                 log.debug("[WebSocket] 发送消息给客户：connectionKey={}, type={}", connectionKey, message.getType());
             } catch (Exception e) {
                 log.error("[WebSocket] 发送消息给客户失败：connectionKey={}", connectionKey, e);
@@ -140,7 +142,9 @@ public class CustomerWebSocketHandler extends TextWebSocketHandler {
                     .timestamp(java.time.LocalDateTime.now().toString())
                     .build();
             String json = objectMapper.writeValueAsString(errorMessage);
-            session.sendMessage(new TextMessage(json));
+            synchronized (session) {
+                session.sendMessage(new TextMessage(json));
+            }
         } catch (Exception e) {
             log.error("[WebSocket] 发送错误消息失败", e);
         }

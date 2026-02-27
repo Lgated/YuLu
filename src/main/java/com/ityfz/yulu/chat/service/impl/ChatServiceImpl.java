@@ -212,6 +212,18 @@ public class ChatServiceImpl implements ChatService {
 
         // 6. 情绪识别（针对用户这句话，也可以针对整段对话）
         String emotion = llmClient.detectEmotion(question);
+        if (emotion == null || emotion.isBlank()) {
+            emotion = "NEUTRAL";
+        } else {
+            emotion = emotion.toUpperCase();
+        }
+
+        String intent = llmClient.detectIntent(question);
+        if (intent == null || intent.isBlank()) {
+            intent = "GENERAL";
+        } else {
+            intent = intent.toUpperCase();
+        }
 
         // 7. 如果检测到负向情绪（NEGATIVE 或 ANGRY），自动创建工单
 /*        if (isNegativeEmotion(emotion)) {
@@ -263,6 +275,7 @@ public class ChatServiceImpl implements ChatService {
         aiMsg.setSenderType("AI");
         aiMsg.setContent(aiReply);
         aiMsg.setEmotion(emotion);
+        aiMsg.setIntent(intent);
         aiMsg.setCreateTime(LocalDateTime.now());
         chatMessageMapper.insert(aiMsg);
 

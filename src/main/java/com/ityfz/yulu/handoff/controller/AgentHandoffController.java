@@ -1,6 +1,8 @@
 package com.ityfz.yulu.handoff.controller;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.ityfz.yulu.chat.entity.ChatMessage;
+import com.ityfz.yulu.chat.mapper.ChatMessageMapper;
 import com.ityfz.yulu.common.annotation.RequireRole;
 import com.ityfz.yulu.common.enums.ErrorCodes;
 import com.ityfz.yulu.common.exception.BizException;
@@ -33,6 +35,7 @@ public class AgentHandoffController {
 
     private final HandoffService handoffService;
     private final HandoffRequestMapper handoffRequestMapper;
+    private final ChatMessageMapper chatMessageMapper;
 
     @GetMapping("/pending")
     @Operation(summary = "获取待处理的转人工请求", description = "获取已分配给当前客服但尚未接受的请求列表")
@@ -90,6 +93,20 @@ public class AgentHandoffController {
         if (request == null) {
             throw new BizException(ErrorCodes.NOT_FOUND, "未找到该会话的转人工请求");
         }
+        ChatMessage latestUserMsg = chatMessageMapper.selectOne(
+                Wrappers.<ChatMessage>lambdaQuery()
+                        .eq(ChatMessage::getTenantId, tenantId)
+                        .eq(ChatMessage::getSessionId, sessionId)
+                        .eq(ChatMessage::getSenderType, "USER")
+                        .orderByDesc(ChatMessage::getCreateTime)
+                        .last("LIMIT 1")
+        );
+
+        String latestEmotion = (latestUserMsg == null || latestUserMsg.getEmotion() == null)
+                ? "NEUTRAL" : latestUserMsg.getEmotion().toUpperCase();
+        String latestIntent = (latestUserMsg == null || latestUserMsg.getIntent() == null)
+                ? "GENERAL" : latestUserMsg.getIntent().toUpperCase();
+        String riskLevel = calcRisk(latestEmotion, latestIntent);
         
         // 构建返回对象
         HandoffRequestItemDTO dto = HandoffRequestItemDTO.builder()
@@ -99,11 +116,22 @@ public class AgentHandoffController {
             .userName("客户#" + request.getUserId())
             .ticketId(request.getTicketId())
             .priority(request.getPriority())
+            .latestEmotion(latestEmotion)
+            .latestIntent(latestIntent)
+            .riskLevel(riskLevel)
             .reason(request.getReason())
             .createdAt(request.getCreateTime())
             .build();
         
         return ApiResponse.success("查询成功", dto);
+    }
+
+    private String calcRisk(String emotion, String intent) {
+        String e = emotion == null ? "" : emotion.toUpperCase();
+        String i = intent == null ? "" : intent.toUpperCase();
+        if (("ANGRY".equals(e) || "NEGATIVE".equals(e)) && "COMPLAIN".equals(i)) return "HIGH";
+        if ("ANGRY".equals(e) || "NEGATIVE".equals(e) || "COMPLAIN".equals(i)) return "MEDIUM";
+        return "LOW";
     }
 
 }

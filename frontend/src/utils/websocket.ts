@@ -30,7 +30,11 @@ export class WebSocketClient {
     this.connect();
   }
 
-  private connect() {
+  public connect() {
+    if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) {
+      return;
+    }
+
     if (this.ws) {
       this.ws.close();
     }
