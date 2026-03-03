@@ -1,0 +1,501 @@
+==== template.docx ====
+001. 毕业论文（设计）规范及论文模板
+002. （互联网金融与信息工程学院专用）
+003. 2021年9月修订
+004. 一、 基本要求
+005. 1．毕业论文（设计）必须由学生本人独立完成，不得弄虚作假，不得抄袭他人成果。
+006. 2．毕业论文（设计）应中心突出，内容充实，论据充分，论证有力，数据可靠，结构紧凑，层次分明，图表清晰，格式规范，文字流畅，字迹工整，结论正确。
+007. 3．毕业论文（设计）中所使用的度量单位一律采用国际标准单位。
+008. 4．对毕业论文（设计）中的图（表）要给予解释，并于相应位置统一标上图（表）编号和标题。若同类图表数量过多，也可作为附录列于论文后面。表中数据要求可编辑，不能转换为图片格式。
+009. 5．凡手绘图形一律用碳素笔在硫酸纸或复印纸上誊描，并标上图号、图题，然后贴附于论文适当位置或附录中，要求图面整洁、比例适当，图中字体大小要适中。
+010. 6．毕业论文（设计）篇幅一般为8000字以上（不含图表、程序和计算数字），或相当信息量，原则上不应超过15000字。
+011. 二、内容要求
+012. 1．题目
+013. 要求简洁、明确、有概括性，字数不宜超过20个字符，可加副标题，副标题字数不宜超过10个字符。
+014. 2．摘要
+015. 重点阐述毕业论文（设计）的目的、方法、结果和结论，要有高度的概括力，语言精练、明确。要求有中、英文对照，中文摘要不少于300汉字；英文摘要须与中文摘要意义相符。注意，摘要内容不能从正文中直接摘取。
+016. 3．关键词
+017. 从标题或正文中挑选3～5个最能表达主要内容的词作为关键词，并按概念大小以及重要程度排序，同时有中、英文对照，分别附于中、英文摘要后。
+018. 4．目录
+019. 要求用Word自动生成目录，目录层次最多以3级为宜，并确保目录编号的连续性。
+020. 5．正文
+021. 在撰写正文前要写毕业论文题目。正文内容一般包括前言、本论、结论三个部分：
+022. ①前言（引言）：是毕业论文（设计）的开头部分，主要阐述研究背景、目的、意义和主要研究（或设计）内容等。前言要写得简明扼要，篇幅不要太长。
+023. ②本论：是毕业论文（设计）的主体。毕业论文要求包括研究内容与方法、数据采集整理，数据分析（讨论）与结果等，能够运用各方面的数据，分析问题，论证观点，尽量反映出自己的科研能力和学术水平。毕业设计要求包括拟采用的技术方法、需求分析、系统设计、系统实现及测试等内容，系统设计要完整，系统架构要合理，系统功能、界面及性能等方面也要符合实际应用的基本要求。若毕业设计为信息系统，必须为客户机/服务器版，除了基本的用户注册、用户登录及用户管理等基本模块外，不能少于五个与业务直接相关的功能模块。
+024. ③结论：是毕业论文（设计）的收尾部分，要求围绕本论部分总结全文的研究成果及未来的工作方向。
+025. 6．参考文献
+026. 在毕业论文（设计）末尾要列出在论文（设计）中参考过的专著、论文及其他资料（不少于15篇，其中英文参考文献不少于2篇，毕业论文引用的教材类文献不能超过2篇，毕业设计引用的教材类文献不能超过5篇），所有参考文献须在毕业论文（设计）中标注引用，所列参考文献应按论文参考或引证的先后顺序排列。所列参考文献要新颖，尽量引用近5年来的参考文献。
+027. 7．致谢
+028. 简述自己经历毕业论文（设计）工作的体会，并对指导教师和协助完成论文的有关人员表示谢意。
+029. 8．附录
+030. 对于一些不宜放在正文中，但有参考价值的内容，可编入附录中。例如，公式推演、算法流程或程序源码等。
+031. 三、引用文献的要求
+032. 注明引用文献的方式通常有文中注（即正文中在引用的地方用括号说明文献的出处）、文末注（即正文中在引用的地方标号，一般以出现的先后次序编号，编号以方括号括起，放在右上角，如[1]（单个引用文献），[3-5]（多个连续引用文献））、脚注（即正文中只在引用地方写一个脚注标号，在当前页最下方以脚注方式按标号顺序说明文献出处，脚注编号使用①、②、③、…方式标注）等三种。
+033. 对于毕业论文（设计）中引文的出处以及需要进一步说明的问题，规定采用文末注方式；对于数据及图表出处，可采用脚注方式注明。引文编号放在右上角，如[1]。参考文献（文末注）或脚注的基本格式如下：
+034. 1.学术期刊格式
+035. [序号] 第一作者, 第二作者, 第三作者等. 论文名称[J]. 学术期刊刊名, 出版年份, 卷号(期号): 起页-止页.
+036. 例：
+037. [1] 高景德, 王祥珩. 交流电机的多回路理论[J]. 清华大学学报, 1987, 27(1): 1-8.
+038. [2] Shabtay D., Gaspar N., Yedidsion L. A bicriteria approach to scheduling a single machine with job rejection and positional penalties[J]. Journal of Combinatorial Optimization, 2012, 23(4): 395-424.
+039. 2.学术著作格式
+040. [序号]作者. 学术著作书名[M]. 翻译者. 出版地: 出版社，出版年.
+041. 例：
+042. [3] Pinedo M. Scheduling: theory, algorithms, and systems (4th edition) [M]. New York: Springer, 2012.
+043. [4] 霍夫斯基主编. 禽病学(第7版)[M]. 胡祥壁等译. 北京: 农业出版社，1981.
+044. 3.学位论文格式
+045. [序号] 作者. 论文题目[D]. 保存地点: 保存单位，年份.
+046. 例：
+047. [5] 张竹生. 微分半动力系统的不变集[D]. 北京: 北京大学数学系，1983.
+048. [6] 余勇. 劲性混凝土柱抗震性能的试验研究[D]. 江苏: 东南大学土木工程学院，1998.
+049. 4.专利文献格式
+050. [序号] 专利申请者. 专利名称[P]. 国别，专利文献种类，专利号. 出版日期.
+051. 例：
+052. [7] 姜锡洲. 一种温热外敷药制备方法[P]. 中国专利，881056073. 1989-07-26.
+053. 5.技术标准格式
+054. [序号] 起草责任者. 标准代号. 标准顺序号-发布年. 标准名称[S]. 出版地: 出版社，出版年.
+055. 例：
+056. [8] 全国文献工作标准化技术委员会第六分委员会. CB6447-S6文摘编写规则[S]. 北京: 标准出版社，1986.
+057. 6.报纸文献格式
+058. [序号] 作者. 文献题名[N]. 报纸名，出版日期(版面次序).
+059. 例：
+060. [9] 谢希德. 创新学习的交思路[N]. 人民日报，1998-12-25(10).
+061. 7.电子文献格式
+062. [序号] 作者. 文献题名. 电子文献类型标示. 载体类型标示文献网址或出处，更新/引用日期.
+063. 例：
+064. [10] 万锦坤. 中国大学学报论文文摘(1983-1993)(英文版)[DB/CD]. 北京：中国大百科全书出版社，1996.
+065. [11] 王明亮. 标准化数据库系统工程新进展[EB/OL]. http://www.cajcd.edu.cn/pub/980810- 2.html, 1998-08-16.
+066. 注意：参考文献中统一采用英文标点符号表示；脚注编号使用①、②、③、…方式标注，以区别于文末标注的参考文献。
+067. 四、论文中数学公式要求
+068. 1．注意事项
+069. （1）公式以另行居中排版为原则。公式编号用加圆括号排在右边对齐，公式和编号之间不加连点或虚线。
+070. 【示例】：
+071. <w:tab w:val="center" w:pos="4410"/><w:tab w:val="right" w:pos="8820"/></w:tabs><w:spacing w:line="360" w:lineRule="auto"/><w:jc w:val="right"/><w:rPr><w:rFonts w:ascii="宋体" w:hAnsi="宋体"/><w:bCs/><w:color w:val="000000"/><w:sz w:val="24"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii="宋体" w:hAnsi="宋体" w:hint="eastAsia"/><w:bCs/><w:color w:val="000000"/><w:position w:val="-28"/><w:sz w:val="24"/></w:rPr><w:object w:dxaOrig="1545" w:dyaOrig="780" w14:anchorId="145F0B07"><v:shapetype id="_x0000_t75" coordsize="21600,21600" o:spt="75" o:preferrelative="t" path="m@4@5l@4@11@9@11@9@5xe" filled="f" stroked="f"><v:stroke joinstyle="miter"/><v:formulas><v:f eqn="if lineDrawn pixelLineWidth 0"/><v:f eqn="sum @0 1 0"/><v:f eqn="sum 0 0 @1"/><v:f eqn="prod @2 1 2"/><v:f eqn="prod @3 21600 pixelWidth"/><v:f eqn="prod @3 21600 pixelHeight"/><v:f eqn="sum @0 0 1"/><v:f eqn="prod @6 1 2"/><v:f eqn="prod @7 21600 pixelWidth"/><v:f eqn="sum @8 21600 0"/><v:f eqn="prod @7 21600 pixelHeight"/><v:f eqn="sum @10 21600 0"/></v:formulas><v:path o:extrusionok="f" gradientshapeok="t" o:connecttype="rect"/><o:lock v:ext="edit" aspectratio="t"/></v:shapetype><v:shape id="_x0000_i1025" type="#_x0000_t75" style="width:76.8pt;height:39.6pt" o:ole=""><v:imagedata r:id="rId8" o:title=""/></v:shape><o:OLEObject Type="Embed" ProgID="Equation.3" ShapeID="_x0000_i1025" DrawAspect="Content" ObjectID="_1804925921" r:id="rId9"/></w:object></w:r><w:r><w:rPr><w:rFonts w:ascii="宋体" w:hAnsi="宋体" w:hint="eastAsia"/><w:bCs/><w:color w:val="000000"/><w:sz w:val="24"/></w:rPr><w:tab/><w:t xml:space="preserve"> （2.1）
+072. （2）公式中，拉丁字母（英文）用斜体，俄文字母用正体，缩写字（如sin, log, max，lim, ln等）和运算符号（∑，∆，∂，∏，∪，∩，∈，∵，∴，∫等）用正体，阿拉伯数字用正体。
+073. 2．数学公式的转行和变换
+074. （1）很长的数学公式请尽可能在=（等号）或类同的其他关系符号（如＜，＞，≤，≥，≠）处转行，如果做不到这一点，最好在“+、-”号处转行。如果算式不是多项式（即式中没有+、-号）的，则可在乘号处转行，用乘号（×或•）连接。等号，加、减号，乘号都应放在下行之首。
+075. （2）数学公式转行后上下行以等号对齐。分行要匀称，不要一行太长一行太短。
+076. （3）如果上行算式中有等号，下行以“+、-”号处转行的，一般下行以“+、-”号起首的算式应比上行的等号退后一格。
+077. 五、一般格式要求
+078. 1．毕业论文（设计）各部分的顺序（装订）要求
+079. （1）封面
+080. （2）诚信声明与授权说明
+081. （3）中文摘要与关键词
+082. （4）英文摘要与关键词
+083. （5）中文目录
+084. （6）正文
+085. （7）参考文献
+086. （8）致谢
+087. （9）附录（可选）
+088. （10）成绩评定及评语表
+089. 2．封面
+090. （1）格式：采用教务处统一格式（教务处主页下载）
+091. （2）中文题目：限20字，中文为黑体，西文和数字为Times New Roman，一号，加粗，居中，题目一行排不下时可排两行；
+092. （3）作者姓名、指导导师姓名、职称、日期等，三号，中文为宋体，西文和数字为Times New Roman。
+093. 3．诚信声明与授权说明
+094. 单设一页，排在封面后。
+095. 4．中（英）文摘要
+096. 中（英）文摘要单设页，排在诚信声明与授权说明后，中文摘要后跟英文摘要。
+097. 中文摘要和英文摘要间要分页，“摘要”小三号黑体居中，“关键词”小四号黑体加方括号，中文摘要和关键词均为小四号楷体，其中的英文和数字用Times New Roman。英文摘要和关键词用小四号 Times New Roman，英文“Key Words”用小四号 Times New Roman，加方括号，加粗。英文摘要正文要两端对齐。
+098. 5．中文目录
+099. 要求中文目录由Word软件自动生成，目录中要体现3级标题。中文目录具体格式请参阅后文的论文模板。
+100. 6．正文
+101. （1）层次代号的格式如下：
+102. 一级标号：1  ×××
+103. 二级标号：1.1 ×××
+104. 三级标号：1.1.1 ×××
+105. （2）论文字体、字形及字号要求
+106. ① 层级字体、字形
+107. 一级标题：1  ×××  小三号黑体加粗
+108. 二级标题：1.1 ×××  四号宋体字
+109. 三级标题：1.1.1 ××× 小四号宋体字
+110. 正文      ××××     小四号宋体
+111. ② 图表标号
+112. 图1.1 题目  图1.2题目
+113. 标在图正下方，宋体五号，居中，图宽度不能超过左右缩进。
+114. 表1.1题目 表1.2题目
+115. 标在表正上方，宋体五号，居中，表宽度不能超过左右缩进。
+116. ③ 参考文献及页眉宋体五号
+117. ④ 脚注中文宋体小五、英文Times New Roman小五
+118. （3）段落及行间距要求
+119. 标题段落设置段后0.5行，段前为0.5行，正文段落1.5倍间距。
+120. 7．参考文献
+121. “参考文献”小三黑体居中，参考文献正文五号，中文为宋体，西文和数字为Times New Roman，取固定行距20磅（pt）。
+122. 8．页眉、页脚和页码
+123. <w:tab w:val="left" w:pos="540"/></w:tabs><w:spacing w:line="360" w:lineRule="auto"/><w:ind w:leftChars="-1" w:left="-2" w:firstLineChars="200" w:firstLine="480"/><w:rPr><w:sz w:val="24"/><w:lang w:val="en-GB"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:sz w:val="24"/><w:lang w:val="en-GB"/></w:rPr><w:t>页眉靠左的部分为： “广东金融学院”全称；靠右的部分为：本科毕业论文（设计）+论文的题目。字体采用黑体小五号。页眉从摘要开始至附录结束。
+124. <w:tab w:val="left" w:pos="540"/></w:tabs><w:spacing w:line="360" w:lineRule="auto"/><w:ind w:leftChars="-1" w:left="-2" w:firstLineChars="200" w:firstLine="480"/><w:jc w:val="left"/><w:rPr><w:sz w:val="24"/><w:lang w:val="en-GB"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:sz w:val="24"/><w:lang w:val="en-GB"/></w:rPr><w:t>论文分页符和分节符设置共分三个部分：封面至本科毕业论文（设计）诚信声明（使用授权声明）之间各页面可以设置分页符或分节符；摘要至目录之间各页面必须设置分页符；正文内的页面不需要设置分页符，论文根据内容自动跳转到下一页，正文至附录之间各页面设置分页符。
+125. <w:tab w:val="left" w:pos="540"/></w:tabs><w:spacing w:line="360" w:lineRule="auto"/><w:ind w:leftChars="-1" w:left="-2" w:firstLineChars="200" w:firstLine="480"/><w:jc w:val="left"/><w:rPr><w:sz w:val="24"/><w:lang w:val="en-GB"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:sz w:val="24"/><w:lang w:val="en-GB"/></w:rPr><w:lastRenderedPageBreak/><w:t>页脚需要设置页码，页码采用小五号Times New Roman，居中放置，页码从摘要到目录之间标注格式为罗马数字：I、II、III……；页码从正文（含参考文献和附录）页码标注格式为：1、2、3……。
+126. <w:tab w:val="left" w:pos="540"/></w:tabs><w:spacing w:line="360" w:lineRule="auto"/><w:ind w:leftChars="-1" w:left="-2" w:firstLineChars="200" w:firstLine="480"/><w:jc w:val="left"/><w:rPr><w:sz w:val="24"/><w:lang w:val="en-GB"/></w:rPr></w:pPr><w:r><w:rPr><w:sz w:val="24"/><w:lang w:val="en-GB"/></w:rPr><w:t>9.标题注意事项
+127. <w:tab w:val="left" w:pos="540"/></w:tabs><w:spacing w:line="360" w:lineRule="auto"/><w:ind w:leftChars="-1" w:left="-2" w:firstLineChars="200" w:firstLine="480"/><w:jc w:val="left"/><w:rPr><w:sz w:val="24"/><w:lang w:val="en-GB"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:sz w:val="24"/><w:lang w:val="en-GB"/></w:rPr><w:t>论文封面、正文开头、页眉以及论文评语表中的题目必须一致，若论文题目有副标题，则只在论文封面和论文正文添加。
+128. 10．论文用纸及打印规格要求
+129. 纸张规格、尺寸（mm）：A4（210×297）。
+130. 每页印刷版面尺寸（mm）：上（T）：2.54cm；下（B）：2.54cm；左（L）：3cm；右（R）：2.2cm。
+131. 论文打印说明：封面、诚信声明、成绩评定及评语表单面打印；中文摘要、英文摘要、目录、正文、参考文献、致谢、附录双面打印。若目录页数为单数，请插入一页空白页，使得正文另起一页开始打印。
+132. <w:p w14:paraId="6566C6EB" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>字体：黑体
+133. 字号：一号，加粗，段落：居中
+134. 该抬头不用删除任何内容
+135. 阅后删除此文本框
+136. <w:p w14:paraId="6566C6EB" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>字体：黑体
+137. 字号：一号，加粗，段落：居中
+138. 该抬头不用删除任何内容
+139. 阅后删除此文本框
+140. 本科毕业论文（设计）
+141. 中文题目
+142. （限20字，中文为黑体，西文和数字为Times New Roman，一号，加粗，居中，单倍行距）
+143. <w:p w14:paraId="001FFE68" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="000000"/></w:rPr><w:t>学号字体：Times New Roman，
+144. 阅后删除此文本框
+145. <w:p w14:paraId="001FFE68" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="000000"/></w:rPr><w:t>学号字体：Times New Roman，
+146. 阅后删除此文本框
+147. 学生姓名
+148. ：
+149. 学号
+150. ：
+151. 学院
+152. ：
+153. 互联网金融与信息工程学院
+154. 专业
+155. ：
+156. 指导教师
+157. ：
+158. 职称：
+159. 提交日期
+160. ：
+161. 年   月   日
+162. （插入分页符）（空一页）
+163. 本科毕业论文（设计）诚信声明
+164. 本人郑重声明：所呈交的本科毕业论文（设计），是本人在指导老师的指导下，独立进行研究工作所取得的成果，成果不存在知识产权争议，除文中已经注明引用的内容外，本论文不含任何其他个人或集体已经发表或撰写过的作品成果。对本文的研究作出重要贡献的个人和集体均已在文中以明确方式标明。本人完全意识到本声明的法律结果由本人承担。
+165. 学生签名：
+166. 时间：          年   月   日
+167. 关于论文（设计）使用授权的说明
+168. 本人完全了解广东金融学院关于收集、保存、使用学位论文的规定，即：
+169. 1.按照学校要求提交学位论文的印刷本和电子版本；
+170. 2.学校有权保存学位论文的印刷本和电子版本，并提供目录检索与阅览服务，在校园网上提供服务；
+171. 3.学校可以采用影印、缩印、数字化或其它复制手段保存论文。
+172. 本人同意上述规定。
+173. 学生签名：
+174. </w:r><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="000000"/><w:sz w:val="28"/><w:szCs w:val="28"/></w:rPr><w:t>时间：        年   月   日
+175. （插入分页符）
+176. （空一页）
+177. <w:p w14:paraId="32F98C9C" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="000080"/><w:sz w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="000080"/><w:sz w:val="22"/></w:rPr><w:t>注意：页眉从摘要开始，文字顶到左右两端
+178. 页眉字体：中文为黑体，西文和数字为Times New Roman
+179. 字号：小五，加粗
+180. 样式：页眉
+181. 阅后删除此文本框
+182. <w:p w14:paraId="32F98C9C" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="000080"/><w:sz w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="000080"/><w:sz w:val="22"/></w:rPr><w:t>注意：页眉从摘要开始，文字顶到左右两端
+183. 页眉字体：中文为黑体，西文和数字为Times New Roman
+184. 字号：小五，加粗
+185. 样式：页眉
+186. 阅后删除此文本框
+187. <w:p w14:paraId="2A47A65C" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>样式：一级标题
+188. 字体： 黑体
+189. 字号：小三，加粗
+190. 段落：居中，段前0.5行，段后0.5行
+191. 阅后删除此文本框
+192. <w:p w14:paraId="2A47A65C" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>样式：一级标题
+193. 字体： 黑体
+194. 字号：小三，加粗
+195. 段落：居中，段前0.5行，段后0.5行
+196. 阅后删除此文本框
+197. 随着中国联通CDMA 1X网络的建成，增值业务计费模式与以往话音计费有很大的不同，故对计费结算在增值业务支撑方面提出了新的要求。针对CDMA 1X增值业务计费系统的大并发量、高可靠性及可扩展性的要求，传统的集中式处理难以满足这些要求。而可以提供并行处理的分布式系统其巨大的灵活性可以应付增值业务爆炸式的增长。
+198. 通过对分布式系统的特点、设计中出现的问题以及软件可靠性等方面的分析，在系统故障表现形式以及故障处理等方面进行了研究，最终提出使用容错技术提高其可靠性。
+199. <w:p w14:paraId="0C478D83" w14:textId="0AB59E22" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>字体：中文为楷体，西文和数字为Times New Roman
+200. 字号：小四
+201. 段落：两端对齐，首行缩进2个字符，1.5倍行距。
+202. 摘要正文不少于300字。
+203. 阅后删除此文本框
+204. <w:p w14:paraId="0C478D83" w14:textId="0AB59E22" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>字体：中文为楷体，西文和数字为Times New Roman
+205. 字号：小四
+206. 段落：两端对齐，首行缩进2个字符，1.5倍行距。
+207. 摘要正文不少于300字。
+208. 阅后删除此文本框
+209. 在可靠性设计的基础上，完成了分布式增值业务计费系统的可靠性实现。通过性能分析表明，研究成果和所描述的设计思路和实现方法是合理的、切实可行的，对于类似的分布式计费系统开发具有一定的参考价值。
+210. [关键词]：计费；分布式系统；容错；软件可靠性
+211. <w:p w14:paraId="5490D63F" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>注意：关键词与摘要正文之间空一行
+212. 字体：黑体
+213. 字号：小四，加粗
+214. 方括号左对齐，无缩进
+215. 阅后删除此文本框
+216. <w:p w14:paraId="5490D63F" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>注意：关键词与摘要正文之间空一行
+217. 字体：黑体
+218. 字号：小四，加粗
+219. 方括号左对齐，无缩进
+220. 阅后删除此文本框
+221. <w:p w14:paraId="1B9F6E2B" w14:textId="24C61F2A" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>字体：中文为楷体，西文和数字为Times New Roman
+222. 字号：小四
+223. 关键词要求3-5个。关键词之间“；”分隔，末尾无符号
+224. 标点符号：全角
+225. 阅后删除此文本框
+226. <w:p w14:paraId="1B9F6E2B" w14:textId="24C61F2A" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>字体：中文为楷体，西文和数字为Times New Roman
+227. 字号：小四
+228. 关键词要求3-5个。关键词之间“；”分隔，末尾无符号
+229. 标点符号：全角
+230. 阅后删除此文本框
+231. <w:p w14:paraId="03E56210" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="000080"/><w:sz w:val="22"/></w:rPr><w:t>页码：摘要至目录间的页码格式要求为罗马数字：I、II、III……….
+232. 阅后删除此文本框
+233. <w:p w14:paraId="03E56210" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="000080"/><w:sz w:val="22"/></w:rPr><w:t>页码：摘要至目录间的页码格式要求为罗马数字：I、II、III……….
+234. 阅后删除此文本框
+235. <w:p w14:paraId="28306BCF" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="000080"/><w:sz w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="000080"/><w:sz w:val="22"/></w:rPr><w:t>样式：一级标题
+236. 字体：Times New Roman
+237. 字号：小三，加粗
+238. 段落：段前0.5行，段后0.5行，1.5倍行距，居中
+239. 阅后删除此文本框
+240. <w:p w14:paraId="28306BCF" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="000080"/><w:sz w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="000080"/><w:sz w:val="22"/></w:rPr><w:t>样式：一级标题
+241. 字体：Times New Roman
+242. 字号：小三，加粗
+243. 段落：段前0.5行，段后0.5行，1.5倍行距，居中
+244. 阅后删除此文本框
+245. Mobile value-added service is on the basis of communication technology, computer technology, Internet technology are being developed and merged constantly, with people‘s encouragement to various kinds of the application demand to increase fast based on information, the premise that the social information-based level improves day by day, a kind of brand-new method of service to develop rapidly.
+246. Build up by network , CDMA 1X with CHINAUNICOM, value-added service charge mode and past speech have difference to charge, so settled account in charging and put forward the new demand in supporting in value-added service. To great erupting simultaneously amount, high reliability and request of the expansibility for CDMA 1X value-added service charge system, traditional centralized difficult to satisfy with these request. And the distributed system undertakes the parallel processing; its enormous flexibility should deal with the exploding growth of value-added service.
+247. By These researches on pattern of trouble expression, analysis on the characteristic of the distributed system, problems in the design and software reliability, finally carry on improving its reliability by fault-tolerant technology.
+248. <w:p w14:paraId="199030E8" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/><w:sz w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="000080"/><w:sz w:val="22"/></w:rPr><w:t>注：（1）关键词要求3-5个单词；（2）英文关键字首字母大写；（3）中英文关键字必须一一对应；（4）关键词之间“；”以及一个空格分隔，末尾无符号；（5）关键词与摘要正文之间空一行
+249. 字体：Times New Roman
+250. 字号：小四
+251. 标点符号：半角
+252. 阅后删除此文本框。
+253. <w:p w14:paraId="199030E8" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/><w:sz w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="000080"/><w:sz w:val="22"/></w:rPr><w:t>注：（1）关键词要求3-5个单词；（2）英文关键字首字母大写；（3）中英文关键字必须一一对应；（4）关键词之间“；”以及一个空格分隔，末尾无符号；（5）关键词与摘要正文之间空一行
+254. 字体：Times New Roman
+255. 字号：小四
+256. 标点符号：半角
+257. 阅后删除此文本框。
+258. 注：（1）英文摘要须与中文摘要意义对应；（2）使用英文标点符号；（3）标点符号后需加一个空格分隔，再书写下一个单词
+259. 字体：Times New Roman
+260. 字号：小四
+261. 段落：两端对齐，首行缩进2个字符，1.5倍行距
+262. 阅后删除此文本框
+263. <w:p w14:paraId="3A6554D5" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="000080"/><w:sz w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="000080"/><w:sz w:val="22"/></w:rPr><w:t>注：（1）英文摘要须与中文摘要意义对应；（2）使用英文标点符号；（3）标点符号后需加一个空格分隔，再书写下一个单词
+264. 字体：Times New Roman
+265. 字号：小四
+266. 段落：两端对齐，首行缩进2个字符，1.5倍行距
+267. 阅后删除此文本框
+268. Based On the reliability design, the reliability of the distributed value-added service charge system is realized. Indicate through the analysis of performance, it is reasonable and practical to design ideas and methods showed in this thesis. And these are valuable for developing similar systems.
+269. [Key Words]: Billing; Distributed system; Fault-tolerant; Software reliability
+270. <w:p w14:paraId="1EC630B9" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="FF0000"/></w:rPr><w:t>一级目录
+271. 字体：中文为黑体；西文和数字等为Times New Roman
+272. 字号：小三
+273. 段落：1.5倍行距
+274. 阅后删除此文本框
+275. <w:p w14:paraId="1EC630B9" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="FF0000"/></w:rPr><w:t>一级目录
+276. 字体：中文为黑体；西文和数字等为Times New Roman
+277. 字号：小三
+278. 段落：1.5倍行距
+279. 阅后删除此文本框
+280. 注意：（1）目录必须通过引用自动生成，不能手工生成；（2）论文修改后，重新生成目录，更新目录的标题及页码
+281. 字体：黑体，居中，加粗
+282. 字号：小三
+283. 段落：段前0.5行
+284. 段后0.5行
+285. 阅后删除此文本框
+286. <w:p w14:paraId="7FC1C64D" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>注意：（1）目录必须通过引用自动生成，不能手工生成；（2）论文修改后，重新生成目录，更新目录的标题及页码
+287. 字体：黑体，居中，加粗
+288. 字号：小三
+289. 段落：段前0.5行
+290. 段后0.5行
+291. 阅后删除此文本框
+292. 目  录
+293. 摘  要</w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="begin"/></w:r><w:r w:rsidR="00C479D6"><w:instrText xml:space="preserve"> PAGEREF _Toc495071423 \h </w:instrText></w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="separate"/></w:r><w:r w:rsidR="00C479D6"><w:t>I
+294. Abstract</w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="begin"/></w:r><w:r w:rsidR="00C479D6"><w:instrText xml:space="preserve"> PAGEREF _Toc495071424 \h </w:instrText></w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="separate"/></w:r><w:r w:rsidR="00C479D6"><w:t>II
+295. <w:p w14:paraId="58D84EBB" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="FF0000"/></w:rPr><w:t>二级目录
+296. 字体：中文为宋体；西文和数字等为Times New Roman
+297. 字号：四号
+298. 段落：1.5倍行距
+299. 阅后删除此文本框
+300. <w:p w14:paraId="58D84EBB" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="FF0000"/></w:rPr><w:t>二级目录
+301. 字体：中文为宋体；西文和数字等为Times New Roman
+302. 字号：四号
+303. 段落：1.5倍行距
+304. 阅后删除此文本框
+305. <w:tab w:val="right" w:leader="dot" w:pos="8302"/></w:tabs><w:ind w:left="420"/><w:rPr><w:rFonts w:asciiTheme="minorHAnsi" w:eastAsiaTheme="minorEastAsia" w:hAnsiTheme="minorHAnsi" w:cstheme="minorBidi"/><w:sz w:val="21"/><w:szCs w:val="22"/></w:rPr></w:pPr><w:hyperlink w:anchor="_Toc495071427" w:history="1"><w:r w:rsidR="00C479D6"><w:rPr><w:rStyle w:val="af7"/></w:rPr><w:t xml:space="preserve">1.1 研究背景</w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="begin"/></w:r><w:r w:rsidR="00C479D6"><w:instrText xml:space="preserve"> PAGEREF _Toc495071427 \h </w:instrText></w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="separate"/></w:r><w:r w:rsidR="00C479D6"><w:t>1
+306. <w:tab w:val="right" w:leader="dot" w:pos="8302"/></w:tabs><w:ind w:left="420"/><w:rPr><w:rFonts w:asciiTheme="minorHAnsi" w:eastAsiaTheme="minorEastAsia" w:hAnsiTheme="minorHAnsi" w:cstheme="minorBidi"/><w:sz w:val="21"/><w:szCs w:val="22"/></w:rPr></w:pPr><w:hyperlink w:anchor="_Toc495071428" w:history="1"><w:r w:rsidR="00C479D6"><w:rPr><w:rStyle w:val="af7"/></w:rPr><w:t>1.2主要研究工作</w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="begin"/></w:r><w:r w:rsidR="00C479D6"><w:instrText xml:space="preserve"> PAGEREF _Toc495071428 \h </w:instrText></w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="separate"/></w:r><w:r w:rsidR="00C479D6"><w:t>2
+307. 2 系统开发技术</w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="begin"/></w:r><w:r w:rsidR="00C479D6"><w:instrText xml:space="preserve"> PAGEREF _Toc495071429 \h </w:instrText></w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="separate"/></w:r><w:r w:rsidR="00C479D6"><w:t>2
+308. <w:tab w:val="right" w:leader="dot" w:pos="8302"/></w:tabs><w:ind w:left="420"/><w:rPr><w:rFonts w:asciiTheme="minorHAnsi" w:eastAsiaTheme="minorEastAsia" w:hAnsiTheme="minorHAnsi" w:cstheme="minorBidi"/><w:sz w:val="21"/><w:szCs w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:noProof/><w:color w:val="0000FF" w:themeColor="hyperlink"/><w:u w:val="single"/></w:rPr><mc:AlternateContent><mc:Choice Requires="wps"><w:drawing><wp:anchor distT="0" distB="0" distL="114300" distR="114300" simplePos="0" relativeHeight="251664384" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1" wp14:anchorId="5E6B1B7C" wp14:editId="4E0A3C29"><wp:simplePos x="0" y="0"/><wp:positionH relativeFrom="column"><wp:posOffset>4469130</wp:posOffset></wp:positionH><wp:positionV relativeFrom="paragraph"><wp:posOffset>64770</wp:posOffset></wp:positionV><wp:extent cx="1602105" cy="2209800"/><wp:effectExtent l="3733800" t="0" r="17145" b="19050"/><wp:wrapNone/><wp:docPr id="57" name="AutoShape 88"/><wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"/></wp:cNvGraphicFramePr><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.microsoft.com/office/word/2010/wordprocessingShape"><wps:wsp><wps:cNvSpPr><a:spLocks noChangeArrowheads="1"/></wps:cNvSpPr><wps:spPr bwMode="auto"><a:xfrm><a:off x="0" y="0"/><a:ext cx="1602105" cy="2209800"/></a:xfrm><a:prstGeom prst="wedgeRoundRectCallout"><a:avLst><a:gd name="adj1" fmla="val -280481"/><a:gd name="adj2" fmla="val -23667"/><a:gd name="adj3" fmla="val 16667"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill><a:ln w="9525"><a:solidFill><a:srgbClr val="0000FF"/></a:solidFill><a:miter lim="800000"/></a:ln></wps:spPr><wps:txbx><w:txbxContent><w:p w14:paraId="70E926FA" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="FF0000"/></w:rPr><w:t>三级目录
+309. 注意：目录最多为三级
+310. 字体：中文为宋体；西文和数字等为Times New Roman
+311. 字号：小四
+312. 段落：1.5倍行距
+313. 阅后删除此文本框。
+314. <w:p w14:paraId="70E926FA" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="FF0000"/></w:rPr><w:t>三级目录
+315. 注意：目录最多为三级
+316. 字体：中文为宋体；西文和数字等为Times New Roman
+317. 字号：小四
+318. 段落：1.5倍行距
+319. 阅后删除此文本框。
+320. <w:tab w:val="right" w:leader="dot" w:pos="8302"/></w:tabs><w:ind w:left="840"/><w:rPr><w:rFonts w:asciiTheme="minorHAnsi" w:eastAsiaTheme="minorEastAsia" w:hAnsiTheme="minorHAnsi" w:cstheme="minorBidi"/><w:sz w:val="21"/><w:szCs w:val="22"/></w:rPr></w:pPr><w:hyperlink w:anchor="_Toc495071431" w:history="1"><w:r w:rsidR="00C479D6"><w:rPr><w:rStyle w:val="af7"/></w:rPr><w:t xml:space="preserve">2.1.1 概述</w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="begin"/></w:r><w:r w:rsidR="00C479D6"><w:instrText xml:space="preserve"> PAGEREF _Toc495071431 \h </w:instrText></w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="separate"/></w:r><w:r w:rsidR="00C479D6"><w:t>2
+321. 3 分布式移动</w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="begin"/></w:r><w:r w:rsidR="00C479D6"><w:instrText xml:space="preserve"> PAGEREF _Toc495071432 \h </w:instrText></w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="separate"/></w:r><w:r w:rsidR="00C479D6"><w:t>3
+322. 4 结论</w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="begin"/></w:r><w:r w:rsidR="00C479D6"><w:instrText xml:space="preserve"> PAGEREF _Toc495071433 \h </w:instrText></w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="separate"/></w:r><w:r w:rsidR="00C479D6"><w:t>4
+323. 参考文献</w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="begin"/></w:r><w:r w:rsidR="00C479D6"><w:instrText xml:space="preserve"> PAGEREF _Toc495071434 \h </w:instrText></w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="separate"/></w:r><w:r w:rsidR="00C479D6"><w:t>5
+324. 致  谢</w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="begin"/></w:r><w:r w:rsidR="00C479D6"><w:instrText xml:space="preserve"> PAGEREF _Toc495071435 \h </w:instrText></w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="separate"/></w:r><w:r w:rsidR="00C479D6"><w:t>6
+325. 附录 内容名称</w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="begin"/></w:r><w:r w:rsidR="00C479D6"><w:instrText xml:space="preserve"> PAGEREF _Toc495071436 \h </w:instrText></w:r><w:r w:rsidR="00C479D6"><w:fldChar w:fldCharType="separate"/></w:r><w:r w:rsidR="00C479D6"><w:t>7
+326. <w:p w14:paraId="5EC7C694" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:szCs w:val="21"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:szCs w:val="21"/></w:rPr><w:t>注意：附录根据实际来确定是否需要
+327. 阅后删除此文本框
+328. <w:p w14:paraId="5EC7C694" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:szCs w:val="21"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:szCs w:val="21"/></w:rPr><w:t>注意：附录根据实际来确定是否需要
+329. 阅后删除此文本框
+330. <w:p w14:paraId="46AD743A" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>注意：封面题目，页眉题目，正文首页以及论文评语表题目四者必须完全一致
+331. 字体：中文为黑体；西文和数字等为Times New Roman
+332. 字号：小二，加粗，居中
+333. 段落：段前为1行，段后1行
+334. 阅后删除此文本框
+335. <w:p w14:paraId="46AD743A" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>注意：封面题目，页眉题目，正文首页以及论文评语表题目四者必须完全一致
+336. 字体：中文为黑体；西文和数字等为Times New Roman
+337. 字号：小二，加粗，居中
+338. 段落：段前为1行，段后1行
+339. 阅后删除此文本框
+340. 正文
+341. 字体：中文为宋体；西文和数字等为Times New Roman
+342. 字号：小四
+343. 段落：两端对齐，首行缩进2个字符，1.5倍行距。
+344. 阅后删除此文本框
+345. <w:p w14:paraId="7C633E4D" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:jc w:val="left"/><w:rPr><w:color w:val="FF0000"/><w:sz w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="FF0000"/><w:sz w:val="22"/></w:rPr><w:t>正文
+346. 字体：中文为宋体；西文和数字等为Times New Roman
+347. 字号：小四
+348. 段落：两端对齐，首行缩进2个字符，1.5倍行距。
+349. 阅后删除此文本框
+350. 分布式移动*******系统可靠性研究与设计
+351. ——以XXX为例
+352. <w:p w14:paraId="3F278E6B" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/><w:sz w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="FF0000"/><w:sz w:val="22"/></w:rPr><w:t>一级标题
+353. 基准样式：标题1
+354. 字体：中文为黑体；西文和数字等为Times New Roman
+355. 字号：小三
+356. 段落：左对齐, 段前为0.5行，段后0.5行
+357. 字号：小三，加粗
+358. 阅后删除此文本框
+359. <w:p w14:paraId="3F278E6B" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/><w:sz w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="FF0000"/><w:sz w:val="22"/></w:rPr><w:t>一级标题
+360. 基准样式：标题1
+361. 字体：中文为黑体；西文和数字等为Times New Roman
+362. 字号：小三
+363. 段落：左对齐, 段前为0.5行，段后0.5行
+364. 字号：小三，加粗
+365. 阅后删除此文本框
+366. 在20世纪50年代末到60年代初，计算机硬件从晶体管到集成电路，得到了飞速的发展，并朝着超大规模集成电路(VLSI )方向发展。
+367. ……
+368. 1 绪论
+369. <w:p w14:paraId="16B73C20" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/><w:sz w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="FF0000"/><w:sz w:val="22"/></w:rPr><w:t>二级标题
+370. 基准样式：标题2
+371. 字体：中文为宋体；西文和数字等为Times New Roman
+372. 字号：四号
+373. 段落：左对齐, 段前为0.5行，段后0.5行
+374. 阅后删除此文本框
+375. <w:p w14:paraId="16B73C20" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/><w:sz w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="FF0000"/><w:sz w:val="22"/></w:rPr><w:t>二级标题
+376. 基准样式：标题2
+377. 字体：中文为宋体；西文和数字等为Times New Roman
+378. 字号：四号
+379. 段落：左对齐, 段前为0.5行，段后0.5行
+380. 阅后删除此文本框
+381. <w:p w14:paraId="2B9DB1E5" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:sz w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:sz w:val="22"/></w:rPr><w:t>位置：表标题在表前面
+382. 字体：中文为宋体；西文和数字等为Times New Roman
+383. 字号：五号
+384. 段落：居中 , 段前为0.5行，段后0.5行
+385. 注意：“表X．X”后留有两个空格
+386. 阅后删除此文本框
+387. <w:p w14:paraId="2B9DB1E5" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:sz w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:sz w:val="22"/></w:rPr><w:t>位置：表标题在表前面
+388. 字体：中文为宋体；西文和数字等为Times New Roman
+389. 字号：五号
+390. 段落：居中 , 段前为0.5行，段后0.5行
+391. 注意：“表X．X”后留有两个空格
+392. 阅后删除此文本框
+393. 注意：每个图表在正文中必须引用
+394. 阅后删除此文本框
+395. <w:p w14:paraId="760BE1E0" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>注意：每个图表在正文中必须引用
+396. 阅后删除此文本框
+397. ……
+398. <w:p w14:paraId="681185DA" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>注意：（1）不能从它处以截图方式获取表格；（2）表需显示所有边框线；（3）图或表均不能独立成节，所有图和表在正文中必须有适量的说明或阐述性文字：（4）表居中
+399. 表内文字的字号：五号
+400. 字体：中文为宋体；西文和数字等为Times New Roman
+401. 阅后删除此文本框
+402. <w:p w14:paraId="681185DA" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>注意：（1）不能从它处以截图方式获取表格；（2）表需显示所有边框线；（3）图或表均不能独立成节，所有图和表在正文中必须有适量的说明或阐述性文字：（4）表居中
+403. 表内文字的字号：五号
+404. 字体：中文为宋体；西文和数字等为Times New Roman
+405. 阅后删除此文本框
+406. 时间
+407. 软件可靠性研究发展状况
+408. 1960年以前
+409. 软件开发过程还处于原始时期，尚没有软件可靠性的概念
+410. 1960-1970年
+411. “软件危机”出现，人们开始关心软件可靠性问题
+412. 1971-1980年
+413. 软件可靠性模型的研究成果丰富，软件失效数据的积累、分析工作有了初步的发展
+414. 1981-1990年
+415. <w:p w14:paraId="5B23453A" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>正文（含参考文献和附录）页码标注格式为： 1、2、3……
+416. 正文页码从1开始
+417. 阅后删除此文本框
+418. <w:p w14:paraId="5B23453A" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>正文（含参考文献和附录）页码标注格式为： 1、2、3……
+419. 正文页码从1开始
+420. 阅后删除此文本框
+421. 1991年至今
+422. 软件体系结构发生了巨变，传统的软件可靠性理论已明显不能解决现代大规模复杂软件的可靠性问题，软件可靠性的研究又面临着新的挑战
+423. 1.2主要研究工作
+424. <w:p w14:paraId="45F02D33" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>正文与图表之间段间距为0.5行
+425. 阅后删除此文本框
+426. <w:p w14:paraId="45F02D33" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>正文与图表之间段间距为0.5行
+427. 阅后删除此文本框
+428. ……
+429. 2 相关技术
+430. <w:p w14:paraId="23D54144" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="000080"/><w:sz w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>注意：文中必须标明每篇参考文献的引用
+431. 字体：Times New Roman
+432. 字号：小四，上标
+433. 阅后删除此文本框
+434. <w:p w14:paraId="23D54144" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="000080"/><w:sz w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>注意：文中必须标明每篇参考文献的引用
+435. 字体：Times New Roman
+436. 字号：小四，上标
+437. 阅后删除此文本框
+438. 2.1.1 概述
+439. <w:p w14:paraId="4D4DCA1C" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/><w:sz w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="FF0000"/><w:sz w:val="22"/></w:rPr><w:t>三级标题
+440. 基准样式：标题3
+441. 字体：中文为宋体；西文和数字等为Times New Roman
+442. 字号：小四
+443. 段落：左对齐, 段前为0.5行，段后0.5行
+444. 阅后删除此文本框
+445. <w:p w14:paraId="4D4DCA1C" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/><w:sz w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="FF0000"/><w:sz w:val="22"/></w:rPr><w:t>三级标题
+446. 基准样式：标题3
+447. 字体：中文为宋体；西文和数字等为Times New Roman
+448. 字号：小四
+449. 段落：左对齐, 段前为0.5行，段后0.5行
+450. 阅后删除此文本框
+451. 对于分布式系统，文献[1]的定义是：“一个分布式系统是一些独立的计算机的集合，但是对这个系统的用户来说，系统就像一台计算机一样。” [2-3]
+452. 2.1.2  分布式系统的特点
+453. <w:p w14:paraId="1B57AEE4" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="FF0000"/></w:rPr><w:t>多个连续参考文献引用示例
+454. 字体：Times New Roman
+455. 字号：小四，上标
+456. 阅后删除此文本框
+457. <w:p w14:paraId="1B57AEE4" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:color w:val="FF0000"/></w:rPr><w:t>多个连续参考文献引用示例
+458. 字体：Times New Roman
+459. 字号：小四，上标
+460. 阅后删除此文本框
+461. <w:p w14:paraId="699635B6" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>字体、字号等与正文同阅后删除此文本框
+462. <w:p w14:paraId="699635B6" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>字体、字号等与正文同阅后删除此文本框
+463. （2）性能/价格
+464. 分布式系统的并行性降低了处理的瓶颈，提供了全面改进的性能，也就是说，分布式系统提供了更好的性能价格比。……
+465. ①模型假设应简单易解，合乎直觉；
+466. ②所需数据应便于收集；
+467. ③参数估计方法简单可行；
+468. <w:p w14:paraId="4A51A4E9" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>图与正文为0.5行段间距
+469. 阅后删除此文本框
+470. <w:p w14:paraId="4A51A4E9" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>图与正文为0.5行段间距
+471. 阅后删除此文本框
+472. （3） 资源共享
+473. <w:p w14:paraId="0845DF13" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>注意：每个图表在正文中必须引用
+474. 阅后删除此文本框
+475. <w:p w14:paraId="0845DF13" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/></w:rPr><w:t>注意：每个图表在正文中必须引用
+476. 阅后删除此文本框
+477. ……
+478. 如图2.1所示。
+479. <w:p w14:paraId="62DCB048" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/><w:sz w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:sz w:val="22"/></w:rPr><w:t>注意：（1）必须保证图表清晰美观；图制作要清晰，不能随意缩放，图中和表中文字为五号字。除实现系统的运行界面允许截图外，其余图件原则上须采用Visio绘制。尤其注意，Visio图要采用复制/粘贴的方式嵌入至Word中，不能使用截图方式；（2）图居中
+480. 字号：五号字
+481. 字体：中文为宋体；西文和数字等为Times New Roman
+482. 阅后删除此文本框
+483. <w:p w14:paraId="62DCB048" w14:textId="77777777" w:rsidR="00525530" w:rsidRDefault="00525530"><w:pPr><w:rPr><w:color w:val="FF0000"/><w:sz w:val="22"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:hint="eastAsia"/><w:sz w:val="22"/></w:rPr><w:t>注意：（1）必须保证图表清晰美观；图制作要清晰，不能随意缩放，图中和表中文字为五号字。除实现系统的运行界面允许截图外，其余图件原则上须采用Visio绘制。尤其注意，Visio图要采用复制/粘贴的方式嵌入至Word中，不能使用截图方式；（2）图居中
+484. 字号：五号字
+485. 字体：中文为宋体；西文和数字等为Times New Roman
+486. 阅后删除此文本框
+487. NIC
+488. NIC
+489. Host
+490. BUS
+491. Adapter
+492. Local Storage
+493. 主机
+494. NIC
+495. NIC
+496. Host
+497. BUS
+498. Adapter
+499. Local Storage
+500. 备份机

@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "P1-智能闭环与看板可用性-完整实施方案.md",
+                "file": "多租户AI智能客服中台系统_毕业论文稿.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "P1-智能闭环与看板可用性-完整实施方案"
+              "title": "多租户AI智能客服中台系统_毕业论文稿"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "P1-智能闭环与看板可用性-完整实施方案.md",
+                "file": "多租户AI智能客服中台系统_毕业论文稿.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for P1-智能闭环与看板可用性-完整实施方案"
+              "title": "Backlinks for 多租户AI智能客服中台系统_毕业论文稿"
             }
           },
           {
@@ -169,7 +169,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 298.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -184,8 +184,17 @@
   },
   "active": "0624134ee67ea6a5",
   "lastOpenFiles": [
-    "多租户AI智能客服中台-全局诊断与优化路线图.md",
+    "多租户智能客服中台-产品与技术架构设计.md",
+    "多租户工单系统设计方案.md",
+    "论文提纲-完整版.md",
+    "毕业论文初稿.md",
+    "多租户AI智能客服中台系统_毕业论文稿.md",
+    "reference_extract.txt",
+    "template_extract.txt",
+    "reference.docx",
+    "template.docx",
     "P1-智能闭环与看板可用性-完整实施方案.md",
+    "多租户AI智能客服中台-全局诊断与优化路线图.md",
     "项目功能完成度分析与详细规划.md",
     "满意度评价V1-建表与后端实现方案.md",
     "知识库索引与检索服务-完整实现指南.md",
@@ -207,19 +216,10 @@
     "转人工功能-完整技术文档与面试指南.md",
     "转人工功能技术文档-第2部分-核心流程.md",
     "转人工功能-完整知识总结.md",
-    "转人工功能-完整技术总结.md",
-    "handoff/转人工功能总结.md",
-    "转人工知识总结.md",
-    "handoff/转人工功能知识总结.md",
-    "handoff/转人工问题-最终解决方案.md",
     "handoff/数据库验证查询.sql",
     "handoff/转人工功能快速验证SQL.sql",
     "handoff/快速修复命令-复制粘贴执行.sh",
     "handoff/快速修复命令-Windows.bat",
-    "handoff",
-    "数据库验证查询.sql",
-    "快速修复命令-Windows.bat",
-    "快速修复命令-复制粘贴执行.sh",
     "Pasted image 20260126103945.png",
     "Pasted image 20260126102510.png",
     "Pasted image 20260126103636.png",
