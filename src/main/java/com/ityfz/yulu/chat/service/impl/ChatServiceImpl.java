@@ -217,7 +217,7 @@ public class ChatServiceImpl implements ChatService {
         } else {
             emotion = emotion.toUpperCase();
         }
-
+        // 7. 意图识别
         String intent = llmClient.detectIntent(question);
         if (intent == null || intent.isBlank()) {
             intent = "GENERAL";

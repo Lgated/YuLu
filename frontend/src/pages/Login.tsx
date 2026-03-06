@@ -107,10 +107,69 @@ export default function Login() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg,#1f3b73,#1677ff)'
+        position: 'relative',
+        overflow: 'hidden',
+        background:
+          'radial-gradient(circle at 10% 10%, rgba(120, 177, 224, 0.16), transparent 18%), radial-gradient(circle at 85% 18%, rgba(120, 177, 224, 0.14), transparent 16%), radial-gradient(circle at 80% 82%, rgba(120, 177, 224, 0.12), transparent 18%), linear-gradient(180deg, #f4f7fb 0%, #eef3f8 100%)'
       }}
     >
-      <Card style={{ width: 420 }}>
+      <div
+        style={{
+          position: 'absolute',
+          left: 60,
+          top: 80,
+          width: 220,
+          height: 180,
+          border: '1px solid rgba(102,132,168,0.16)',
+          borderRadius: 999,
+          transform: 'rotate(-18deg)'
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          right: 90,
+          bottom: 100,
+          width: 260,
+          height: 200,
+          border: '1px solid rgba(102,132,168,0.14)',
+          borderRadius: 999,
+          transform: 'rotate(12deg)'
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          left: 95,
+          top: 135,
+          width: 8,
+          height: 8,
+          borderRadius: '50%',
+          background: 'rgba(116, 179, 229, 0.75)',
+          boxShadow: '0 0 0 14px rgba(116, 179, 229, 0.11)'
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          right: 160,
+          top: 160,
+          width: 7,
+          height: 7,
+          borderRadius: '50%',
+          background: 'rgba(245, 166, 166, 0.75)',
+          boxShadow: '0 0 0 11px rgba(245, 166, 166, 0.12)'
+        }}
+      />
+      <Card
+        style={{
+          width: 420,
+          background: 'rgba(255,255,255,0.88)',
+          backdropFilter: 'blur(2px)',
+          border: '1px solid rgba(157,181,208,0.35)',
+          boxShadow: '0 20px 60px rgba(31,55,90,0.08)'
+        }}
+      >
         <Title level={3} style={{ textAlign: 'center', marginBottom: 8 }}>
           YuLu 智链客服中台
         </Title>
@@ -199,5 +258,4 @@ export default function Login() {
     </div>
   );
 }
-
 
