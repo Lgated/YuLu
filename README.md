@@ -104,6 +104,4 @@ npm run dev
 - **消息队列报错**：确认 RabbitMQ 用户名、密码、端口与配置一致
 - **AI 调用失败**：优先检查 API Key 和 base-url 配置
 
----
 
-如果你希望，我可以再补一版「一键本地初始化脚本（含 MySQL/Redis/RabbitMQ/Qdrant 的 Docker Compose）」到仓库里，拉库后执行一次就能跑起来。
